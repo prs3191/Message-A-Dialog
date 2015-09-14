@@ -17,6 +17,7 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
     
     public interface MyClickListener {
         public void onItemClick(int position, View v);
+        
     }
  
     // Provide a suitable constructor (depends on the kind of dataset)
@@ -28,19 +29,22 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
     {
         TextView label;
         TextView dateTime;
-
+        View mMessengerButton;
         public DataObjectHolder(View itemView) {
             super(itemView);
             label = (TextView) itemView.findViewById(R.id.textView);
-            dateTime = (TextView) itemView.findViewById(R.id.textView2);
+            mMessengerButton = itemView.findViewById(R.id.messenger_send_button);
+           // dateTime = (TextView) itemView.findViewById(R.id.textView2);
             Log.i(LOG_TAG, "Adding Listener");
-            itemView.setOnClickListener(this);
+           // itemView.setOnClickListener(this);
+            mMessengerButton.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
             myClickListener.onItemClick(getAdapterPosition(), v);
         }
+        
     }
     
     //called from onResume()
@@ -67,7 +71,7 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
     public void onBindViewHolder(DataObjectHolder holder, int position)
     {
         holder.label.setText(mDataset.get(position).getmText1());
-        holder.dateTime.setText(mDataset.get(position).getmText2());
+        //holder.dateTime.setText(mDataset.get(position).getmText2());
     }
 
     public void addItem(DataObject dataObj, int index)

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:id="@+id/messenger_send_button"
+  style="@style/MyfbLargeButton"
+  >
+  <TextView
+    android:text="@string/messenger_send_button_text"
+    style="@style/MessengerButtonText.Blue.Large"
+    />
+</LinearLayout>

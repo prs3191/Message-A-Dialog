@@ -16,6 +16,11 @@ import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.example.mad.DataObject;
 import com.example.mad.MyRecyclerViewAdapter;
+import com.facebook.messenger.MessengerThreadParams;
+import com.facebook.messenger.MessengerUtils;
+import com.facebook.messenger.ShareToMessengerParams;
+
+
 
 
 
@@ -23,6 +28,8 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -45,10 +52,19 @@ public class MainActivity extends Activity {
 	private RecyclerView.LayoutManager mLayoutManager;
 	private static String LOG_TAG = "CardViewActivity";
 
+
+	// This is the request code that the SDK uses for startActivityForResult. See the code below
+	// that references it. Messenger currently doesn't return any data back to the calling
+	// application.
+	private static final int REQUEST_CODE_SHARE_TO_MESSENGER = 1;
+	private View mMessengerButton;
+	private MessengerThreadParams mThreadParams;
+	private boolean mPicking;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+
 		setContentView(R.layout.activity_card_view);
 
 
@@ -62,12 +78,28 @@ public class MainActivity extends Activity {
 
 		mAdapter = new MyRecyclerViewAdapter(results);
 		mRecyclerView.setAdapter(mAdapter);
-		
+
+
+
+
 		// Code to Add an item with default animation
 		//((MyRecyclerViewAdapter) mAdapter).addItem(obj, index);
 
 		// Code to remove an item with default animation
 		//((MyRecyclerViewAdapter) mAdapter).deleteItem(index);
+
+		// If we received Intent.ACTION_PICK from Messenger, we were launched from a composer shortcut
+		// or the reply flow.
+		Intent intent = getIntent();
+		if (Intent.ACTION_PICK.equals(intent.getAction())) {
+			mThreadParams = MessengerUtils.getMessengerThreadParamsForIntent(intent);
+			mPicking = true;
+
+			// Note, if mThreadParams is non-null, it means the activity was launched from Messenger.
+			// It will contain the metadata associated with the original content, if there was content.
+		}
+
+
 
 		try{
 			new HttpTask().execute();
@@ -77,6 +109,8 @@ public class MainActivity extends Activity {
 		}
 
 	}
+
+
 
 
 	public final class HttpTask extends AsyncTask<URL , Boolean /* Progress */, String /* Result */>
@@ -130,25 +164,26 @@ public class MainActivity extends Activity {
 		@Override
 		protected void onPostExecute(String result) {
 			publishProgress(false);
-			
-//			setContentView(R.layout.activity_card_view);
-//
-//
-//			mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
-//			mRecyclerView.setHasFixedSize(true);
-//
-//			mLayoutManager = new LinearLayoutManager(MainActivity.this);
-//			mRecyclerView.setLayoutManager(mLayoutManager);
-//
-//
-//
+
+			//			setContentView(R.layout.activity_card_view);
+			//
+			//
+			//			mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
+			//			mRecyclerView.setHasFixedSize(true);
+			//
+			//			mLayoutManager = new LinearLayoutManager(MainActivity.this);
+			//			mRecyclerView.setLayoutManager(mLayoutManager);
+			//
+			//
+			//
 			mAdapter = new MyRecyclerViewAdapter(getDataSet());
 			mRecyclerView.setAdapter(mAdapter);
-		
-			
-//
-//			mAdapter = new MyRecyclerViewAdapter(getDataSet());
-//			mRecyclerView.setAdapter(mAdapter);
+
+
+
+			//
+			//			mAdapter = new MyRecyclerViewAdapter(getDataSet());
+			//			mRecyclerView.setAdapter(mAdapter);
 
 			/*	try {
 				RadioGroup radioGroup = (RadioGroup)findViewById(R.id.rg_mainactivity);
@@ -215,52 +250,85 @@ public class MainActivity extends Activity {
 		}
 		return results;
 	}
-	
-//	private ArrayList<DataObject> getDataSet2() {
-//        ArrayList results = new ArrayList<DataObject>();
-//        for (int index = 0; index < 20; index++) {
-//            DataObject obj = new DataObject("Some Primary Text " + index,
-//                    "Secondary " + index);
-//            results.add(index, obj);
-//        }
-//        return results;
-//    }
 
-		 @Override
-	 protected void onResume()
-	 {
-	        super.onResume();
-	        ((MyRecyclerViewAdapter) mAdapter).setOnItemClickListener(new MyRecyclerViewAdapter.MyClickListener()
-	        	{
-	            	@Override
-	            	public void onItemClick(int position, View v)
-	            	{
-	            		Log.i(LOG_TAG, " Clicked on Item " + position);
-	            	}
-	        	}
-	        );
-	 }
-	
-	
-//
-//	@Override
-//	public boolean onCreateOptionsMenu(Menu menu) {
-//		// Inflate the menu; this adds items to the action bar if it is present.
-//		getMenuInflater().inflate(R.menu.main, menu);
-//		return true;
-//	}
-//
-//	@Override
-//	public boolean onOptionsItemSelected(MenuItem item) {
-//		// Handle action bar item clicks here. The action bar will
-//		// automatically handle clicks on the Home/Up button, so long
-//		// as you specify a parent activity in AndroidManifest.xml.
-//		int id = item.getItemId();
-//		if (id == R.id.action_settings) {
-//			return true;
-//		}
-//		return super.onOptionsItemSelected(item);
-//	}
+	//	private ArrayList<DataObject> getDataSet2() {
+	//        ArrayList results = new ArrayList<DataObject>();
+	//        for (int index = 0; index < 20; index++) {
+	//            DataObject obj = new DataObject("Some Primary Text " + index,
+	//                    "Secondary " + index);
+	//            results.add(index, obj);
+	//        }
+	//        return results;
+	//    }
+
+	@Override
+	protected void onResume()
+	{
+		super.onResume();
+		((MyRecyclerViewAdapter) mAdapter).setOnItemClickListener(new MyRecyclerViewAdapter.MyClickListener()
+		{
+			@Override
+			public void onItemClick(int position, View v)
+			{
+				Log.i(LOG_TAG, " Clicked on Item " + position);
+				
+				
+				onMessengerButtonClicked(position);
+
+			}
+		}
+				);
+
+	}
+
+
+	private void onMessengerButtonClicked(int position) {
+		// The URI can reference a file://, content://, or android.resource. Here we use
+		// android.resource for sample purposes.
+		
+		Uri uri =
+				Uri.parse("android.resource://com.example.mad/" + R.drawable.tree);
+
+		// Create the parameters for what we want to send to Messenger.
+		ShareToMessengerParams shareToMessengerParams =
+				ShareToMessengerParams.newBuilder(uri, "image/jpeg")
+				.setMetaData("{ \"image\" : \"tree\" }")
+				.build();
+
+		if (mPicking) {
+			// If we were launched from Messenger, we call MessengerUtils.finishShareToMessenger to return
+			// the content to Messenger.
+			MessengerUtils.finishShareToMessenger(this, shareToMessengerParams);
+		} else {
+			// Otherwise, we were launched directly (for example, user clicked the launcher icon). We
+			// initiate the broadcast flow in Messenger. If Messenger is not installed or Messenger needs
+			// to be upgraded, this will direct the user to the play store.
+			MessengerUtils.shareToMessenger(
+					this,
+					REQUEST_CODE_SHARE_TO_MESSENGER,
+					shareToMessengerParams);
+		}
+	}
+
+	//
+	//	@Override
+	//	public boolean onCreateOptionsMenu(Menu menu) {
+	//		// Inflate the menu; this adds items to the action bar if it is present.
+	//		getMenuInflater().inflate(R.menu.main, menu);
+	//		return true;
+	//	}
+	//
+	//	@Override
+	//	public boolean onOptionsItemSelected(MenuItem item) {
+	//		// Handle action bar item clicks here. The action bar will
+	//		// automatically handle clicks on the Home/Up button, so long
+	//		// as you specify a parent activity in AndroidManifest.xml.
+	//		int id = item.getItemId();
+	//		if (id == R.id.action_settings) {
+	//			return true;
+	//		}
+	//		return super.onOptionsItemSelected(item);
+	//	}
 
 
 }
