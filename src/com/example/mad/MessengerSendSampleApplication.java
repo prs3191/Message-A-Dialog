@@ -22,16 +22,20 @@ package com.example.mad;
 
 import android.app.Application;
 
+import com.facebook.CallbackManager;
 import com.facebook.FacebookSdk;
+import com.facebook.share.widget.ShareDialog;
 
 /**
  * Application object for sample app.
  */
 public class MessengerSendSampleApplication extends Application {
 
+
   @Override
   public void onCreate() {
     super.onCreate();
     FacebookSdk.sdkInitialize(this);
+
   }
 }

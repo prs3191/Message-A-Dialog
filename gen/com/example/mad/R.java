@@ -2346,11 +2346,12 @@ containing a value of this type.
         public static final int messenger_button_send_round_shadow=0x7f020057;
         public static final int messenger_button_white_bg_round=0x7f020058;
         public static final int messenger_button_white_bg_selector=0x7f020059;
-        public static final int notification_template_icon_bg=0x7f02005b;
-        public static final int tree=0x7f02005a;
+        public static final int notification_template_icon_bg=0x7f02005c;
+        public static final int sample=0x7f02005a;
+        public static final int tree=0x7f02005b;
     }
     public static final class id {
-        public static final int action0=0x7f0b006e;
+        public static final int action0=0x7f0b006f;
         public static final int action_bar=0x7f0b0050;
         public static final int action_bar_activity_content=0x7f0b0003;
         public static final int action_bar_container=0x7f0b004f;
@@ -2359,13 +2360,13 @@ containing a value of this type.
         public static final int action_bar_subtitle=0x7f0b0034;
         public static final int action_bar_title=0x7f0b0033;
         public static final int action_context_bar=0x7f0b0051;
-        public static final int action_divider=0x7f0b0072;
+        public static final int action_divider=0x7f0b0073;
         public static final int action_menu_divider=0x7f0b0005;
         public static final int action_menu_presenter=0x7f0b0006;
         public static final int action_mode_bar=0x7f0b004d;
         public static final int action_mode_bar_stub=0x7f0b004c;
         public static final int action_mode_close_button=0x7f0b0035;
-        public static final int action_settings=0x7f0b007b;
+        public static final int action_settings=0x7f0b007c;
         public static final int activity_chooser_view_content=0x7f0b0036;
         public static final int alertTitle=0x7f0b0040;
         public static final int always=0x7f0b002b;
@@ -2375,19 +2376,19 @@ containing a value of this type.
         public static final int box_count=0x7f0b0013;
         public static final int button=0x7f0b0014;
         public static final int buttonPanel=0x7f0b0046;
-        public static final int cancel_action=0x7f0b006f;
+        public static final int cancel_action=0x7f0b0070;
         public static final int card_view=0x7f0b0062;
         public static final int center=0x7f0b0019;
         public static final int checkbox=0x7f0b0048;
-        public static final int chronometer=0x7f0b0075;
+        public static final int chronometer=0x7f0b0076;
         public static final int collapseActionView=0x7f0b002c;
-        public static final int com_facebook_body_frame=0x7f0b0068;
-        public static final int com_facebook_button_xout=0x7f0b006a;
-        public static final int com_facebook_fragment_container=0x7f0b0066;
-        public static final int com_facebook_login_activity_progress_bar=0x7f0b0067;
-        public static final int com_facebook_tooltip_bubble_view_bottom_pointer=0x7f0b006c;
-        public static final int com_facebook_tooltip_bubble_view_text_body=0x7f0b006b;
-        public static final int com_facebook_tooltip_bubble_view_top_pointer=0x7f0b0069;
+        public static final int com_facebook_body_frame=0x7f0b0069;
+        public static final int com_facebook_button_xout=0x7f0b006b;
+        public static final int com_facebook_fragment_container=0x7f0b0067;
+        public static final int com_facebook_login_activity_progress_bar=0x7f0b0068;
+        public static final int com_facebook_tooltip_bubble_view_bottom_pointer=0x7f0b006d;
+        public static final int com_facebook_tooltip_bubble_view_text_body=0x7f0b006c;
+        public static final int com_facebook_tooltip_bubble_view_top_pointer=0x7f0b006a;
         public static final int contentPanel=0x7f0b0041;
         public static final int custom=0x7f0b0045;
         public static final int customPanel=0x7f0b0044;
@@ -2397,30 +2398,31 @@ containing a value of this type.
         public static final int display_always=0x7f0b000b;
         public static final int edit_query=0x7f0b0052;
         public static final int end=0x7f0b0031;
-        public static final int end_padder=0x7f0b007a;
+        public static final int end_padder=0x7f0b007b;
         public static final int expand_activities_button=0x7f0b0037;
         public static final int expanded_menu=0x7f0b0047;
         public static final int fbbuttonlayout=0x7f0b0064;
+        public static final int fbsendButton=0x7f0b0066;
         public static final int file_name=0x7f0b0063;
         public static final int home=0x7f0b0000;
         public static final int homeAsUp=0x7f0b0020;
         public static final int icon=0x7f0b003b;
         public static final int ifRoom=0x7f0b002d;
         public static final int image=0x7f0b0038;
-        public static final int info=0x7f0b0079;
+        public static final int info=0x7f0b007a;
         public static final int inline=0x7f0b0017;
         /**  ItemTouchHelper uses this id to save a View's original elevation. 
          */
         public static final int item_touch_helper_previous_elevation=0x7f0b0009;
         public static final int large=0x7f0b000d;
         public static final int left=0x7f0b001a;
-        public static final int line1=0x7f0b0073;
-        public static final int line3=0x7f0b0077;
+        public static final int line1=0x7f0b0074;
+        public static final int line3=0x7f0b0078;
         public static final int listMode=0x7f0b001d;
         public static final int list_files_txtv=0x7f0b0060;
         public static final int list_item=0x7f0b003a;
-        public static final int media_actions=0x7f0b0071;
-        public static final int messenger_send_button=0x7f0b006d;
+        public static final int media_actions=0x7f0b0072;
+        public static final int messenger_send_button=0x7f0b006e;
         public static final int middle=0x7f0b0032;
         public static final int multiply=0x7f0b0026;
         public static final int my_recycler_view=0x7f0b005f;
@@ -2459,14 +2461,14 @@ containing a value of this type.
         public static final int src_in=0x7f0b0029;
         public static final int src_over=0x7f0b002a;
         public static final int standard=0x7f0b0015;
-        public static final int status_bar_latest_event_content=0x7f0b0070;
+        public static final int status_bar_latest_event_content=0x7f0b0071;
         public static final int submit_area=0x7f0b005b;
         public static final int tabMode=0x7f0b001e;
-        public static final int text=0x7f0b0078;
-        public static final int text2=0x7f0b0076;
+        public static final int text=0x7f0b0079;
+        public static final int text2=0x7f0b0077;
         public static final int textSpacerNoButtons=0x7f0b0043;
         public static final int textView=0x7f0b0065;
-        public static final int time=0x7f0b0074;
+        public static final int time=0x7f0b0075;
         public static final int title=0x7f0b003c;
         public static final int title_template=0x7f0b003f;
         public static final int top=0x7f0b0018;
@@ -2627,7 +2629,6 @@ containing a value of this type.
         /**  Content description for the Toolbar icon used to collapse an expanded action mode. [CHAR LIMIT=NONE] 
          */
         public static final int abc_toolbar_collapse_description=0x7f050015;
-        public static final int action_settings=0x7f050025;
         public static final int app_name=0x7f050023;
         public static final int com_facebook_image_download_unknown_error=0x7f05000e;
         public static final int com_facebook_internet_permission_error_message=0x7f05000c;
@@ -2645,7 +2646,7 @@ containing a value of this type.
         public static final int com_facebook_send_button_text=0x7f050010;
         public static final int com_facebook_share_button_text=0x7f05000f;
         public static final int com_facebook_tooltip_default=0x7f05000d;
-        public static final int facebook_app_id=0x7f050026;
+        public static final int facebook_app_id=0x7f050025;
         public static final int list_files_txtv=0x7f050024;
         public static final int messenger_send_button_text=0x7f050000;
         /**  Text to use when the number in a notification info is too large

@@ -16,10 +16,17 @@ import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.example.mad.DataObject;
 import com.example.mad.MyRecyclerViewAdapter;
+import com.facebook.CallbackManager;
 import com.facebook.messenger.MessengerThreadParams;
 import com.facebook.messenger.MessengerUtils;
 import com.facebook.messenger.ShareToMessengerParams;
+import com.facebook.share.model.ShareLinkContent;
+import com.facebook.share.model.ShareVideo;
+import com.facebook.share.model.ShareVideoContent;
+import com.facebook.share.widget.MessageDialog;
+import com.facebook.share.widget.ShareButton;
 
+import com.facebook.share.widget.SendButton;
 
 
 
@@ -60,6 +67,8 @@ public class MainActivity extends Activity {
 	private View mMessengerButton;
 	private MessengerThreadParams mThreadParams;
 	private boolean mPicking;
+	private CallbackManager callbackManager;
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +89,8 @@ public class MainActivity extends Activity {
 		mRecyclerView.setAdapter(mAdapter);
 
 
+
+		callbackManager = CallbackManager.Factory.create();
 
 
 		// Code to Add an item with default animation
@@ -268,12 +279,12 @@ public class MainActivity extends Activity {
 		((MyRecyclerViewAdapter) mAdapter).setOnItemClickListener(new MyRecyclerViewAdapter.MyClickListener()
 		{
 			@Override
-			public void onItemClick(int position, View v)
+			public void onItemClick(int position, View v, SendButton sendbutton)
 			{
 				Log.i(LOG_TAG, " Clicked on Item " + position);
-				
-				
-				onMessengerButtonClicked(position);
+				Log.i(LOG_TAG, " View ID " + v.getId());
+				Log.i(LOG_TAG, " Sendbutton ID " + sendbutton.getId());
+				onMessengerButtonClicked(position,v,sendbutton);
 
 			}
 		}
@@ -282,20 +293,49 @@ public class MainActivity extends Activity {
 	}
 
 
-	private void onMessengerButtonClicked(int position) {
+	private void onMessengerButtonClicked(int position,View v, SendButton sendbutton) {
 		// The URI can reference a file://, content://, or android.resource. Here we use
 		// android.resource for sample purposes.
-		
-		Uri uri =
-				Uri.parse("android.resource://com.example.mad/" + R.drawable.tree);
+		//	Uri suri=Uri.parse("content://");
+
+		String link=Utils.LINK+""+((ArrayList<DataObject>)results).get(position).getmText1();
+
+		/*Uri uri =Uri.parse("https://www.google.co.in/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png");*/
+		//Uri.parse("file:///storage/emulated/0/Music/sample.mp3");
+		//Uri.parse(Utils.LINK+((ArrayList<DataObject>)results).get(position).getmText1());
 
 		// Create the parameters for what we want to send to Messenger.
-		ShareToMessengerParams shareToMessengerParams =
-				ShareToMessengerParams.newBuilder(uri, "image/jpeg")
-				.setMetaData("{ \"image\" : \"tree\" }")
+		/*	ShareToMessengerParams shareToMessengerParams =
+				ShareToMessengerParams.newBuilder(uri, "audio/mpeg")
+				.setMetaData("{ \"audio\" : \"tre\" }")
+				//.setExternalUri(uri)
 				.build();
+		 */
 
-		if (mPicking) {
+		/*Uri videoFileUri = uri;
+		ShareVideo video = new ShareVideo.Builder()
+									.setLocalUrl(videoFileUri)
+									.build();
+		ShareVideoContent content = new ShareVideoContent.Builder()
+										.setVideo(video)
+										.build();
+		 Log.i(LOG_TAG,"uri:"+uri);
+		 Log.i(LOG_TAG,"video:"+video);
+		 Log.i(LOG_TAG,"content:"+content);*/
+
+		/*ShareButton shareButton = (ShareButton)mMessengerButton;
+		 shareButton.setShareContent(content);*/
+
+
+		// MessageDialog messageDialog = new MessageDialog(this);
+		// MessageDialog.show(this, content);
+
+		ShareLinkContent content = new ShareLinkContent.Builder()
+		.setContentUrl(Uri.parse(link))
+		.build();
+
+		sendbutton.setShareContent(content);
+		/*	if (mPicking) {
 			// If we were launched from Messenger, we call MessengerUtils.finishShareToMessenger to return
 			// the content to Messenger.
 			MessengerUtils.finishShareToMessenger(this, shareToMessengerParams);
@@ -307,7 +347,7 @@ public class MainActivity extends Activity {
 					this,
 					REQUEST_CODE_SHARE_TO_MESSENGER,
 					shareToMessengerParams);
-		}
+		}*/
 	}
 
 	//
