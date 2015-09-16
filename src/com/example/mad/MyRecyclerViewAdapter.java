@@ -39,11 +39,12 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
 		public DataObjectHolder(View itemView) {
 			super(itemView);
 			label = (TextView) itemView.findViewById(R.id.textView);
-			sendbutton = (SendButton)itemView.findViewById(R.id.fbsendButton);
+			mMessengerButton=itemView.findViewById(R.id.messenger_send_button);
+			//sendbutton = (SendButton)itemView.findViewById(R.id.fbsendButton);
 			// dateTime = (TextView) itemView.findViewById(R.id.textView2);
 			Log.i(LOG_TAG, "Adding Listener");
 			// itemView.setOnClickListener(this);
-			sendbutton.setOnClickListener(this);
+			mMessengerButton.setOnClickListener(this);
 		}
 
 		@Override

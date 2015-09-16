@@ -1,12 +1,19 @@
 package com.example.mad;
 
+import java.io.File;
 import java.net.URL;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
+import com.amazonaws.mobileconnectors.s3.transfermanager.TransferManager;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
@@ -36,9 +43,15 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.pm.Signature;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -68,11 +81,29 @@ public class MainActivity extends Activity {
 	private MessengerThreadParams mThreadParams;
 	private boolean mPicking;
 	private CallbackManager callbackManager;
-
+	@SuppressWarnings("deprecation")
+	private TransferUtility transferUtility  ;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		/*	try {
+	        PackageInfo info = getPackageManager().getPackageInfo(
+	                "com.example.mad", 
+	                PackageManager.GET_SIGNATURES);
+	        for (Signature signature : info.signatures) {
+	            MessageDigest md = MessageDigest.getInstance("SHA");
+	            md.update(signature.toByteArray());
+	            Log.d("YourKeyHash :", Base64.encodeToString(md.digest(), Base64.DEFAULT));
+	            System.out.println("YourKeyHash: "+ Base64.encodeToString(md.digest(), Base64.DEFAULT));
+	            }
+	    } catch (NameNotFoundException e) {
+
+	    } catch (NoSuchAlgorithmException e) {
+
+	    }*/
+
 
 		setContentView(R.layout.activity_card_view);
 
@@ -141,7 +172,8 @@ public class MainActivity extends Activity {
 			Log.d("cred provider check",""+credentialsProvider.getIdentityId());
 
 			AmazonS3 s3 = new AmazonS3Client(credentialsProvider);
-			//TransferUtility transferUtility = new TransferUtility(s3, getApplicationContext());
+			//transferManager = new TransferManager(credentialsProvider);
+			transferUtility= new TransferUtility(s3, getApplicationContext());
 			try{
 				//Log.d("s3 check","");
 				ListObjectsRequest listObjectsRequest = new ListObjectsRequest()
@@ -283,7 +315,7 @@ public class MainActivity extends Activity {
 			{
 				Log.i(LOG_TAG, " Clicked on Item " + position);
 				Log.i(LOG_TAG, " View ID " + v.getId());
-				Log.i(LOG_TAG, " Sendbutton ID " + sendbutton.getId());
+				//Log.i(LOG_TAG, " Sendbutton ID " + sendbutton.getId());
 				onMessengerButtonClicked(position,v,sendbutton);
 
 			}
@@ -297,29 +329,62 @@ public class MainActivity extends Activity {
 		// The URI can reference a file://, content://, or android.resource. Here we use
 		// android.resource for sample purposes.
 		//	Uri suri=Uri.parse("content://");
+		
+		//error while downloading
+		String music_file_key=Utils.LINK+((ArrayList<DataObject>)results).get(position).getmText1();
+		Log.i(LOG_TAG,"storage loc:"+Environment.getExternalStorageDirectory());
 
-		String link=Utils.LINK+""+((ArrayList<DataObject>)results).get(position).getmText1();
+		File local_storage_loc=new File(Environment.getExternalStorageDirectory()
+				+File.separator
+				+"myDirectory" 
+				+File.separator
+				+music_file_key);
+		TransferObserver observer=transferUtility.download(Utils.BUCKET, music_file_key, local_storage_loc);
+		observer.setTransferListener(new TransferListener() {
 
+			@Override
+			public void onError(int arg0, Exception arg1) {
+				// TODO Auto-generated method stub
+				Log.i(LOG_TAG,"transfer error:"+arg1);
+			}
+
+			@Override
+			public void onProgressChanged(int arg0, long arg1, long arg2) {
+				// TODO Auto-generated method stub
+				Log.i(LOG_TAG,"transfer progress:"+arg1);
+			}
+
+			@Override
+			public void onStateChanged(int arg0, TransferState arg1) {
+				// TODO Auto-generated method stub
+				Log.i(LOG_TAG,"transfer state:"+arg1);
+			}
+
+		});
+
+		String link="file:///storage/emulated/0/Music/sample.mp3";
+		//String link="android.resource://com.example.mad/drawable/"+R.drawable.sample;
+		Uri uri =Uri.parse(link);
 		/*Uri uri =Uri.parse("https://www.google.co.in/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png");*/
-		//Uri.parse("file:///storage/emulated/0/Music/sample.mp3");
+		//Uri.parse("file:///storage/emulated/0/Android/data/com.getsamosa/cache/sample.mp3");
 		//Uri.parse(Utils.LINK+((ArrayList<DataObject>)results).get(position).getmText1());
 
 		// Create the parameters for what we want to send to Messenger.
-		/*	ShareToMessengerParams shareToMessengerParams =
-				ShareToMessengerParams.newBuilder(uri, "audio/mpeg")
-				.setMetaData("{ \"audio\" : \"tre\" }")
+		ShareToMessengerParams shareToMessengerParams =
+				ShareToMessengerParams.newBuilder(uri, "audio/*")
+				//.setMetaData("{ \"audio\" : \"tre\" }")
 				//.setExternalUri(uri)
 				.build();
-		 */
 
-		/*Uri videoFileUri = uri;
+
+		/*Uri videoFileUri = Uri.parse(link);
 		ShareVideo video = new ShareVideo.Builder()
 									.setLocalUrl(videoFileUri)
 									.build();
 		ShareVideoContent content = new ShareVideoContent.Builder()
 										.setVideo(video)
 										.build();
-		 Log.i(LOG_TAG,"uri:"+uri);
+		 Log.i(LOG_TAG,"uri:"+Uri.parse(link));
 		 Log.i(LOG_TAG,"video:"+video);
 		 Log.i(LOG_TAG,"content:"+content);*/
 
@@ -330,12 +395,12 @@ public class MainActivity extends Activity {
 		// MessageDialog messageDialog = new MessageDialog(this);
 		// MessageDialog.show(this, content);
 
-		ShareLinkContent content = new ShareLinkContent.Builder()
+		/*ShareLinkContent content = new ShareLinkContent.Builder()
 		.setContentUrl(Uri.parse(link))
-		.build();
+		.build();*/
 
-		sendbutton.setShareContent(content);
-		/*	if (mPicking) {
+		//sendbutton.setShareContent(content);
+		if (mPicking) {
 			// If we were launched from Messenger, we call MessengerUtils.finishShareToMessenger to return
 			// the content to Messenger.
 			MessengerUtils.finishShareToMessenger(this, shareToMessengerParams);
@@ -347,7 +412,7 @@ public class MainActivity extends Activity {
 					this,
 					REQUEST_CODE_SHARE_TO_MESSENGER,
 					shareToMessengerParams);
-		}*/
+		}
 	}
 
 	//
