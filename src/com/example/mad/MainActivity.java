@@ -60,6 +60,7 @@ import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends Activity {
 
@@ -71,7 +72,9 @@ public class MainActivity extends Activity {
 	private RecyclerView.Adapter mAdapter;
 	private RecyclerView.LayoutManager mLayoutManager;
 	private static String LOG_TAG = "CardViewActivity";
-
+	//	private static boolean DOWNLOAD_CLICKED=false;
+	//	private static int send_button_position=-1;
+	private String link="file:///storage/emulated/0/mad/";
 
 	// This is the request code that the SDK uses for startActivityForResult. See the code below
 	// that references it. Messenger currently doesn't return any data back to the calling
@@ -81,8 +84,10 @@ public class MainActivity extends Activity {
 	private MessengerThreadParams mThreadParams;
 	private boolean mPicking;
 	private CallbackManager callbackManager;
-	@SuppressWarnings("deprecation")
+
 	private TransferUtility transferUtility  ;
+	private static boolean  transfer_complete=false;
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -104,7 +109,7 @@ public class MainActivity extends Activity {
 
 	    }*/
 
-
+		new File("/storage/emulated/0/"+"mad").mkdirs();
 		setContentView(R.layout.activity_card_view);
 
 
@@ -158,7 +163,11 @@ public class MainActivity extends Activity {
 	public final class HttpTask extends AsyncTask<URL , Boolean /* Progress */, String /* Result */>
 	{
 		@Override
-		protected String doInBackground(URL... params) {
+		protected String doInBackground(URL... params)
+		{
+
+			//		if(!DOWNLOAD_CLICKED)
+			//	{
 
 
 			// Initialize the Amazon Cognito credentials provider
@@ -201,13 +210,55 @@ public class MainActivity extends Activity {
 
 
 
-			return null;
+			return null;	
+			//			}
+			//		else
+			//			{
+			//				String music_file_key=((ArrayList<DataObject>)results).get(send_button_position).getmText1();
+			//				Log.i(LOG_TAG,"storage loc:"+Environment.getExternalStorageDirectory());
+			//
+			//				File local_storage_loc=new File(Environment.getExternalStorageDirectory()
+			//						+File.separator
+			//						+"Music" 
+			//						+File.separator
+			//						+music_file_key);
+			//				Log.i(LOG_TAG,"music file key:"+music_file_key);
+			//				TransferObserver observer=transferUtility.download(Utils.BUCKET, music_file_key, local_storage_loc);
+			//				observer.setTransferListener(new TransferListener() {
+			//
+			//					@Override
+			//					public void onError(int arg0, Exception arg1) {
+			//						// TODO Auto-generated method stub
+			//						Log.i(LOG_TAG,"transfer error:"+arg0+" arg1:"+arg1);
+			//					}
+			//
+			//					@Override
+			//					public void onProgressChanged(int arg0, long arg1, long arg2) {
+			//						// TODO Auto-generated method stub
+			//						Log.i(LOG_TAG,"transfer progress:"+arg0+" arg1:"+arg1+" arg2:"+arg2);
+			//					}
+			//
+			//					@Override
+			//					public void onStateChanged(int arg0, TransferState arg1) {
+			//						// TODO Auto-generated method stub
+			//						Log.i(LOG_TAG,"transfer state:"+arg0+" arg1:"+arg1);
+			//					}
+			//
+			//				});
+			//
+			//				//DOWNLOAD_CLICKED=true;
+			//				return null;
+			//
+			//			}
+
 		}
 
 		@Override
 		protected void onPostExecute(String result) {
 			publishProgress(false);
 
+			//			if(!DOWNLOAD_CLICKED)
+			//		{
 			//			setContentView(R.layout.activity_card_view);
 			//
 			//
@@ -277,8 +328,8 @@ public class MainActivity extends Activity {
 			 */
 
 
+			//		}
 		}
-
 
 	}
 
@@ -316,7 +367,92 @@ public class MainActivity extends Activity {
 				Log.i(LOG_TAG, " Clicked on Item " + position);
 				Log.i(LOG_TAG, " View ID " + v.getId());
 				//Log.i(LOG_TAG, " Sendbutton ID " + sendbutton.getId());
-				onMessengerButtonClicked(position,v,sendbutton);
+
+
+				String music_file_key=((ArrayList<DataObject>)results).get(position).getmText1();
+				Log.i(LOG_TAG,"storage loc:"+Environment.getExternalStorageDirectory());
+
+				link="file:///storage/emulated/0/mad/"+music_file_key;
+				Log.i(LOG_TAG, "file path:" + link);
+
+				File local_stored_file=new File(Environment.getExternalStorageDirectory()
+						+File.separator
+						+"mad" 
+						+File.separator
+						+music_file_key);
+				Log.i(LOG_TAG,"music file key:"+music_file_key);
+				// boolean  transfer_complete=false;
+
+				if(!local_stored_file.exists())
+				{
+
+					TransferObserver observer=transferUtility.download(Utils.BUCKET, music_file_key, local_stored_file);
+					observer.setTransferListener(new TransferListener() {
+
+
+						@Override
+						public void onError(int arg0, Exception arg1) {
+							// TODO Auto-generated method stub
+							Log.i(LOG_TAG,"transfer error:"+arg0+" arg1:"+arg1);
+						}
+
+						@Override
+						public void onProgressChanged(int arg0, long arg1, long arg2) {
+							// TODO Auto-generated method stub
+							Log.i(LOG_TAG,"transfer progress:"+arg0+" arg1:"+arg1+" arg2:"+arg2);
+						}
+
+						@Override
+						public void onStateChanged(int arg0, TransferState arg1) {
+							// TODO Auto-generated method stub
+							Log.i(LOG_TAG,"transfer state:"+arg0+" arg1:"+arg1);
+							if(arg1.toString()=="COMPLETED"){
+								transfer_complete=true;
+								//								Uri uri =Uri.parse(link);
+								//								ShareToMessengerParams shareToMessengerParams =
+								//										ShareToMessengerParams.newBuilder(uri, "audio/*")
+								//										//.setMetaData("{ \"audio\" : \"tre\" }")
+								//										//.setExternalUri(uri)
+								//										.build();
+								//								onMessengerButtonClicked(position,v,sendbutton);
+								Log.i(LOG_TAG,"written to:"+link);
+								Toast.makeText(getApplicationContext(), "Tap Again !", 
+										Toast.LENGTH_SHORT).show();
+							}
+
+						}
+
+					});
+					if(transfer_complete){
+						transfer_complete=false;
+						Log.i(LOG_TAG, " File Already EXISTS ?" + "No and file written");
+						onMessengerButtonClicked(position,v,sendbutton);
+					}
+
+				}
+				else{
+					//					// Create the parameters for what we want to send to Messenger.
+					//					Log.i(LOG_TAG,"file status:"+"already exists");
+					//					Uri uri =Uri.parse(link);
+					//					ShareToMessengerParams shareToMessengerParams =
+					//							ShareToMessengerParams.newBuilder(uri, "audio/*")
+					//							//.setMetaData("{ \"audio\" : \"tre\" }")
+					//							//.setExternalUri(uri)
+					//							.build();
+					//	
+					Log.i(LOG_TAG, " File Already EXISTS ?" + "YES");
+					onMessengerButtonClicked(position,v,sendbutton);
+
+				}
+
+
+
+
+
+
+
+
+
 
 			}
 		}
@@ -325,59 +461,41 @@ public class MainActivity extends Activity {
 	}
 
 
-	private void onMessengerButtonClicked(int position,View v, SendButton sendbutton) {
+	private void onMessengerButtonClicked(int position,View v, SendButton sendbutton)
+	{
 		// The URI can reference a file://, content://, or android.resource. Here we use
 		// android.resource for sample purposes.
 		//	Uri suri=Uri.parse("content://");
-		
-		//error while downloading
-		String music_file_key=Utils.LINK+((ArrayList<DataObject>)results).get(position).getmText1();
-		Log.i(LOG_TAG,"storage loc:"+Environment.getExternalStorageDirectory());
 
-		File local_storage_loc=new File(Environment.getExternalStorageDirectory()
+		String music_file_key=((ArrayList<DataObject>)results).get(position).getmText1();
+		File local_stored_file=new File(Environment.getExternalStorageDirectory()
 				+File.separator
-				+"myDirectory" 
+				+"mad" 
 				+File.separator
 				+music_file_key);
-		TransferObserver observer=transferUtility.download(Utils.BUCKET, music_file_key, local_storage_loc);
-		observer.setTransferListener(new TransferListener() {
-
-			@Override
-			public void onError(int arg0, Exception arg1) {
-				// TODO Auto-generated method stub
-				Log.i(LOG_TAG,"transfer error:"+arg1);
-			}
-
-			@Override
-			public void onProgressChanged(int arg0, long arg1, long arg2) {
-				// TODO Auto-generated method stub
-				Log.i(LOG_TAG,"transfer progress:"+arg1);
-			}
-
-			@Override
-			public void onStateChanged(int arg0, TransferState arg1) {
-				// TODO Auto-generated method stub
-				Log.i(LOG_TAG,"transfer state:"+arg1);
-			}
-
-		});
-
-		String link="file:///storage/emulated/0/Music/sample.mp3";
-		//String link="android.resource://com.example.mad/drawable/"+R.drawable.sample;
-		Uri uri =Uri.parse(link);
-		/*Uri uri =Uri.parse("https://www.google.co.in/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png");*/
-		//Uri.parse("file:///storage/emulated/0/Android/data/com.getsamosa/cache/sample.mp3");
-		//Uri.parse(Utils.LINK+((ArrayList<DataObject>)results).get(position).getmText1());
-
-		// Create the parameters for what we want to send to Messenger.
-		ShareToMessengerParams shareToMessengerParams =
-				ShareToMessengerParams.newBuilder(uri, "audio/*")
-				//.setMetaData("{ \"audio\" : \"tre\" }")
-				//.setExternalUri(uri)
-				.build();
+		Log.i(LOG_TAG,"music file key:"+music_file_key);
+		if(local_stored_file.exists())
+		{
 
 
-		/*Uri videoFileUri = Uri.parse(link);
+
+
+			//String link="android.resource://com.example.mad/drawable/"+R.drawable.sample;
+			//		Uri uri =Uri.parse(link);
+			/*Uri uri =Uri.parse("https://www.google.co.in/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png");*/
+			//Uri.parse("file:///storage/emulated/0/Android/data/com.getsamosa/cache/sample.mp3");
+			//Uri.parse(Utils.LINK+((ArrayList<DataObject>)results).get(position).getmText1());
+
+			// Create the parameters for what we want to send to Messenger.
+			Uri uri =Uri.parse(link);
+			ShareToMessengerParams shareToMessengerParams =
+					ShareToMessengerParams.newBuilder(uri, "audio/*")
+					//.setMetaData("{ \"audio\" : \"tre\" }")
+					//.setExternalUri(uri)
+					.build();
+
+
+			/*Uri videoFileUri = Uri.parse(link);
 		ShareVideo video = new ShareVideo.Builder()
 									.setLocalUrl(videoFileUri)
 									.build();
@@ -388,31 +506,37 @@ public class MainActivity extends Activity {
 		 Log.i(LOG_TAG,"video:"+video);
 		 Log.i(LOG_TAG,"content:"+content);*/
 
-		/*ShareButton shareButton = (ShareButton)mMessengerButton;
+			/*ShareButton shareButton = (ShareButton)mMessengerButton;
 		 shareButton.setShareContent(content);*/
 
 
-		// MessageDialog messageDialog = new MessageDialog(this);
-		// MessageDialog.show(this, content);
+			// MessageDialog messageDialog = new MessageDialog(this);
+			// MessageDialog.show(this, content);
 
-		/*ShareLinkContent content = new ShareLinkContent.Builder()
+			/*ShareLinkContent content = new ShareLinkContent.Builder()
 		.setContentUrl(Uri.parse(link))
 		.build();*/
 
-		//sendbutton.setShareContent(content);
-		if (mPicking) {
-			// If we were launched from Messenger, we call MessengerUtils.finishShareToMessenger to return
-			// the content to Messenger.
-			MessengerUtils.finishShareToMessenger(this, shareToMessengerParams);
-		} else {
-			// Otherwise, we were launched directly (for example, user clicked the launcher icon). We
-			// initiate the broadcast flow in Messenger. If Messenger is not installed or Messenger needs
-			// to be upgraded, this will direct the user to the play store.
-			MessengerUtils.shareToMessenger(
-					this,
-					REQUEST_CODE_SHARE_TO_MESSENGER,
-					shareToMessengerParams);
+			//sendbutton.setShareContent(content);
+
+
+
+			if (mPicking) {
+				// If we were launched from Messenger, we call MessengerUtils.finishShareToMessenger to return
+				// the content to Messenger.
+				MessengerUtils.finishShareToMessenger(this, shareToMessengerParams);
+			} else {
+				// Otherwise, we were launched directly (for example, user clicked the launcher icon). We
+				// initiate the broadcast flow in Messenger. If Messenger is not installed or Messenger needs
+				// to be upgraded, this will direct the user to the play store.
+
+				MessengerUtils.shareToMessenger(
+						this,
+						REQUEST_CODE_SHARE_TO_MESSENGER,
+						shareToMessengerParams);
+			}
 		}
+
 	}
 
 	//
