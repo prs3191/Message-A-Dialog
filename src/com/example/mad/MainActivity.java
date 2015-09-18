@@ -24,6 +24,7 @@ import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.example.mad.DataObject;
 import com.example.mad.MyRecyclerViewAdapter;
 import com.facebook.CallbackManager;
+import com.facebook.appevents.AppEventsLogger;
 import com.facebook.messenger.MessengerThreadParams;
 import com.facebook.messenger.MessengerUtils;
 import com.facebook.messenger.ShareToMessengerParams;
@@ -359,6 +360,9 @@ public class MainActivity extends Activity {
 	protected void onResume()
 	{
 		super.onResume();
+		AppEventsLogger.activateApp(this); 
+
+
 		((MyRecyclerViewAdapter) mAdapter).setOnItemClickListener(new MyRecyclerViewAdapter.MyClickListener()
 		{
 			@Override
@@ -460,13 +464,17 @@ public class MainActivity extends Activity {
 
 	}
 
-
+	@Override
+	protected void onPause() { 
+		super.onPause(); 
+		AppEventsLogger.deactivateApp(this);
+	}
 	private void onMessengerButtonClicked(int position,View v, SendButton sendbutton)
 	{
 		// The URI can reference a file://, content://, or android.resource. Here we use
 		// android.resource for sample purposes.
 		//	Uri suri=Uri.parse("content://");
-
+		AppEventsLogger logger = AppEventsLogger.newLogger(v.getContext());
 		String music_file_key=((ArrayList<DataObject>)results).get(position).getmText1();
 		File local_stored_file=new File(Environment.getExternalStorageDirectory()
 				+File.separator
@@ -493,7 +501,7 @@ public class MainActivity extends Activity {
 					//.setMetaData("{ \"audio\" : \"tre\" }")
 					//.setExternalUri(uri)
 					.build();
-
+			//logger.logEvent("button_count_"+music_file_key,1);
 
 			/*Uri videoFileUri = Uri.parse(link);
 		ShareVideo video = new ShareVideo.Builder()
@@ -525,6 +533,7 @@ public class MainActivity extends Activity {
 				// If we were launched from Messenger, we call MessengerUtils.finishShareToMessenger to return
 				// the content to Messenger.
 				MessengerUtils.finishShareToMessenger(this, shareToMessengerParams);
+
 			} else {
 				// Otherwise, we were launched directly (for example, user clicked the launcher icon). We
 				// initiate the broadcast flow in Messenger. If Messenger is not installed or Messenger needs
