@@ -20,10 +20,20 @@
 
 package com.example.mad;
 
-import android.app.Application;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.json.JSONObject;
+
+import android.app.Application;
+import android.os.Bundle;
+import android.util.Log;
+
+import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookSdk;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
 import com.facebook.share.widget.ShareDialog;
 
 /**
@@ -31,11 +41,47 @@ import com.facebook.share.widget.ShareDialog;
  */
 public class MessengerSendSampleApplication extends Application {
 
+	private CallbackManager callbackManager;
+	private String FBTAG="after sdk init";
+	@Override
+	public void onCreate() {
+		super.onCreate();
+		
+		//FacebookSdk.sdkInitialize(this.getApplicationContext());
+		//AccessToken.getCurrentAccessToken();
 
-  @Override
-  public void onCreate() {
-    super.onCreate();
-    FacebookSdk.sdkInitialize(this);
-
-  }
+		//    Map<String, String> logins = new HashMap<String, String>();
+		//	logins.put("graph.facebook.com", AccessToken.getCurrentAccessToken().getToken());
+		////	credentialsProvider.setLogins(logins);
+		//	Log.d("Access Token from fb to aws:",""+logins);
+		//
+		//	for (Map.Entry entry : logins.entrySet()) {
+		//		Log.d("Access Token from fb to aws:",""+entry.getKey() + ", " + entry.getValue());
+		//	}
+		//    GraphRequest request = GraphRequest.newMeRequest(
+		//            AccessToken.getCurrentAccessToken(),
+		//            new GraphRequest.GraphJSONObjectCallback() {
+		//             	@Override
+		//				public void onCompleted(JSONObject jsonObject,
+		//						GraphResponse response) {
+		//					 Log.d("after sdk init","onCompleted jsonObject: "+jsonObject);
+		//	                 Log.d("after sdk init","onCompleted response: "+response);
+		//	                    // Application code
+		//					
+		//				}
+		//            });
+		//    Bundle parameters = new Bundle();
+		//    parameters.putString("fields", "id,name,link,cover,email");
+		//    request.setParameters(parameters);
+		//    request.executeAsync();
+		//
+		//  }*/
+//		FacebookSdk.sdkInitialize(this.getApplicationContext());
+//		callbackManager = CallbackManager.Factory.create();
+//		if(AccessToken.getCurrentAccessToken()!=null){
+//			Log.d(FBTAG,"facebook already logged in");
+//			//isFBLogin = true;
+//		}
+//		
+	}
 }

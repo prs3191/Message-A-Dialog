@@ -5,7 +5,9 @@ import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
@@ -23,6 +25,7 @@ import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.example.mad.DataObject;
 import com.example.mad.MyRecyclerViewAdapter;
+import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.appevents.AppEventsLogger;
 import com.facebook.messenger.MessengerThreadParams;
@@ -81,14 +84,19 @@ public class MainActivity extends Activity {
 	// that references it. Messenger currently doesn't return any data back to the calling
 	// application.
 	private static final int REQUEST_CODE_SHARE_TO_MESSENGER = 1;
+	
 	private View mMessengerButton;
 	private MessengerThreadParams mThreadParams;
+	
 	private boolean mPicking;
+	private boolean isReply, isCompose;
+	private String threadToken;
+	
 	private CallbackManager callbackManager;
 
 	private TransferUtility transferUtility  ;
 	private static boolean  transfer_complete=false;
-
+	private String User_Access_token;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -109,7 +117,12 @@ public class MainActivity extends Activity {
 	    } catch (NoSuchAlgorithmException e) {
 
 	    }*/
-
+		
+		
+		
+		Intent intent=this.getIntent();
+		User_Access_token=intent.getStringExtra("user_access_token");
+		
 		new File("/storage/emulated/0/"+"mad").mkdirs();
 		setContentView(R.layout.activity_card_view);
 
@@ -138,7 +151,7 @@ public class MainActivity extends Activity {
 
 		// If we received Intent.ACTION_PICK from Messenger, we were launched from a composer shortcut
 		// or the reply flow.
-		Intent intent = getIntent();
+		//Intent intent = getIntent();
 		if (Intent.ACTION_PICK.equals(intent.getAction())) {
 			mThreadParams = MessengerUtils.getMessengerThreadParamsForIntent(intent);
 			mPicking = true;
@@ -146,6 +159,7 @@ public class MainActivity extends Activity {
 			// Note, if mThreadParams is non-null, it means the activity was launched from Messenger.
 			// It will contain the metadata associated with the original content, if there was content.
 		}
+	
 
 
 
@@ -177,10 +191,21 @@ public class MainActivity extends Activity {
 					Utils.POOL_ID, // Identity Pool ID
 					Regions.US_EAST_1 // Region
 					);
-			credentialsProvider.refresh();
-
+			
 			Log.d("cred provider check",""+credentialsProvider.getIdentityId());
+			credentialsProvider.refresh();
+//			Map<String, String> logins = new HashMap<String, String>();
+//			logins.put("graph.facebook.com", AccessToken.getCurrentAccessToken().getToken());
+//			credentialsProvider.setLogins(logins);
+//			
+			
 
+//			Log.d("Access Token from fb to aws:",""+logins);
+//
+//			for (Map.Entry entry : logins.entrySet()) {
+//				Log.d("Access Token from fb to aws:",""+entry.getKey() + ", " + entry.getValue());
+//			}
+			
 			AmazonS3 s3 = new AmazonS3Client(credentialsProvider);
 			//transferManager = new TransferManager(credentialsProvider);
 			transferUtility= new TransferUtility(s3, getApplicationContext());
