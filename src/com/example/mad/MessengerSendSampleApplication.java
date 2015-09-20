@@ -43,9 +43,9 @@ public class MessengerSendSampleApplication extends Application {
 
 	private CallbackManager callbackManager;
 	private String FBTAG="after sdk init";
-	@Override
-	public void onCreate() {
-		super.onCreate();
+	//@Override
+//	public void onCreate() {
+	//	super.onCreate();
 		
 		//FacebookSdk.sdkInitialize(this.getApplicationContext());
 		//AccessToken.getCurrentAccessToken();
@@ -83,5 +83,5 @@ public class MessengerSendSampleApplication extends Application {
 //			//isFBLogin = true;
 //		}
 //		
-	}
+//	}
 }

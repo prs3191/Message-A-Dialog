@@ -12,6 +12,11 @@ import java.util.Map;
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
+import com.amazonaws.auth.CognitoCredentialsProvider;
+import com.amazonaws.mobileconnectors.cognito.CognitoSyncManager;
+import com.amazonaws.mobileconnectors.cognito.Dataset;
+import com.amazonaws.mobileconnectors.cognito.Dataset.SyncCallback;
+import com.amazonaws.mobileconnectors.cognito.DefaultSyncCallback;
 import com.amazonaws.mobileconnectors.s3.transfermanager.TransferManager;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
@@ -27,6 +32,7 @@ import com.example.mad.DataObject;
 import com.example.mad.MyRecyclerViewAdapter;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
+import com.facebook.appevents.AppEventsConstants;
 import com.facebook.appevents.AppEventsLogger;
 import com.facebook.messenger.MessengerThreadParams;
 import com.facebook.messenger.MessengerUtils;
@@ -96,7 +102,12 @@ public class MainActivity extends Activity {
 
 	private TransferUtility transferUtility  ;
 	private static boolean  transfer_complete=false;
-	private String User_Access_token;
+	private static String user_access_token;
+	private Dataset dataset;
+	private static String user_id;
+	private static String user_name;
+	
+//	private  DefaultSyncCallback syncCallback;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -120,8 +131,8 @@ public class MainActivity extends Activity {
 		
 		
 		
-		Intent intent=this.getIntent();
-		User_Access_token=intent.getStringExtra("user_access_token");
+		
+		
 		
 		new File("/storage/emulated/0/"+"mad").mkdirs();
 		setContentView(R.layout.activity_card_view);
@@ -140,7 +151,7 @@ public class MainActivity extends Activity {
 
 
 
-		callbackManager = CallbackManager.Factory.create();
+		//callbackManager = CallbackManager.Factory.create();
 
 
 		// Code to Add an item with default animation
@@ -151,13 +162,21 @@ public class MainActivity extends Activity {
 
 		// If we received Intent.ACTION_PICK from Messenger, we were launched from a composer shortcut
 		// or the reply flow.
-		//Intent intent = getIntent();
+		//else intent is received from LoginActivity, so get user_id,token,name
+		Intent intent = getIntent();
+		Log.d("MainActivity","What is intent action received:"+intent.getAction());
 		if (Intent.ACTION_PICK.equals(intent.getAction())) {
 			mThreadParams = MessengerUtils.getMessengerThreadParamsForIntent(intent);
 			mPicking = true;
-
+			user_access_token=AccessToken.getCurrentAccessToken().getToken();
+			Log.d("MainActivity","access token after hit reply button:"+user_access_token);
 			// Note, if mThreadParams is non-null, it means the activity was launched from Messenger.
 			// It will contain the metadata associated with the original content, if there was content.
+		}
+		else{
+			user_access_token=intent.getStringExtra("user_access_token");
+			user_id=intent.getStringExtra("user_id");
+			user_name=intent.getStringExtra("user_name");
 		}
 	
 
@@ -184,29 +203,52 @@ public class MainActivity extends Activity {
 			//		if(!DOWNLOAD_CLICKED)
 			//	{
 
+			
+			Map<String, String> logins = new HashMap<String, String>();
+			logins.put("graph.facebook.com", user_access_token/*AccessToken.getCurrentAccessToken().getToken()*/);
 
+			for (Map.Entry entry : logins.entrySet()) {
+				Log.d("Access Token from fb to aws:",""+entry.getKey() + ", " + entry.getValue());
+			}
+			
 			// Initialize the Amazon Cognito credentials provider
-			CognitoCachingCredentialsProvider credentialsProvider = new CognitoCachingCredentialsProvider(
-					getApplicationContext(),
+		
+			CognitoCredentialsProvider credentialsProvider = new CognitoCredentialsProvider(
+					//getApplicationContext(),
 					Utils.POOL_ID, // Identity Pool ID
 					Regions.US_EAST_1 // Region
 					);
-			
-			Log.d("cred provider check",""+credentialsProvider.getIdentityId());
+			credentialsProvider.setLogins(logins);
 			credentialsProvider.refresh();
-//			Map<String, String> logins = new HashMap<String, String>();
-//			logins.put("graph.facebook.com", AccessToken.getCurrentAccessToken().getToken());
-//			credentialsProvider.setLogins(logins);
-//			
-			
+			Log.d("cred provider check",""+credentialsProvider.getIdentityId());
 
-//			Log.d("Access Token from fb to aws:",""+logins);
-//
-//			for (Map.Entry entry : logins.entrySet()) {
-//				Log.d("Access Token from fb to aws:",""+entry.getKey() + ", " + entry.getValue());
-//			}
-			
+			//CognitoCachingCredentialsProvider not updating properly when new user logs in.
+			//Including it because 3rd param of CognitoSyncManager requires it
+
+//			CognitoCachingCredentialsProvider credentialscachProvider = new CognitoCachingCredentialsProvider(
+//					getApplicationContext(),
+//					Utils.POOL_ID, // Identity Pool ID
+//					Regions.US_EAST_1 // Region
+//					);
+//			
+//			CognitoSyncManager client_cognitosync = new CognitoSyncManager(
+//				    getApplicationContext(),
+//				    Regions.US_EAST_1, 
+//				    credentialscachProvider);
+//			 dataset = client_cognitosync.openOrCreateDataset(
+//		                Utils.DATASET_NAME);
+//			 dataset.put(user_id,user_name);
+//			
+//			dataset.synchronize(syncCallback);
+			 
 			AmazonS3 s3 = new AmazonS3Client(credentialsProvider);
+		
+			
+			
+			
+//			Log.d("Access Token from fb to aws:",""+logins);
+
+			
 			//transferManager = new TransferManager(credentialsProvider);
 			transferUtility= new TransferUtility(s3, getApplicationContext());
 			try{
@@ -499,7 +541,7 @@ public class MainActivity extends Activity {
 		// The URI can reference a file://, content://, or android.resource. Here we use
 		// android.resource for sample purposes.
 		//	Uri suri=Uri.parse("content://");
-		AppEventsLogger logger = AppEventsLogger.newLogger(v.getContext());
+		
 		String music_file_key=((ArrayList<DataObject>)results).get(position).getmText1();
 		File local_stored_file=new File(Environment.getExternalStorageDirectory()
 				+File.separator
@@ -507,6 +549,19 @@ public class MainActivity extends Activity {
 				+File.separator
 				+music_file_key);
 		Log.i(LOG_TAG,"music file key:"+music_file_key);
+		
+		//track events
+		//working in all flows
+		AppEventsLogger logger = AppEventsLogger.newLogger(v.getContext());
+		Bundle parameters = new Bundle();
+		parameters.putString(AppEventsConstants.EVENT_PARAM_MAX_RATING_VALUE, "1");
+		parameters.putString(AppEventsConstants.EVENT_PARAM_CONTENT_TYPE, "mp3");
+		parameters.putString(AppEventsConstants.EVENT_PARAM_CONTENT_ID, user_id);
+		parameters.putString(AppEventsConstants.EVENT_PARAM_DESCRIPTION, music_file_key);
+		logger.logEvent(AppEventsConstants.EVENT_NAME_RATED, 1,parameters);
+		
+		
+		
 		if(local_stored_file.exists())
 		{
 
