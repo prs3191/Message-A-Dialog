@@ -2,6 +2,7 @@ package com.example.mad;
 
 
 import org.json.JSONException;
+
 import org.json.JSONObject;
 
 import com.facebook.AccessToken;
@@ -13,6 +14,9 @@ import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+
+import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.android.gms.analytics.Tracker;
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -32,6 +36,7 @@ public class fb_loginActivity extends Activity {
 	private String user_access_token;
 	private String user_id;
 	private String user_name;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -41,6 +46,7 @@ public class fb_loginActivity extends Activity {
 	protected void onResume()
 	{
 		super.onResume();
+
 		FacebookSdk.sdkInitialize(this.getApplicationContext());
 		callbackManager = CallbackManager.Factory.create();
 

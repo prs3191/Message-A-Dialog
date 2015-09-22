@@ -28,6 +28,7 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.ListObjectsRequest;
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
+import com.example.mad.MyApp;
 import com.example.mad.DataObject;
 import com.example.mad.MyRecyclerViewAdapter;
 import com.facebook.AccessToken;
@@ -44,6 +45,9 @@ import com.facebook.share.widget.MessageDialog;
 import com.facebook.share.widget.ShareButton;
 
 import com.facebook.share.widget.SendButton;
+import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Logger.LogLevel;
 
 
 
@@ -177,6 +181,19 @@ public class MainActivity extends Activity {
 			user_access_token=intent.getStringExtra("user_access_token");
 			user_id=intent.getStringExtra("user_id");
 			user_name=intent.getStringExtra("user_name");
+			
+			// You only need to set User ID on a tracker once. By setting it on the tracker, the ID will be
+			// sent with all subsequent hits.
+			Log.d("MainActivity","access token after login button:"+user_access_token);
+			Log.d("MainActivity","accessing google tracker:"+MyApp.tracker().getClass());
+			MyApp.tracker().set("&uid", user_id);
+			
+			MyApp.tracker().send(new HitBuilders.EventBuilder()
+					.setCategory("UX")
+					.setAction("User Sign In").build());
+			GoogleAnalytics.getInstance(this).getLogger()
+            .setLogLevel(LogLevel.VERBOSE);
+
 		}
 	
 
@@ -550,18 +567,7 @@ public class MainActivity extends Activity {
 				+music_file_key);
 		Log.i(LOG_TAG,"music file key:"+music_file_key);
 		
-		//track events
-		//working in all flows
-		AppEventsLogger logger = AppEventsLogger.newLogger(v.getContext());
-		Bundle parameters = new Bundle();
-		parameters.putString(AppEventsConstants.EVENT_PARAM_MAX_RATING_VALUE, "1");
-		parameters.putString(AppEventsConstants.EVENT_PARAM_CONTENT_TYPE, "mp3");
-		parameters.putString(AppEventsConstants.EVENT_PARAM_CONTENT_ID, user_id);
-		parameters.putString(AppEventsConstants.EVENT_PARAM_DESCRIPTION, music_file_key);
-		logger.logEvent(AppEventsConstants.EVENT_NAME_RATED, 1,parameters);
-		
-		
-		
+				
 		if(local_stored_file.exists())
 		{
 
@@ -606,23 +612,42 @@ public class MainActivity extends Activity {
 		.build();*/
 
 			//sendbutton.setShareContent(content);
-
-
+			
+			//track events
+			//working in all flows
+			AppEventsLogger logger = AppEventsLogger.newLogger(v.getContext());
+			Bundle parameters = new Bundle();
+			parameters.putString(AppEventsConstants.EVENT_PARAM_MAX_RATING_VALUE, "1");
+			parameters.putString(AppEventsConstants.EVENT_PARAM_CONTENT_TYPE, "mp3");
+			parameters.putString(AppEventsConstants.EVENT_PARAM_CONTENT_ID, user_id);
+			parameters.putString(AppEventsConstants.EVENT_PARAM_DESCRIPTION, music_file_key);
+			logger.logEvent(AppEventsConstants.EVENT_NAME_RATED, 1,parameters);
+			
+			
+		
+			
+            MyApp.tracker().send(new HitBuilders.EventBuilder("tamil", "send")
+            		.setLabel(music_file_key)
+            		//.setValue(1)
+            		.build()
+            	);
+            GoogleAnalytics.getInstance(this).getLogger()
+            .setLogLevel(LogLevel.VERBOSE);
 
 			if (mPicking) {
 				// If we were launched from Messenger, we call MessengerUtils.finishShareToMessenger to return
 				// the content to Messenger.
-				MessengerUtils.finishShareToMessenger(this, shareToMessengerParams);
+				//MessengerUtils.finishShareToMessenger(this, shareToMessengerParams);
 
 			} else {
 				// Otherwise, we were launched directly (for example, user clicked the launcher icon). We
 				// initiate the broadcast flow in Messenger. If Messenger is not installed or Messenger needs
 				// to be upgraded, this will direct the user to the play store.
 
-				MessengerUtils.shareToMessenger(
+				/*MessengerUtils.shareToMessenger(
 						this,
 						REQUEST_CODE_SHARE_TO_MESSENGER,
-						shareToMessengerParams);
+						shareToMessengerParams);*/
 			}
 		}
 
