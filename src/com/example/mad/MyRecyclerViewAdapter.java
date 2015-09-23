@@ -32,13 +32,14 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
 	public static class DataObjectHolder extends RecyclerView.ViewHolder implements View.OnClickListener
 	{
 		TextView label;
-		TextView dateTime;
+		TextView nots;
 		View mMessengerButton;
 		SendButton sendbutton;
 		//ShareButton sendbutton;
 		public DataObjectHolder(View itemView) {
 			super(itemView);
-			label = (TextView) itemView.findViewById(R.id.textView);
+			label = (TextView) itemView.findViewById(R.id.music_key);
+			nots = (TextView) itemView.findViewById(R.id.nots);
 			mMessengerButton=itemView.findViewById(R.id.messenger_send_button);
 			//sendbutton = (SendButton)itemView.findViewById(R.id.fbsendButton);
 			// dateTime = (TextView) itemView.findViewById(R.id.textView2);
@@ -78,7 +79,10 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
 	public void onBindViewHolder(DataObjectHolder holder, int position)
 	{
 		holder.label.setText(mDataset.get(position).getmText1());
-		//holder.dateTime.setText(mDataset.get(position).getmText2());
+		//means graph api has returned null due to some error
+		if(mDataset.get(position).getmText2()==null)
+			mDataset.get(position).setmText2("0");
+		holder.nots.setText(mDataset.get(position).getmText2()+" NoTS");
 	}
 
 	public void addItem(DataObject dataObj, int index)

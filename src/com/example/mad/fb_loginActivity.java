@@ -1,6 +1,7 @@
 package com.example.mad;
 
 
+import org.json.JSONArray;
 import org.json.JSONException;
 
 import org.json.JSONObject;
@@ -12,6 +13,7 @@ import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
+import com.facebook.HttpMethod;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 
@@ -36,7 +38,7 @@ public class fb_loginActivity extends Activity {
 	private String user_access_token;
 	private String user_id;
 	private String user_name;
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -53,7 +55,7 @@ public class fb_loginActivity extends Activity {
 		setContentView(R.layout.fb_login);
 
 		loginButton = (LoginButton) findViewById(R.id.login_button);
-
+		loginButton.setReadPermissions("read_insights");
 
 		// Callback registration
 		loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
@@ -72,7 +74,7 @@ public class fb_loginActivity extends Activity {
 
 				user_access_token=result.getAccessToken().getToken();
 				user_id=result.getAccessToken().getUserId();
-				
+
 				//graph api to get user name after getting Accesstoken
 				GraphRequest request = GraphRequest.newMeRequest(
 						result.getAccessToken(),
@@ -81,32 +83,35 @@ public class fb_loginActivity extends Activity {
 							@Override
 							public void onCompleted(JSONObject jsonObject,
 									GraphResponse response) {
-									Log.d("after sdk init","onCompleted jsonObject: "+jsonObject);
-									Log.d("after sdk init","onCompleted response: "+response);
-									try {
-										user_name=(String)jsonObject.getString("name");
-										Log.d("Graph api",""+user_name);
-									} catch (JSONException e) {
-										// TODO Auto-generated catch block
-										Log.d("Graph api json error",""+e);
-									}
+								Log.d("after sdk init","onCompleted jsonObject: "+jsonObject);
+								Log.d("after sdk init","onCompleted response: "+response);
+								try {
+									user_name=(String)jsonObject.getString("name");
+									Log.d("Graph api",""+user_name);
+								} catch (JSONException e) {
+									// TODO Auto-generated catch block
+									Log.d("Graph api json error",""+e);
+								}
+
+
+
 								// Application code
-									Intent i=new Intent(fb_loginActivity.this,MainActivity.class);
-									i.putExtra("user_access_token",user_access_token);
-									i.putExtra("user_id",user_id);
-									i.putExtra("user_name",user_name);
-									startActivity(i);
+								Intent i=new Intent(fb_loginActivity.this,MainActivity.class);
+								i.putExtra("user_access_token",user_access_token);
+								i.putExtra("user_id",user_id);
+								i.putExtra("user_name",user_name);
+								startActivity(i);
 							}
-							
+
 						});
 				Bundle parameters = new Bundle();
 				parameters.putString("fields", "name"/*,id,link,cover,email*/);
 				request.setParameters(parameters);
 				request.executeAsync();
 
-//				Intent i=new Intent(fb_loginActivity.this,MainActivity.class);
-//				i.putExtra("user_access_token",result.getAccessToken().getToken());
-//				i.putExtra("user_id",result.getAccessToken().getUserId());
+				//				Intent i=new Intent(fb_loginActivity.this,MainActivity.class);
+				//				i.putExtra("user_access_token",result.getAccessToken().getToken());
+				//				i.putExtra("user_id",result.getAccessToken().getUserId());
 				//i.putExtra("user_name",result.getAccessToken().);
 				//i.putExtra("ds", d);
 
@@ -131,27 +136,8 @@ public class fb_loginActivity extends Activity {
 			}
 
 		});   
-		
-		
-//		GraphRequest request = GraphRequest.newMeRequest(
-//				AccessToken.getCurrentAccessToken(),
-//				new GraphRequest.GraphJSONObjectCallback() {
-//
-//					@Override
-//					public void onCompleted(JSONObject jsonObject,
-//							GraphResponse response) {
-//							Log.d("after sdk init","onCompleted jsonObject: "+jsonObject);
-//							Log.d("after sdk init","onCompleted response: "+response);
-//						// Application code
-//									
-//					}
-//					
-//				});
-//		Bundle parameters = new Bundle();
-//		parameters.putString("fields", "id,name,link,cover,email");
-//		request.setParameters(parameters);
-//		request.executeAsync();
-		
+
+
 	}
 
 	@Override
@@ -164,7 +150,7 @@ public class fb_loginActivity extends Activity {
 		callbackManager.onActivityResult(requestCode, resultCode, data);
 	}
 
-	
+
 
 
 }

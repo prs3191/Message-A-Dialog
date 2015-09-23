@@ -9,6 +9,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
@@ -33,6 +36,9 @@ import com.example.mad.DataObject;
 import com.example.mad.MyRecyclerViewAdapter;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.HttpMethod;
 import com.facebook.appevents.AppEventsConstants;
 import com.facebook.appevents.AppEventsLogger;
 import com.facebook.messenger.MessengerThreadParams;
@@ -85,7 +91,7 @@ public class MainActivity extends Activity {
 	private RecyclerView mRecyclerView;
 	private RecyclerView.Adapter mAdapter;
 	private RecyclerView.LayoutManager mLayoutManager;
-	private static String LOG_TAG = "CardViewActivity";
+	private static String LOG_TAG = "MainActivity";
 	//	private static boolean DOWNLOAD_CLICKED=false;
 	//	private static int send_button_position=-1;
 	private String link="file:///storage/emulated/0/mad/";
@@ -94,14 +100,14 @@ public class MainActivity extends Activity {
 	// that references it. Messenger currently doesn't return any data back to the calling
 	// application.
 	private static final int REQUEST_CODE_SHARE_TO_MESSENGER = 1;
-	
+
 	private View mMessengerButton;
 	private MessengerThreadParams mThreadParams;
-	
+
 	private boolean mPicking;
 	private boolean isReply, isCompose;
 	private String threadToken;
-	
+
 	private CallbackManager callbackManager;
 
 	private TransferUtility transferUtility  ;
@@ -110,8 +116,10 @@ public class MainActivity extends Activity {
 	private Dataset dataset;
 	private static String user_id;
 	private static String user_name;
-	
-//	private  DefaultSyncCallback syncCallback;
+
+	private Map<String, String> times_sent = new HashMap<String, String>();
+
+	//	private  DefaultSyncCallback syncCallback;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -132,12 +140,12 @@ public class MainActivity extends Activity {
 	    } catch (NoSuchAlgorithmException e) {
 
 	    }*/
-		
-		
-		
-		
-		
-		
+
+
+
+
+
+
 		new File("/storage/emulated/0/"+"mad").mkdirs();
 		setContentView(R.layout.activity_card_view);
 
@@ -168,12 +176,12 @@ public class MainActivity extends Activity {
 		// or the reply flow.
 		//else intent is received from LoginActivity, so get user_id,token,name
 		Intent intent = getIntent();
-		Log.d("MainActivity","What is intent action received:"+intent.getAction());
+		Log.d("MainActivity","What is intent action received:\n"+intent.getAction());
 		if (Intent.ACTION_PICK.equals(intent.getAction())) {
 			mThreadParams = MessengerUtils.getMessengerThreadParamsForIntent(intent);
 			mPicking = true;
 			user_access_token=AccessToken.getCurrentAccessToken().getToken();
-			Log.d("MainActivity","access token after hit reply button:"+user_access_token);
+			Log.d("MainActivity","access token after hit reply button:\n"+user_access_token);
 			// Note, if mThreadParams is non-null, it means the activity was launched from Messenger.
 			// It will contain the metadata associated with the original content, if there was content.
 		}
@@ -181,21 +189,21 @@ public class MainActivity extends Activity {
 			user_access_token=intent.getStringExtra("user_access_token");
 			user_id=intent.getStringExtra("user_id");
 			user_name=intent.getStringExtra("user_name");
-			
+
 			// You only need to set User ID on a tracker once. By setting it on the tracker, the ID will be
 			// sent with all subsequent hits.
-			Log.d("MainActivity","access token after login button:"+user_access_token);
+			Log.d("MainActivity","access token after login button:\n"+user_access_token);
 			Log.d("MainActivity","accessing google tracker:"+MyApp.tracker().getClass());
 			MyApp.tracker().set("&uid", user_id);
-			
+
 			MyApp.tracker().send(new HitBuilders.EventBuilder()
-					.setCategory("UX")
-					.setAction("User Sign In").build());
+			.setCategory("UX")
+			.setAction("User Sign In").build());
 			GoogleAnalytics.getInstance(this).getLogger()
-            .setLogLevel(LogLevel.VERBOSE);
+			.setLogLevel(LogLevel.VERBOSE);
 
 		}
-	
+
 
 
 
@@ -203,7 +211,7 @@ public class MainActivity extends Activity {
 			new HttpTask().execute();
 		}
 		catch(Exception e){
-			Log.d("Http_async_mainact", ""+e);
+			Log.d("MainActivity","Http_async_mainact:\n"+e);
 		}
 
 	}
@@ -220,16 +228,16 @@ public class MainActivity extends Activity {
 			//		if(!DOWNLOAD_CLICKED)
 			//	{
 
-			
+
 			Map<String, String> logins = new HashMap<String, String>();
 			logins.put("graph.facebook.com", user_access_token/*AccessToken.getCurrentAccessToken().getToken()*/);
 
 			for (Map.Entry entry : logins.entrySet()) {
-				Log.d("Access Token from fb to aws:",""+entry.getKey() + ", " + entry.getValue());
+				Log.d("MainActivity","Access Token from fb to aws:\n"+entry.getKey() + ", " + entry.getValue());
 			}
-			
+
 			// Initialize the Amazon Cognito credentials provider
-		
+
 			CognitoCredentialsProvider credentialsProvider = new CognitoCredentialsProvider(
 					//getApplicationContext(),
 					Utils.POOL_ID, // Identity Pool ID
@@ -237,35 +245,35 @@ public class MainActivity extends Activity {
 					);
 			credentialsProvider.setLogins(logins);
 			credentialsProvider.refresh();
-			Log.d("cred provider check",""+credentialsProvider.getIdentityId());
+			Log.d("MainActivity","cred provider check:\n"+credentialsProvider.getIdentityId());
 
 			//CognitoCachingCredentialsProvider not updating properly when new user logs in.
 			//Including it because 3rd param of CognitoSyncManager requires it
 
-//			CognitoCachingCredentialsProvider credentialscachProvider = new CognitoCachingCredentialsProvider(
-//					getApplicationContext(),
-//					Utils.POOL_ID, // Identity Pool ID
-//					Regions.US_EAST_1 // Region
-//					);
-//			
-//			CognitoSyncManager client_cognitosync = new CognitoSyncManager(
-//				    getApplicationContext(),
-//				    Regions.US_EAST_1, 
-//				    credentialscachProvider);
-//			 dataset = client_cognitosync.openOrCreateDataset(
-//		                Utils.DATASET_NAME);
-//			 dataset.put(user_id,user_name);
-//			
-//			dataset.synchronize(syncCallback);
-			 
-			AmazonS3 s3 = new AmazonS3Client(credentialsProvider);
-		
-			
-			
-			
-//			Log.d("Access Token from fb to aws:",""+logins);
+			//			CognitoCachingCredentialsProvider credentialscachProvider = new CognitoCachingCredentialsProvider(
+			//					getApplicationContext(),
+			//					Utils.POOL_ID, // Identity Pool ID
+			//					Regions.US_EAST_1 // Region
+			//					);
+			//			
+			//			CognitoSyncManager client_cognitosync = new CognitoSyncManager(
+			//				    getApplicationContext(),
+			//				    Regions.US_EAST_1, 
+			//				    credentialscachProvider);
+			//			 dataset = client_cognitosync.openOrCreateDataset(
+			//		                Utils.DATASET_NAME);
+			//			 dataset.put(user_id,user_name);
+			//			
+			//			dataset.synchronize(syncCallback);
 
-			
+			AmazonS3 s3 = new AmazonS3Client(credentialsProvider);
+
+
+
+
+			//			Log.d("Access Token from fb to aws:",""+logins);
+
+
 			//transferManager = new TransferManager(credentialsProvider);
 			transferUtility= new TransferUtility(s3, getApplicationContext());
 			try{
@@ -276,7 +284,7 @@ public class MainActivity extends Activity {
 				/*.withPrefix("gou/")*/;
 
 				ObjectListing listing = s3.listObjects(listObjectsRequest);
-				Log.d("after listobjects","Bucket accessed");
+				Log.d("MainActivity","after listobjects..Bucket accessed");
 
 				summaries = listing.getObjectSummaries();
 
@@ -287,13 +295,47 @@ public class MainActivity extends Activity {
 				//list_files(summaries);
 			}
 			catch(AmazonServiceException  e){
-				Log.d("s3_lisiting_se",""+e);
+				Log.d("MainActivity","s3_lisiting_se:\n"+e);
 			}
 			catch (AmazonClientException e) {
-				Log.d("s3_lisiting_ce",""+e);
+				Log.d("MainActivity","s3_lisiting_ce:\n"+e);
 			}
 
+			Bundle parameters = new Bundle();
+			parameters.putString("breakdowns[0]", "fb_description");
+			parameters.putString("aggregateBy", "SUM");
+			parameters.putString("event_name", "fb_mobile_rate");
+			parameters.putString("period", "range");
+			/* make the API call */
+			new GraphRequest(
+					AccessToken.getCurrentAccessToken(),
+					"/"+Utils.fb_app_id+"/app_insights/app_event",
+					parameters,
+					HttpMethod.GET,
+					new GraphRequest.Callback() {
+						public void onCompleted(GraphResponse response) {
+							/* handle the result */
 
+							Log.d("MainActivity","fb analytics response:\n"+response);
+							try{
+								JSONObject jsonobj = response.getJSONObject();
+								JSONArray jarray = jsonobj.getJSONArray("data");
+								for(int i = 0; i < jarray.length(); i++)
+								{
+									JSONObject getval = jarray.getJSONObject(i);
+									//get your values
+									String val=getval.getString("value"); // this will return you total sends.
+									String music_key=getval.getJSONObject("breakdowns").getString("fb_description");
+									times_sent.put(music_key,val);
+									Log.d("MainActivity","music_key:\n"+music_key+"\nval:"+val);
+								}
+							}
+							catch(Exception e){
+								Log.d("MainActivity","err in gettin times send:\n"+e);
+							}
+						}
+					}
+					).executeAndWait();
 
 			return null;	
 			//			}
@@ -423,7 +465,9 @@ public class MainActivity extends Activity {
 		int index=0;
 		for(S3ObjectSummary summary : summaries)
 		{
-			DataObject obj = new DataObject(summary.getKey().toString(),"Secondary " + index);
+			Log.d("Mainactivity","times_sent from hashmap:"+times_sent.get(summary.getKey().toString()));
+			
+			DataObject obj = new DataObject(summary.getKey().toString(), times_sent.get(summary.getKey().toString()));
 			results.add(index, obj);
 			index++;
 		}
@@ -452,23 +496,23 @@ public class MainActivity extends Activity {
 			@Override
 			public void onItemClick(int position, View v, SendButton sendbutton)
 			{
-				Log.i(LOG_TAG, " Clicked on Item " + position);
-				Log.i(LOG_TAG, " View ID " + v.getId());
+				Log.i(LOG_TAG, " Clicked on Item: " + position);
+				Log.i(LOG_TAG, " View ID: " + v.getId());
 				//Log.i(LOG_TAG, " Sendbutton ID " + sendbutton.getId());
 
 
 				String music_file_key=((ArrayList<DataObject>)results).get(position).getmText1();
-				Log.i(LOG_TAG,"storage loc:"+Environment.getExternalStorageDirectory());
+				Log.i(LOG_TAG,"storage loc:\n"+Environment.getExternalStorageDirectory());
 
 				link="file:///storage/emulated/0/mad/"+music_file_key;
-				Log.i(LOG_TAG, "file path:" + link);
+				Log.i(LOG_TAG, "file path:\n" + link);
 
 				File local_stored_file=new File(Environment.getExternalStorageDirectory()
 						+File.separator
 						+"mad" 
 						+File.separator
 						+music_file_key);
-				Log.i(LOG_TAG,"music file key:"+music_file_key);
+				Log.i(LOG_TAG,"music file key:\n"+music_file_key);
 				// boolean  transfer_complete=false;
 
 				if(!local_stored_file.exists())
@@ -558,7 +602,7 @@ public class MainActivity extends Activity {
 		// The URI can reference a file://, content://, or android.resource. Here we use
 		// android.resource for sample purposes.
 		//	Uri suri=Uri.parse("content://");
-		
+
 		String music_file_key=((ArrayList<DataObject>)results).get(position).getmText1();
 		File local_stored_file=new File(Environment.getExternalStorageDirectory()
 				+File.separator
@@ -566,8 +610,8 @@ public class MainActivity extends Activity {
 				+File.separator
 				+music_file_key);
 		Log.i(LOG_TAG,"music file key:"+music_file_key);
-		
-				
+
+
 		if(local_stored_file.exists())
 		{
 
@@ -577,8 +621,7 @@ public class MainActivity extends Activity {
 			//String link="android.resource://com.example.mad/drawable/"+R.drawable.sample;
 			//		Uri uri =Uri.parse(link);
 			/*Uri uri =Uri.parse("https://www.google.co.in/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png");*/
-			//Uri.parse("file:///storage/emulated/0/Android/data/com.getsamosa/cache/sample.mp3");
-			//Uri.parse(Utils.LINK+((ArrayList<DataObject>)results).get(position).getmText1());
+		   //Uri.parse(Utils.LINK+((ArrayList<DataObject>)results).get(position).getmText1());
 
 			// Create the parameters for what we want to send to Messenger.
 			Uri uri =Uri.parse(link);
@@ -612,7 +655,7 @@ public class MainActivity extends Activity {
 		.build();*/
 
 			//sendbutton.setShareContent(content);
-			
+
 			//track events
 			//working in all flows
 			AppEventsLogger logger = AppEventsLogger.newLogger(v.getContext());
@@ -621,33 +664,37 @@ public class MainActivity extends Activity {
 			parameters.putString(AppEventsConstants.EVENT_PARAM_CONTENT_TYPE, "mp3");
 			parameters.putString(AppEventsConstants.EVENT_PARAM_CONTENT_ID, user_id);
 			parameters.putString(AppEventsConstants.EVENT_PARAM_DESCRIPTION, music_file_key);
+			//parameters.putString("app_event_parameter1", music_file_key);
+			//logger.logEvent("Custom_Rating2", 1,parameters);
 			logger.logEvent(AppEventsConstants.EVENT_NAME_RATED, 1,parameters);
-			
-			
-		
-			
-            MyApp.tracker().send(new HitBuilders.EventBuilder("tamil", "send")
-            		.setLabel(music_file_key)
-            		//.setValue(1)
-            		.build()
-            	);
-            GoogleAnalytics.getInstance(this).getLogger()
-            .setLogLevel(LogLevel.VERBOSE);
+
+
+
+
+			MyApp.tracker().send(new HitBuilders.EventBuilder("tamil", "send")
+			.setLabel(music_file_key)
+			//.setValue(1)
+			.build()
+					);
+			GoogleAnalytics.getInstance(this).getLogger()
+			.setLogLevel(LogLevel.VERBOSE);
 
 			if (mPicking) {
 				// If we were launched from Messenger, we call MessengerUtils.finishShareToMessenger to return
 				// the content to Messenger.
-				//MessengerUtils.finishShareToMessenger(this, shareToMessengerParams);
+				MessengerUtils.finishShareToMessenger(this, shareToMessengerParams);
+				Log.d("Main_Activity","After send button clicked reply flow");
 
 			} else {
 				// Otherwise, we were launched directly (for example, user clicked the launcher icon). We
 				// initiate the broadcast flow in Messenger. If Messenger is not installed or Messenger needs
 				// to be upgraded, this will direct the user to the play store.
 
-				/*MessengerUtils.shareToMessenger(
+				MessengerUtils.shareToMessenger(
 						this,
 						REQUEST_CODE_SHARE_TO_MESSENGER,
-						shareToMessengerParams);*/
+						shareToMessengerParams);
+				Log.d("Main_Activity","After send button clicked normal flow");
 			}
 		}
 
