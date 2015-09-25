@@ -2717,20 +2717,21 @@ containing a value of this type.
         public static final int ic_plusone_small_off_client=0x7f02006c;
         public static final int ic_plusone_standard_off_client=0x7f02006d;
         public static final int ic_plusone_tall_off_client=0x7f02006e;
-        public static final int messenger_bubble_large_blue=0x7f02006f;
-        public static final int messenger_bubble_large_white=0x7f020070;
-        public static final int messenger_bubble_small_blue=0x7f020071;
-        public static final int messenger_bubble_small_white=0x7f020072;
-        public static final int messenger_button_blue_bg_round=0x7f020073;
-        public static final int messenger_button_blue_bg_selector=0x7f020074;
-        public static final int messenger_button_send_round_shadow=0x7f020075;
-        public static final int messenger_button_white_bg_round=0x7f020076;
-        public static final int messenger_button_white_bg_selector=0x7f020077;
-        public static final int notification_template_icon_bg=0x7f02007c;
-        public static final int powered_by_google_dark=0x7f020078;
-        public static final int powered_by_google_light=0x7f020079;
-        public static final int sample=0x7f02007a;
-        public static final int tree=0x7f02007b;
+        public static final int ic_search=0x7f02006f;
+        public static final int messenger_bubble_large_blue=0x7f020070;
+        public static final int messenger_bubble_large_white=0x7f020071;
+        public static final int messenger_bubble_small_blue=0x7f020072;
+        public static final int messenger_bubble_small_white=0x7f020073;
+        public static final int messenger_button_blue_bg_round=0x7f020074;
+        public static final int messenger_button_blue_bg_selector=0x7f020075;
+        public static final int messenger_button_send_round_shadow=0x7f020076;
+        public static final int messenger_button_white_bg_round=0x7f020077;
+        public static final int messenger_button_white_bg_selector=0x7f020078;
+        public static final int notification_template_icon_bg=0x7f02007d;
+        public static final int powered_by_google_dark=0x7f020079;
+        public static final int powered_by_google_light=0x7f02007a;
+        public static final int sample=0x7f02007b;
+        public static final int tree=0x7f02007c;
     }
     public static final class id {
         public static final int action0=0x7f0b0081;
@@ -2748,7 +2749,6 @@ containing a value of this type.
         public static final int action_mode_bar=0x7f0b005e;
         public static final int action_mode_bar_stub=0x7f0b005d;
         public static final int action_mode_close_button=0x7f0b0046;
-        public static final int action_settings=0x7f0b008e;
         public static final int activity_chooser_view_content=0x7f0b0047;
         public static final int alertTitle=0x7f0b0051;
         public static final int always=0x7f0b003c;
@@ -2838,6 +2838,7 @@ containing a value of this type.
         public static final int satellite=0x7f0b000d;
         public static final int screen=0x7f0b0038;
         public static final int scrollView=0x7f0b0053;
+        public static final int search=0x7f0b008e;
         public static final int search_badge=0x7f0b0065;
         public static final int search_bar=0x7f0b0064;
         public static final int search_button=0x7f0b0066;
@@ -3151,9 +3152,10 @@ containing a value of this type.
         public static final int create_calendar_message=0x7f060005;
         public static final int create_calendar_title=0x7f060004;
         public static final int decline=0x7f060003;
-        public static final int facebook_app_id=0x7f060048;
-        public static final int list_files_txtv=0x7f060047;
+        public static final int facebook_app_id=0x7f060049;
+        public static final int list_files_txtv=0x7f060048;
         public static final int messenger_send_button_text=0x7f060023;
+        public static final int search_title=0x7f060047;
         /**  Text to use when the number in a notification info is too large
          (greater than status_bar_notification_info_maxnum, defined in
          values/config.xml) and must be truncated. May need to be localized

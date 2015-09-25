@@ -1,12 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.example.mad.MainActivity" >
-
+<!--  
     <item
         android:id="@+id/action_settings"
         android:orderInCategory="100"
         android:title="dummy"
         app:showAsAction="never"/>
+    -->
+    <item android:id="@+id/search"
+          android:title="@string/search_title"
+          android:icon="@drawable/ic_search"
+          android:showAsAction="collapseActionView|ifRoom"
+          android:actionViewClass="android.widget.SearchView" />
 
 </menu>
