@@ -61,7 +61,12 @@ import com.google.android.gms.analytics.Logger.LogLevel;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.widget.SearchView;
 import android.app.Activity;
+import android.app.SearchManager;
+import android.app.SearchableInfo;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -705,6 +710,18 @@ public class MainActivity extends Activity {
 		public boolean onCreateOptionsMenu(Menu menu) {
 			// Inflate the menu; this adds items to the action bar if it is present.
 			getMenuInflater().inflate(R.menu.main, menu);
+			
+			// Associate searchable configuration with the SearchView
+		    SearchManager searchManager =(SearchManager) getSystemService(Context.SEARCH_SERVICE);
+		    SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
+		   
+		    //binds search string and starts intent with ACTION.SEARCH
+		    SearchableInfo searchableInfo = (searchManager.getSearchableInfo(
+		    		new ComponentName(getApplicationContext(), SearchResultsActivity.class)));
+		    searchView.setSearchableInfo(searchableInfo);
+		    
+		    Log.d(LOG_TAG,""+searchManager.getSearchableInfo(getComponentName()));
+		    Log.d(LOG_TAG,"seacrh in:"+searchableInfo.getSearchActivity().toString());
 			return true;
 		}
 	
