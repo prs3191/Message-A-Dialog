@@ -91,7 +91,7 @@ public class MainActivity extends Activity {
 
 
 	List<S3ObjectSummary> summaries;
-	ArrayList results = new ArrayList<DataObject>();
+	static ArrayList results = new ArrayList<DataObject>();
 
 	private RecyclerView mRecyclerView;
 	private RecyclerView.Adapter mAdapter;
@@ -115,15 +115,15 @@ public class MainActivity extends Activity {
 
 	private CallbackManager callbackManager;
 
-	private TransferUtility transferUtility  ;
+	static TransferUtility transferUtility  ;
 	private static boolean  transfer_complete=false;
 	private static String user_access_token;
 	private Dataset dataset;
-	private static String user_id;
-	private static String user_name;
+	static String user_id;
+	static String user_name;
 
 	private Map<String, String> times_sent = new HashMap<String, String>();
-
+	static Map<String,String> all_files_wnots = new HashMap<String,String>();
 	//	private  DefaultSyncCallback syncCallback;
 
 	@Override
@@ -180,6 +180,8 @@ public class MainActivity extends Activity {
 		// If we received Intent.ACTION_PICK from Messenger, we were launched from a composer shortcut
 		// or the reply flow.
 		//else intent is received from LoginActivity, so get user_id,token,name
+		
+		//handleIntent(getIntent());
 		Intent intent = getIntent();
 		Log.d("MainActivity","What is intent action received:\n"+intent.getAction());
 		if (Intent.ACTION_PICK.equals(intent.getAction())) {
@@ -190,6 +192,10 @@ public class MainActivity extends Activity {
 			// Note, if mThreadParams is non-null, it means the activity was launched from Messenger.
 			// It will contain the metadata associated with the original content, if there was content.
 		}
+		/*else if(Intent.ACTION_SEARCH.equals(intent.getAction())){
+			handleIntent(getIntent());
+			
+		}*/
 		else{
 			user_access_token=intent.getStringExtra("user_access_token");
 			user_id=intent.getStringExtra("user_id");
@@ -464,9 +470,11 @@ public class MainActivity extends Activity {
 		}
 
 	}
-
+	
+	
+	
 	private ArrayList<DataObject> getDataSet() {
-
+		
 		int index=0;
 		for(S3ObjectSummary summary : summaries)
 		{
@@ -475,6 +483,7 @@ public class MainActivity extends Activity {
 			DataObject obj = new DataObject(summary.getKey().toString(), times_sent.get(summary.getKey().toString()));
 			results.add(index, obj);
 			index++;
+			
 		}
 		return results;
 	}
@@ -715,16 +724,34 @@ public class MainActivity extends Activity {
 		    SearchManager searchManager =(SearchManager) getSystemService(Context.SEARCH_SERVICE);
 		    SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
 		   
-		    //binds search string and starts intent with ACTION.SEARCH
+		    //binds search string and starts intent with ACTION_SEARCH
 		    SearchableInfo searchableInfo = (searchManager.getSearchableInfo(
-		    		new ComponentName(getApplicationContext(), SearchResultsActivity.class)));
+		    		new ComponentName(getApplicationContext(),SearchResultsActivity.class)));
 		    searchView.setSearchableInfo(searchableInfo);
 		    
 		    Log.d(LOG_TAG,""+searchManager.getSearchableInfo(getComponentName()));
 		    Log.d(LOG_TAG,"seacrh in:"+searchableInfo.getSearchActivity().toString());
 			return true;
 		}
-	
+		
+	/*	@Override
+		protected void onNewIntent(Intent intent){
+			handleIntent(intent);
+			
+		}
+		
+		private void handleIntent(Intent intent){
+			
+			if(Intent.ACTION_SEARCH.equals(intent.getAction())){
+				Log.d(LOG_TAG,"Inside oncreate of serachresults activity");
+				String query = intent.getStringExtra(SearchManager.QUERY);
+				Log.d(LOG_TAG,"queried string"+query);
+				String music_file_key=((ArrayList<DataObject>)results).get(1).getmText1();
+				Log.i(LOG_TAG,"music file key:"+music_file_key);
+				
+			}
+		}
+		*/
 		@Override
 		public boolean onOptionsItemSelected(MenuItem item) {
 			// Handle action bar item clicks here. The action bar will
