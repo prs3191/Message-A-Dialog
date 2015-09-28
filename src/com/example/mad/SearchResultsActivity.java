@@ -60,7 +60,6 @@ public class SearchResultsActivity extends Activity {
 		new File("/storage/emulated/0/"+"mad").mkdirs();
 		setContentView(R.layout.activity_card_view);
 
-
 		mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
 		mRecyclerView.setHasFixedSize(true);
 
@@ -101,7 +100,7 @@ public class SearchResultsActivity extends Activity {
 			String music_file_key= ((ArrayList<DataObject>)mresults).get(index1).getmText1();
 			String nots= ((ArrayList<DataObject>)mresults).get(index1).getmText2();
 			Log.d(LOG_TAG,"searching:"+music_file_key);
-			if(music_file_key.contains(query))
+			if(music_file_key.toLowerCase().contains(query.toLowerCase()))
 			{
 				DataObject obj = new DataObject(music_file_key,nots);
 				search_results.add(index2, obj);

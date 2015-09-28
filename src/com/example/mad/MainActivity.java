@@ -57,8 +57,12 @@ import com.google.android.gms.analytics.Logger.LogLevel;
 
 
 
-
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.SearchView;
@@ -72,6 +76,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.Signature;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -81,7 +86,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -126,6 +134,16 @@ public class MainActivity extends Activity {
 	static Map<String,String> all_files_wnots = new HashMap<String,String>();
 	//	private  DefaultSyncCallback syncCallback;
 
+	private DrawerLayout mDrawerLayout;
+//	private ListView mDrawerList;
+	private ActionBarDrawerToggle mDrawerToggle;
+
+	private CharSequence mDrawerTitle;
+	private CharSequence mTitle;
+	private String[] mdrawerItemTitles;
+	
+	private NavigationView mNavigationView; 
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -155,6 +173,56 @@ public class MainActivity extends Activity {
 		setContentView(R.layout.activity_card_view);
 
 
+		mTitle = mDrawerTitle = getTitle();
+		Log.d(LOG_TAG,"Initially:\nmTitle:"+mTitle+" mDrawerTitle:"+mDrawerTitle);
+//		mdrawerItemTitles = getResources().getStringArray(R.array.drawerItem_array);
+		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+		//mDrawerList = (ListView) findViewById(R.id.left_drawer);
+		mNavigationView=(NavigationView) findViewById(R.id.nav_view);
+		// set a custom shadow that overlays the main content when the drawer opens
+		mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
+		// set up the drawer's list view with items and click listener
+	//	mDrawerList.setAdapter(new ArrayAdapter<String>(this,
+		//		R.layout.drawer_list_item, mdrawerItemTitles));
+		mNavigationView.setNavigationItemSelectedListener(new DrawerItemClickListener());
+		//mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+
+		// enable ActionBar app icon to behave as action to toggle nav drawer
+		getActionBar().setDisplayHomeAsUpEnabled(true);
+		getActionBar().setHomeButtonEnabled(true);
+
+		// ActionBarDrawerToggle ties together the the proper interactions
+		// between the sliding drawer and the action bar app icon
+		mDrawerToggle = new ActionBarDrawerToggle(
+				this,                  /* host Activity */
+				mDrawerLayout,         /* DrawerLayout object */
+				//R.drawable.ic_drawer,  /* nav drawer image to replace 'Up' caret */
+				R.string.drawer_open,  /* "open drawer" description for accessibility */
+				R.string.drawer_close  /* "close drawer" description for accessibility */
+				) {
+			public void onDrawerClosed(View view) {
+				
+				Log.d(LOG_TAG,"onDrawerClosed b4 setTitle:\nmTitle:"+mTitle+" mDrawerTitle"+mDrawerTitle);
+				getActionBar().setTitle(mTitle);
+				Log.d(LOG_TAG,"onDrawerClosed after setTitle:\nmTitle:"+mTitle+" mDrawerTitle"+mDrawerTitle);
+				invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+			}
+
+			public void onDrawerOpened(View drawerView) {
+				Log.d(LOG_TAG,"onDrawerOpened b4 setTitle:\nmTitle:"+mTitle+" mDrawerTitle"+mDrawerTitle);
+				getActionBar().setTitle(mDrawerTitle);
+				Log.d(LOG_TAG,"onDrawerOpened after setTitle:\nmTitle:"+mTitle+" mDrawerTitle"+mDrawerTitle);
+				invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+			}
+		};
+		mDrawerToggle.setDrawerIndicatorEnabled(true);
+		mDrawerLayout.setDrawerListener(mDrawerToggle);
+
+		if (savedInstanceState == null) {
+			//selectItem(0);
+		}
+
+
 		mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
 		mRecyclerView.setHasFixedSize(true);
 
@@ -180,7 +248,7 @@ public class MainActivity extends Activity {
 		// If we received Intent.ACTION_PICK from Messenger, we were launched from a composer shortcut
 		// or the reply flow.
 		//else intent is received from LoginActivity, so get user_id,token,name
-		
+
 		//handleIntent(getIntent());
 		Intent intent = getIntent();
 		Log.d("MainActivity","What is intent action received:\n"+intent.getAction());
@@ -194,7 +262,7 @@ public class MainActivity extends Activity {
 		}
 		/*else if(Intent.ACTION_SEARCH.equals(intent.getAction())){
 			handleIntent(getIntent());
-			
+
 		}*/
 		else{
 			user_access_token=intent.getStringExtra("user_access_token");
@@ -470,20 +538,20 @@ public class MainActivity extends Activity {
 		}
 
 	}
-	
-	
-	
+
+
+
 	private ArrayList<DataObject> getDataSet() {
-		
+
 		int index=0;
 		for(S3ObjectSummary summary : summaries)
 		{
 			Log.d("Mainactivity","times_sent from hashmap:"+times_sent.get(summary.getKey().toString()));
-			
+
 			DataObject obj = new DataObject(summary.getKey().toString(), times_sent.get(summary.getKey().toString()));
 			results.add(index, obj);
 			index++;
-			
+
 		}
 		return results;
 	}
@@ -591,15 +659,6 @@ public class MainActivity extends Activity {
 
 				}
 
-
-
-
-
-
-
-
-
-
 			}
 		}
 				);
@@ -635,7 +694,7 @@ public class MainActivity extends Activity {
 			//String link="android.resource://com.example.mad/drawable/"+R.drawable.sample;
 			//		Uri uri =Uri.parse(link);
 			/*Uri uri =Uri.parse("https://www.google.co.in/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png");*/
-		   //Uri.parse(Utils.LINK+((ArrayList<DataObject>)results).get(position).getmText1());
+			//Uri.parse(Utils.LINK+((ArrayList<DataObject>)results).get(position).getmText1());
 
 			// Create the parameters for what we want to send to Messenger.
 			Uri uri =Uri.parse(link);
@@ -714,60 +773,125 @@ public class MainActivity extends Activity {
 
 	}
 
-	
-		@Override
-		public boolean onCreateOptionsMenu(Menu menu) {
-			// Inflate the menu; this adds items to the action bar if it is present.
-			getMenuInflater().inflate(R.menu.main, menu);
-			
-			// Associate searchable configuration with the SearchView
-		    SearchManager searchManager =(SearchManager) getSystemService(Context.SEARCH_SERVICE);
-		    SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
-		   
-		    //binds search string and starts intent with ACTION_SEARCH
-		    SearchableInfo searchableInfo = (searchManager.getSearchableInfo(
-		    		new ComponentName(getApplicationContext(),SearchResultsActivity.class)));
-		    searchView.setSearchableInfo(searchableInfo);
-		    
-		    Log.d(LOG_TAG,""+searchManager.getSearchableInfo(getComponentName()));
-		    Log.d(LOG_TAG,"seacrh in:"+searchableInfo.getSearchActivity().toString());
-			return true;
-		}
-		
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.main, menu);
+
+		// Associate searchable configuration with the SearchView
+		SearchManager searchManager =(SearchManager) getSystemService(Context.SEARCH_SERVICE);
+		SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
+
+		//binds search string and starts intent with ACTION_SEARCH
+		SearchableInfo searchableInfo = (searchManager.getSearchableInfo(
+				new ComponentName(getApplicationContext(),SearchResultsActivity.class)));
+		searchView.setSearchableInfo(searchableInfo);
+
+		Log.d(LOG_TAG,"onCreateOptionsMenu() getcomponent name:"+searchManager.getSearchableInfo(getComponentName())); //always gives null ??
+		Log.d(LOG_TAG,"onCreateOptionsMenu() seacrh in:"+searchableInfo.getSearchActivity().toString());
+		return true;
+	}
+
 	/*	@Override
 		protected void onNewIntent(Intent intent){
 			handleIntent(intent);
-			
+
 		}
-		
+
 		private void handleIntent(Intent intent){
-			
+
 			if(Intent.ACTION_SEARCH.equals(intent.getAction())){
 				Log.d(LOG_TAG,"Inside oncreate of serachresults activity");
 				String query = intent.getStringExtra(SearchManager.QUERY);
 				Log.d(LOG_TAG,"queried string"+query);
 				String music_file_key=((ArrayList<DataObject>)results).get(1).getmText1();
 				Log.i(LOG_TAG,"music file key:"+music_file_key);
-				
+
 			}
 		}
-		*/
+	 */
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle action bar item clicks here. The action bar will
+		// automatically handle clicks on the Home/Up button, so long
+		// as you specify a parent activity in AndroidManifest.xml.
+		int id = item.getItemId();
+		//			if (id == R.id.action_settings) {
+		//				return true;
+		//			}
+		//			else
+		if (id == R.id.search) {
+			Log.d("MainActivity","search icon clicked");
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
+	}
+
+	/* Called whenever we call invalidateOptionsMenu() */
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		// If the nav drawer is open, hide action items related to the content view
+		boolean drawerOpen = isNavDrawerOpen();
+		menu.findItem(R.id.search).setVisible(!drawerOpen);
+		return super.onPrepareOptionsMenu(menu);
+	}
+	
+	 protected boolean isNavDrawerOpen() {
+	     return mDrawerLayout != null && mDrawerLayout.isDrawerOpen(GravityCompat.START);
+	 }
+	 
+	 protected void closeNavDrawer() {
+	     if (mDrawerLayout != null) {
+	         mDrawerLayout.closeDrawer(GravityCompat.START);
+	     }
+	 }
+	/* The click listner for ListView in the navigation drawer */
+	private class DrawerItemClickListener
+		    implements NavigationView.OnNavigationItemSelectedListener {
 		@Override
-		public boolean onOptionsItemSelected(MenuItem item) {
-			// Handle action bar item clicks here. The action bar will
-			// automatically handle clicks on the Home/Up button, so long
-			// as you specify a parent activity in AndroidManifest.xml.
-			int id = item.getItemId();
-//			if (id == R.id.action_settings) {
-//				return true;
-//			}
-//			else
-			if (id == R.id.search) {
-				Log.d("MainActivity","search icon clicked");
-				return true;
-			}
-			return super.onOptionsItemSelected(item);
+		public boolean onNavigationItemSelected(MenuItem menuitem) {
+			//selectItem(position);
+			menuitem.setChecked(true);
+			closeNavDrawer();
+			return true;
 		}
+	}
+/*	private void selectItem(int position) {
+		// update selected item and title, then close the drawer
+		
+		mDrawerList.setItemChecked(position, true);
+		setTitle(mdrawerItemTitles[position]);
+		mDrawerLayout.closeDrawer(mDrawerList);
+	}*/
+	
+	@Override
+    public void setTitle(CharSequence title) {
+        mTitle = title;
+        Log.d(LOG_TAG,"setting title:"+mTitle);
+        getActionBar().setTitle(mTitle);
+    }
+
+    /**
+     * When using the ActionBarDrawerToggle, you must call it during
+     * onPostCreate() and onConfigurationChanged()...
+     */
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        // Sync the toggle state after onRestoreInstanceState has occurred.
+        mDrawerToggle.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        // Pass any configuration change to the drawer toggls
+        mDrawerToggle.onConfigurationChanged(newConfig);
+    }
+
+
 
 
 }

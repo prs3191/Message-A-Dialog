@@ -3,5 +3,5 @@
     <color name="actionbar_background">#00E5FF</color>
     <color name="actionbar_text">#000000</color>
     <color name="statusbar_background">#00B8D4</color>
-    
+    <color name="white">#FFFFFF</color>
 </resources>
