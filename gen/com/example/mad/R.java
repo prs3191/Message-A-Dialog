@@ -2786,20 +2786,20 @@ containing a value of this type.
         public static final int abc_config_showMenuShortcutsWhenKeyboardPresent=0x7f060003;
     }
     public static final class color {
-        public static final int abc_background_cache_hint_selector_material_dark=0x7f07006f;
-        public static final int abc_background_cache_hint_selector_material_light=0x7f070070;
-        public static final int abc_color_highlight_material=0x7f070071;
+        public static final int abc_background_cache_hint_selector_material_dark=0x7f070070;
+        public static final int abc_background_cache_hint_selector_material_light=0x7f070071;
+        public static final int abc_color_highlight_material=0x7f070072;
         public static final int abc_input_method_navigation_guard=0x7f070003;
-        public static final int abc_primary_text_disable_only_material_dark=0x7f070072;
-        public static final int abc_primary_text_disable_only_material_light=0x7f070073;
-        public static final int abc_primary_text_material_dark=0x7f070074;
-        public static final int abc_primary_text_material_light=0x7f070075;
-        public static final int abc_search_url_text=0x7f070076;
+        public static final int abc_primary_text_disable_only_material_dark=0x7f070073;
+        public static final int abc_primary_text_disable_only_material_light=0x7f070074;
+        public static final int abc_primary_text_material_dark=0x7f070075;
+        public static final int abc_primary_text_material_light=0x7f070076;
+        public static final int abc_search_url_text=0x7f070077;
         public static final int abc_search_url_text_normal=0x7f070000;
         public static final int abc_search_url_text_pressed=0x7f070002;
         public static final int abc_search_url_text_selected=0x7f070001;
-        public static final int abc_secondary_text_material_dark=0x7f070077;
-        public static final int abc_secondary_text_material_light=0x7f070078;
+        public static final int abc_secondary_text_material_dark=0x7f070078;
+        public static final int abc_secondary_text_material_light=0x7f070079;
         public static final int accent_material_dark=0x7f070011;
         public static final int accent_material_light=0x7f070010;
         public static final int actionbar_background=0x7f07006b;
@@ -2857,8 +2857,8 @@ containing a value of this type.
         public static final int common_signin_btn_light_text_disabled=0x7f070049;
         public static final int common_signin_btn_light_text_focused=0x7f07004a;
         public static final int common_signin_btn_light_text_pressed=0x7f070048;
-        public static final int common_signin_btn_text_dark=0x7f070079;
-        public static final int common_signin_btn_text_light=0x7f07007a;
+        public static final int common_signin_btn_text_dark=0x7f07007a;
+        public static final int common_signin_btn_text_light=0x7f07007b;
         /**  Shadow color for the furthest pixels of a shadow 
          */
         public static final int design_fab_shadow_end_color=0x7f070040;
@@ -2908,6 +2908,7 @@ containing a value of this type.
         public static final int material_grey_800=0x7f070030;
         public static final int material_grey_850=0x7f07002f;
         public static final int material_grey_900=0x7f07002e;
+        public static final int primary_background=0x7f07006f;
         public static final int primary_dark_material_dark=0x7f07000c;
         public static final int primary_dark_material_light=0x7f07000d;
         public static final int primary_material_dark=0x7f07000a;
@@ -2941,8 +2942,8 @@ containing a value of this type.
         public static final int statusbar_background=0x7f07006d;
         public static final int switch_thumb_disabled_material_dark=0x7f070016;
         public static final int switch_thumb_disabled_material_light=0x7f070017;
-        public static final int switch_thumb_material_dark=0x7f07007b;
-        public static final int switch_thumb_material_light=0x7f07007c;
+        public static final int switch_thumb_material_dark=0x7f07007c;
+        public static final int switch_thumb_material_light=0x7f07007d;
         public static final int switch_thumb_normal_material_dark=0x7f070014;
         public static final int switch_thumb_normal_material_light=0x7f070015;
         public static final int wallet_bright_foreground_disabled_holo_light=0x7f070052;
@@ -2963,8 +2964,8 @@ containing a value of this type.
         public static final int wallet_hint_foreground_holo_light=0x7f070054;
         public static final int wallet_holo_blue_light=0x7f070058;
         public static final int wallet_link_text_light=0x7f070059;
-        public static final int wallet_primary_text_holo_light=0x7f07007d;
-        public static final int wallet_secondary_text_holo_dark=0x7f07007e;
+        public static final int wallet_primary_text_holo_light=0x7f07007e;
+        public static final int wallet_secondary_text_holo_dark=0x7f07007f;
         public static final int white=0x7f07006e;
     }
     public static final class dimen {
@@ -3882,6 +3883,23 @@ containing a value of this type.
  All customizations that are NOT specific to a particular API-level can go here. 
          */
         public static final int AppTheme=0x7f0c015b;
+        /** trying to add toolbar instead of action bar
+    	NOT WORKING  
+    <style name="Theme.MyApp" parent="Theme.AppCompat.Light.NoActionBar">
+       <item name="windowActionBar">false</item>
+       
+        <item name="windowActionModeOverlay">true</item>
+        <item name="android:textColorPrimary">@color/white</item>
+        <item name="colorPrimary">@color/white</item>
+        <item name="colorPrimaryDark">@color/white</item>
+        <item name="android:windowBackground">@color/white</item>
+        <item name="android:colorBackground">@color/white</item>
+    </style>
+
+ Base application theme. 
+ Customize your theme here. 
+         */
+        public static final int AtoolTheme=0x7f0c0160;
         public static final int Base_AlertDialog_AppCompat=0x7f0c00c8;
         public static final int Base_AlertDialog_AppCompat_Light=0x7f0c00c9;
         public static final int Base_Animation_AppCompat_Dialog=0x7f0c00c4;

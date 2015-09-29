@@ -60,12 +60,14 @@ import com.google.android.gms.analytics.Logger.LogLevel;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.widget.SearchView;
+import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.SearchView;
 import android.app.Activity;
 import android.app.SearchManager;
 import android.app.SearchableInfo;
@@ -95,7 +97,7 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class MainActivity extends Activity {
+public class MainActivity extends AppCompatActivity  {
 
 
 	List<S3ObjectSummary> summaries;
@@ -143,7 +145,8 @@ public class MainActivity extends Activity {
 	private String[] mdrawerItemTitles;
 	
 	private NavigationView mNavigationView; 
-
+	private Toolbar mtoolbar;
+	static ActionBar actionBar;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -171,7 +174,10 @@ public class MainActivity extends Activity {
 
 		new File("/storage/emulated/0/"+"mad").mkdirs();
 		setContentView(R.layout.activity_card_view);
-
+		
+		mtoolbar=(Toolbar) findViewById(R.id.toolbar);
+		setSupportActionBar(mtoolbar);
+		actionBar= getSupportActionBar();
 
 		mTitle = mDrawerTitle = getTitle();
 		Log.d(LOG_TAG,"Initially:\nmTitle:"+mTitle+" mDrawerTitle:"+mDrawerTitle);
@@ -188,8 +194,8 @@ public class MainActivity extends Activity {
 		//mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 
 		// enable ActionBar app icon to behave as action to toggle nav drawer
-		getActionBar().setDisplayHomeAsUpEnabled(true);
-		getActionBar().setHomeButtonEnabled(true);
+		actionBar.setDisplayHomeAsUpEnabled(true);
+		actionBar.setHomeButtonEnabled(true);
 
 		// ActionBarDrawerToggle ties together the the proper interactions
 		// between the sliding drawer and the action bar app icon
@@ -203,14 +209,14 @@ public class MainActivity extends Activity {
 			public void onDrawerClosed(View view) {
 				
 				Log.d(LOG_TAG,"onDrawerClosed b4 setTitle:\nmTitle:"+mTitle+" mDrawerTitle"+mDrawerTitle);
-				getActionBar().setTitle(mTitle);
+				actionBar.setTitle(mTitle);
 				Log.d(LOG_TAG,"onDrawerClosed after setTitle:\nmTitle:"+mTitle+" mDrawerTitle"+mDrawerTitle);
 				invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
 			}
 
 			public void onDrawerOpened(View drawerView) {
 				Log.d(LOG_TAG,"onDrawerOpened b4 setTitle:\nmTitle:"+mTitle+" mDrawerTitle"+mDrawerTitle);
-				getActionBar().setTitle(mDrawerTitle);
+				actionBar.setTitle(mDrawerTitle);
 				Log.d(LOG_TAG,"onDrawerOpened after setTitle:\nmTitle:"+mTitle+" mDrawerTitle"+mDrawerTitle);
 				invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
 			}
@@ -869,7 +875,7 @@ public class MainActivity extends Activity {
     public void setTitle(CharSequence title) {
         mTitle = title;
         Log.d(LOG_TAG,"setting title:"+mTitle);
-        getActionBar().setTitle(mTitle);
+        actionBar.setTitle(mTitle);
     }
 
     /**

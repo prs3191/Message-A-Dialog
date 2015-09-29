@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- NOT WORKING NOT WORKING
 	SO ADDING NAVIGATION VIEW -->
-<android.support.v7.widget.Toolbar
+<android.support.v7.widget.Toolbar 
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/com.example.mad"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/toolbar"
-    android:layout_height="wrap_content"
     android:layout_width="match_parent"
-    app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-    app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-    android:minHeight="?attr/actionBarSize"
-    android:background="?attr/colorPrimary" />
+    android:layout_height="wrap_content"
+    android:background="@color/primary_background"
+    android:minHeight="48dip"
+    android:elevation="4dp" />
+

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res/com.example.mad"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.example.mad.MainActivity" >
 
@@ -13,9 +14,9 @@
     -->
     <item
         android:id="@+id/search"
-        android:actionViewClass="android.widget.SearchView"
+        android:actionViewClass="android.support.v7.widget.SearchView"
         android:icon="@drawable/ic_search"
-        android:showAsAction="collapseActionView|ifRoom"
+        app:showAsAction="collapseActionView|ifRoom"
         android:title="@string/search_title"/>
 
 </menu>

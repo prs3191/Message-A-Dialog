@@ -1,19 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res/com.example.mad"
     xmlns:tools="http://schemas.android.com/tools"
-    >
+    
+     tools:context=".MainActivity"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp">
 
     <group android:checkableBehavior="single" >
         <item
             android:id="@+id/navigation_item_1"
             android:checked="true"
             android:icon="@drawable/ic_launcher"
-            android:title="@string/nav1"/>
+            android:title="@string/nav1"
+            />
         <item
             android:id="@+id/navigation_item_2"
             android:icon="@drawable/ic_launcher"
-            android:title="@string/nav2"/>
+            android:title="@string/nav2"
+           />
     </group>
 
 </menu>
