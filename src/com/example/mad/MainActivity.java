@@ -126,6 +126,8 @@ public class MainActivity extends AppCompatActivity  {
 	private CallbackManager callbackManager;
 
 	static TransferUtility transferUtility  ;
+	private CognitoCredentialsProvider  credentialsProvider;
+	private static String mBucket;
 	private static boolean  transfer_complete=false;
 	private static String user_access_token;
 	private Dataset dataset;
@@ -180,6 +182,7 @@ public class MainActivity extends AppCompatActivity  {
 		actionBar= getSupportActionBar();
 
 		mTitle = mDrawerTitle = getTitle();
+		mBucket=Utils.BUCKET;
 		Log.d(LOG_TAG,"Initially:\nmTitle:"+mTitle+" mDrawerTitle:"+mDrawerTitle);
 //		mdrawerItemTitles = getResources().getStringArray(R.array.drawerItem_array);
 		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -209,14 +212,14 @@ public class MainActivity extends AppCompatActivity  {
 			public void onDrawerClosed(View view) {
 				
 				Log.d(LOG_TAG,"onDrawerClosed b4 setTitle:\nmTitle:"+mTitle+" mDrawerTitle"+mDrawerTitle);
-				actionBar.setTitle(mTitle);
+				//actionBar.setTitle(mTitle);
 				Log.d(LOG_TAG,"onDrawerClosed after setTitle:\nmTitle:"+mTitle+" mDrawerTitle"+mDrawerTitle);
 				invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
 			}
 
 			public void onDrawerOpened(View drawerView) {
 				Log.d(LOG_TAG,"onDrawerOpened b4 setTitle:\nmTitle:"+mTitle+" mDrawerTitle"+mDrawerTitle);
-				actionBar.setTitle(mDrawerTitle);
+				//actionBar.setTitle(mDrawerTitle);
 				Log.d(LOG_TAG,"onDrawerOpened after setTitle:\nmTitle:"+mTitle+" mDrawerTitle"+mDrawerTitle);
 				invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
 			}
@@ -236,7 +239,7 @@ public class MainActivity extends AppCompatActivity  {
 		mRecyclerView.setLayoutManager(mLayoutManager);
 
 
-
+		results.clear();
 		mAdapter = new MyRecyclerViewAdapter(results);
 		mRecyclerView.setAdapter(mAdapter);
 
@@ -259,8 +262,10 @@ public class MainActivity extends AppCompatActivity  {
 		Intent intent = getIntent();
 		Log.d("MainActivity","What is intent action received:\n"+intent.getAction());
 		if (Intent.ACTION_PICK.equals(intent.getAction())) {
+			
 			mThreadParams = MessengerUtils.getMessengerThreadParamsForIntent(intent);
 			mPicking = true;
+			
 			user_access_token=AccessToken.getCurrentAccessToken().getToken();
 			Log.d("MainActivity","access token after hit reply button:\n"+user_access_token);
 			// Note, if mThreadParams is non-null, it means the activity was launched from Messenger.
@@ -291,7 +296,13 @@ public class MainActivity extends AppCompatActivity  {
 
 
 
+		getbucketlist();
+		
+	}
 
+
+	private void getbucketlist(){
+		
 		try{
 			new HttpTask().execute();
 		}
@@ -300,8 +311,6 @@ public class MainActivity extends AppCompatActivity  {
 		}
 
 	}
-
-
 
 
 	public final class HttpTask extends AsyncTask<URL , Boolean /* Progress */, String /* Result */>
@@ -313,7 +322,7 @@ public class MainActivity extends AppCompatActivity  {
 			//		if(!DOWNLOAD_CLICKED)
 			//	{
 
-
+			results.clear();
 			Map<String, String> logins = new HashMap<String, String>();
 			logins.put("graph.facebook.com", user_access_token/*AccessToken.getCurrentAccessToken().getToken()*/);
 
@@ -322,8 +331,8 @@ public class MainActivity extends AppCompatActivity  {
 			}
 
 			// Initialize the Amazon Cognito credentials provider
-
-			CognitoCredentialsProvider credentialsProvider = new CognitoCredentialsProvider(
+			if (credentialsProvider==null){
+			 credentialsProvider = new CognitoCredentialsProvider(
 					//getApplicationContext(),
 					Utils.POOL_ID, // Identity Pool ID
 					Regions.US_EAST_1 // Region
@@ -331,7 +340,7 @@ public class MainActivity extends AppCompatActivity  {
 			credentialsProvider.setLogins(logins);
 			credentialsProvider.refresh();
 			Log.d("MainActivity","cred provider check:\n"+credentialsProvider.getIdentityId());
-
+			}
 			//CognitoCachingCredentialsProvider not updating properly when new user logs in.
 			//Including it because 3rd param of CognitoSyncManager requires it
 
@@ -364,9 +373,10 @@ public class MainActivity extends AppCompatActivity  {
 			try{
 				//Log.d("s3 check","");
 				ListObjectsRequest listObjectsRequest = new ListObjectsRequest()
-				.withBucketName(Utils.BUCKET)
+				.withBucketName(mBucket)
+				//.withPrefix("gou/")
 				.withDelimiter("/")
-				/*.withPrefix("gou/")*/;
+				;
 
 				ObjectListing listing = s3.listObjects(listObjectsRequest);
 				Log.d("MainActivity","after listobjects..Bucket accessed");
@@ -550,14 +560,17 @@ public class MainActivity extends AppCompatActivity  {
 	private ArrayList<DataObject> getDataSet() {
 
 		int index=0;
+		String key;
 		for(S3ObjectSummary summary : summaries)
 		{
-			Log.d("Mainactivity","times_sent from hashmap:"+times_sent.get(summary.getKey().toString()));
-
-			DataObject obj = new DataObject(summary.getKey().toString(), times_sent.get(summary.getKey().toString()));
+			Log.d("Mainactivity","times_sent from hashmap:"+summary.getKey().toString()+"="+times_sent.get(summary.getKey().toString()));
+			key=summary.getKey().toString();
+			Log.d(LOG_TAG,"keysplit:"+key.substring(key.lastIndexOf('/')+1));
+			//if(key.substring(key.lastIndexOf('/')+1)!= ""){
+			DataObject obj = new DataObject(key, times_sent.get(summary.getKey().toString()));
 			results.add(index, obj);
 			index++;
-
+			//}
 		}
 		return results;
 	}
@@ -866,6 +879,18 @@ public class MainActivity extends AppCompatActivity  {
 		public boolean onNavigationItemSelected(MenuItem menuitem) {
 			//selectItem(position);
 			menuitem.setChecked(true);
+			setTitle(menuitem.getTitle());
+			 Log.d(LOG_TAG,"Clicked title in Navig View:"+menuitem.getTitle().toString());
+			if(menuitem.getTitle().toString().contains("Tamil")){
+				 Log.d(LOG_TAG,"Loading bucket Tamil");
+				mBucket=Utils.BUCKET;
+				getbucketlist();
+			}
+			else if(menuitem.getTitle().toString().contains("English")){
+				Log.d(LOG_TAG,"Loading bucket English");
+				mBucket=Utils.BUCKET2;
+				getbucketlist();
+			}
 			closeNavDrawer();
 			return true;
 		}
