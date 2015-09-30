@@ -784,17 +784,24 @@ public class MainActivity extends AppCompatActivity  {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
-
+		
+		Log.d(LOG_TAG,"onCreateOptionsMenu() searchViewid:"+menu.findItem(R.id.search).toString());
 		// Associate searchable configuration with the SearchView
 		SearchManager searchManager =(SearchManager) getSystemService(Context.SEARCH_SERVICE);
 		SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
-
+		Log.d(LOG_TAG,"onCreateOptionsMenu() searchView:"+searchView.toString());
+		
 		//binds search string and starts intent with ACTION_SEARCH
 		SearchableInfo searchableInfo = (searchManager.getSearchableInfo(
 				new ComponentName(getApplicationContext(),SearchResultsActivity.class)));
+		
+		Log.d(LOG_TAG,"onCreateOptionsMenu() searchableInfo:"+searchableInfo.toString());
+		
 		searchView.setSearchableInfo(searchableInfo);
+		
 
-		Log.d(LOG_TAG,"onCreateOptionsMenu() getcomponent name:"+searchManager.getSearchableInfo(getComponentName())); //always gives null ??
+		
+		//Log.d(LOG_TAG,"onCreateOptionsMenu() getcomponent name:"+searchManager.getSearchableInfo(getComponentName())); //always gives null ??
 		Log.d(LOG_TAG,"onCreateOptionsMenu() seacrh in:"+searchableInfo.getSearchActivity().toString());
 		return true;
 	}
