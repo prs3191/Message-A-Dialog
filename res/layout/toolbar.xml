@@ -10,5 +10,6 @@
     android:layout_height="wrap_content"
     android:background="@color/primary_background"
     android:minHeight="48dip"
-    android:elevation="4dp" />
+    android:elevation="7dp" 
+    />
 

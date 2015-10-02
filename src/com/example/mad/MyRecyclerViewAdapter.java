@@ -69,6 +69,7 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
 		// create a new view
 		View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_view_row, parent, false);
 		// set the view's size, margins, paddings and layout parameters
+		
 		Log.d("recyc adapter","parent layout -->"+parent.getContext());
 		DataObjectHolder dataObjectHolder = new DataObjectHolder(view);
 		return dataObjectHolder;

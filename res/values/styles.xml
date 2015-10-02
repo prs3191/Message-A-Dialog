@@ -69,6 +69,7 @@
         <item name="colorPrimary">@color/primary_background</item>
         <item name="colorPrimaryDark">@color/statusbar_background</item>
         <item name="toolbarStyle">@style/Widget.AppCompat.Toolbar</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
         <!-- Customize your theme here. -->
     </style>
 
