@@ -24,13 +24,16 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-public class SearchResultsActivity extends Activity {
+public class SearchResultsActivity extends AppCompatActivity {
 
 	ArrayList search_results = new ArrayList<DataObject>();
 	ArrayList mresults = new ArrayList<DataObject>();
@@ -48,17 +51,20 @@ public class SearchResultsActivity extends Activity {
 	private MessengerThreadParams mThreadParams;
 	private boolean mPicking;
 	public String LOG_TAG="SearchResultsActivity";
+	private Toolbar mtoolbar;
+	static ActionBar actionBar;
 
 	@Override
 	public void onCreate (Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 
 		Log.d(LOG_TAG,"Inside oncreate of serachresults activity");
+		setContentView(R.layout.activity_card_view);
 		handleIntent(getIntent());
 
 
 		new File("/storage/emulated/0/"+"mad").mkdirs();
-		setContentView(R.layout.activity_card_view);
+		
 
 		mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
 		mRecyclerView.setHasFixedSize(true);
@@ -68,7 +74,17 @@ public class SearchResultsActivity extends Activity {
 
 		mAdapter = new MyRecyclerViewAdapter(getDataSet());
 		mRecyclerView.setAdapter(mAdapter);
-
+		
+		actionBar.setTitle(search_results.size()+" results for '"+query+"'");
+		/*actionBar.setDisplayHomeAsUpEnabled(true);
+		actionBar.setHomeButtonEnabled(true);*/
+		mtoolbar.setNavigationIcon(R.drawable.ic_action_back_2);
+		mtoolbar.setNavigationOnClickListener(new View.OnClickListener() {
+		    @Override
+		    public void onClick(View v) {
+		        onBackPressed();
+		    }
+		});
 //		gatrack();
 //		getawsauth();
 
@@ -85,6 +101,13 @@ public class SearchResultsActivity extends Activity {
 		if(Intent.ACTION_SEARCH.equals(intent.getAction())){
 			query = intent.getStringExtra(SearchManager.QUERY);
 			Log.d(LOG_TAG,"queried string:"+query);
+			
+			mtoolbar=(Toolbar) findViewById(R.id.toolbar);
+			Log.d(LOG_TAG,"mtoolbar:"+mtoolbar.toString());
+			setSupportActionBar(mtoolbar);
+			actionBar= getSupportActionBar();
+			
+			//Log.d(LOG_TAG,"actionbar:"+actionBar.toString());
 
 		}
 	}
@@ -94,6 +117,7 @@ public class SearchResultsActivity extends Activity {
 	private ArrayList<DataObject> getDataSet() {
 		mresults=MainActivity.results;
 		msize=mresults.size();
+		
 		int index1=0;int index2=0;
 		Log.d(LOG_TAG,"inside getdataset\nfile_list_size:"+msize);
 		while(index1 < msize){

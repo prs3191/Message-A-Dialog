@@ -7,4 +7,5 @@
     <color name="card_color">#FFB74D</color>
     <color name="selected_item">#9E9E9E</color>
     <color name="primary_background">#00E5FF</color>
+    <color name="black">#000000</color>
 </resources>

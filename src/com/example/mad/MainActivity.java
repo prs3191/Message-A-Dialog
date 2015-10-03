@@ -177,6 +177,8 @@ public class MainActivity extends AppCompatActivity  {
 		new File("/storage/emulated/0/"+"mad").mkdirs();
 		setContentView(R.layout.activity_card_view);
 		
+		
+		
 		mtoolbar=(Toolbar) findViewById(R.id.toolbar);
 		setSupportActionBar(mtoolbar);
 		actionBar= getSupportActionBar();
@@ -199,13 +201,15 @@ public class MainActivity extends AppCompatActivity  {
 		// enable ActionBar app icon to behave as action to toggle nav drawer
 		actionBar.setDisplayHomeAsUpEnabled(true);
 		actionBar.setHomeButtonEnabled(true);
-
+		
+	
 		// ActionBarDrawerToggle ties together the the proper interactions
 		// between the sliding drawer and the action bar app icon
 		mDrawerToggle = new ActionBarDrawerToggle(
 				this,                  /* host Activity */
 				mDrawerLayout,         /* DrawerLayout object */
 				//R.drawable.ic_drawer,  /* nav drawer image to replace 'Up' caret */
+				mtoolbar,
 				R.string.drawer_open,  /* "open drawer" description for accessibility */
 				R.string.drawer_close  /* "close drawer" description for accessibility */
 				) {
@@ -280,6 +284,7 @@ public class MainActivity extends AppCompatActivity  {
 			user_id=intent.getStringExtra("user_id");
 			user_name=intent.getStringExtra("user_name");
 
+			
 			// You only need to set User ID on a tracker once. By setting it on the tracker, the ID will be
 			// sent with all subsequent hits.
 			Log.d("MainActivity","access token after login button:\n"+user_access_token);
@@ -295,7 +300,8 @@ public class MainActivity extends AppCompatActivity  {
 		}
 
 
-
+		TextView usrname=(TextView)this.findViewById(R.id.header_layout_username);
+		usrname.setText("Welcome, "+user_name);
 		getbucketlist();
 		
 	}

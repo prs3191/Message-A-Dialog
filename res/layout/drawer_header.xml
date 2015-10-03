@@ -12,6 +12,7 @@
     tools:context=".MainActivity" >
 
     <TextView
+        android:id="@+id/header_layout_username"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Username"

@@ -9,6 +9,7 @@
 
     <group 
         android:checkableBehavior="single" 
+        android:visible="true"
         >
         <item
             android:id="@+id/navigation_item_1"
