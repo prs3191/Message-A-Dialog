@@ -58,6 +58,7 @@ import com.google.android.gms.analytics.Logger.LogLevel;
 
 
 import android.support.design.widget.NavigationView;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -78,6 +79,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.Signature;
+import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -90,6 +92,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioButton;
@@ -201,7 +204,31 @@ public class MainActivity extends AppCompatActivity  {
 		// enable ActionBar app icon to behave as action to toggle nav drawer
 		actionBar.setDisplayHomeAsUpEnabled(true);
 		actionBar.setHomeButtonEnabled(true);
+		mNavigationView.setItemTextColor(new ColorStateList(
+	            new int [] [] {
+	                    new int [] {android.R.attr.state_checked},
+	                    new int [] {-android.R.attr.state_checked},
+	                    new int [] {}
+	            },
+	            new int [] {
+	            		ContextCompat.getColor(getApplicationContext(), R.color.selected_text),
+	            		ContextCompat.getColor(getApplicationContext(), R.color.black),
+	            		ContextCompat.getColor(getApplicationContext(), R.color.black)
+	            }
+	    ));
 		
+		mNavigationView.setItemIconTintList(new ColorStateList(
+	            new int [] [] {
+	                    new int [] {android.R.attr.state_checked},
+	                    new int [] {-android.R.attr.state_checked},
+	                    new int [] {}
+	            },
+	            new int [] {
+	            		ContextCompat.getColor(getApplicationContext(), R.color.selected_text),
+	            		ContextCompat.getColor(getApplicationContext(), R.color.black),
+	            		ContextCompat.getColor(getApplicationContext(), R.color.black)
+	            }
+	    ));
 	
 		// ActionBarDrawerToggle ties together the the proper interactions
 		// between the sliding drawer and the action bar app icon
@@ -810,6 +837,20 @@ public class MainActivity extends AppCompatActivity  {
 		SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
 		Log.d(LOG_TAG,"onCreateOptionsMenu() searchView:"+searchView.toString());
 		
+		
+		SearchView.SearchAutoComplete searchAutoComplete = 
+		(SearchView.SearchAutoComplete)searchView.
+			findViewById(android.support.v7.appcompat.R.id.search_src_text);
+	    searchAutoComplete.setHintTextColor(ContextCompat.getColor(getApplicationContext(), R.color.hint_grey));
+	    searchAutoComplete.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.white));
+
+	    View searchplate = (View)searchView.findViewById(android.support.v7.appcompat.R.id.search_plate);
+	    searchplate.setBackgroundResource(R.drawable.mysearchview_edit_text_holo_light);
+		//searchplate.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.black));
+		
+	    ImageView searchIcon = (ImageView)searchView.findViewById(android.support.v7.appcompat.R.id.search_mag_icon);
+	    searchIcon.setImageResource(R.drawable.hint_search);
+		
 		//binds search string and starts intent with ACTION_SEARCH
 		SearchableInfo searchableInfo = (searchManager.getSearchableInfo(
 				new ComponentName(getApplicationContext(),SearchResultsActivity.class)));
@@ -885,6 +926,7 @@ public class MainActivity extends AppCompatActivity  {
 		public boolean onNavigationItemSelected(MenuItem menuitem) {
 			//selectItem(position);
 			menuitem.setChecked(true);
+			
 			setTitle(menuitem.getTitle());
 			 Log.d(LOG_TAG,"Clicked title in Navig View:"+menuitem.getTitle().toString());
 			if(menuitem.getTitle().toString().contains("Tamil")){

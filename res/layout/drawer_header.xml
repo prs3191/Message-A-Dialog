@@ -5,11 +5,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="192dp"
-    android:background="@color/statusbar_background"
+    android:background="@drawable/amber_pentagonal_background"
     android:gravity="bottom"
     android:orientation="vertical"
     android:padding="16dp"
-    tools:context=".MainActivity" >
+    
+    tools:context=".MainActivity" 
+>
 
     <TextView
         android:id="@+id/header_layout_username"

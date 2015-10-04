@@ -16,10 +16,9 @@
         android:layout_gravity="center"
         android:layout_margin="5dp"
         android:padding="8dp"
-        app:cardBackgroundColor="#FFB74D"
+        app:cardBackgroundColor="@color/card_color"
         card_view:cardCornerRadius="2dp"
-        card_view:contentPadding="10dp"
-        >
+        card_view:contentPadding="10dp" >
 		
         <RelativeLayout
             android:id="@+id/file_name"

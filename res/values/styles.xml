@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!--
         Base application theme, dependent on API level. This theme is replaced
@@ -64,14 +64,14 @@
 -->
 	
 	 <!-- Base application theme. -->
-    <style name="AtoolTheme" parent="Theme.AppCompat.NoActionBar">
+    <style name="AtoolTheme" parent="Theme.AppCompat.Light.NoActionBar">
  
         <item name="colorPrimary">@color/primary_background</item>
         <item name="colorPrimaryDark">@color/statusbar_background</item>
         <item name="toolbarStyle">@style/Widget.AppCompat.Toolbar</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
-        
         <!-- Customize your theme here. -->
     </style>
+
     
 </resources>

@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="actionbar_background">#00E5FF</color>
-    <color name="actionbar_text">#000000</color>
-    <color name="statusbar_background">#00B8D4</color>
+    <color name="actionbar_background">#3F51B5</color>
+    <color name="actionbar_text">#FFFFFF</color>
+    <color name="statusbar_background">#1565C0</color>
     <color name="white">#FFFFFF</color>
-    <color name="card_color">#FFB74D</color>
-    <color name="selected_item">#9E9E9E</color>
-    <color name="primary_background">#00E5FF</color>
+    <color name="card_color">#FFC107</color>
+    <color name="selected_item">#E0E0E0</color>
+    <color name="primary_background">#ECEFF1</color>
     <color name="black">#000000</color>
+    <color name="hint_grey">#616161</color>
+    <color name="selected_text">#1565C0</color>
+    <color name="toolbar_color">#1f8eff</color>
 </resources>
