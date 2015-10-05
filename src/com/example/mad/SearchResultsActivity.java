@@ -33,7 +33,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-public class SearchResultsActivity extends AppCompatActivity {
+public class SearchResultsActivity extends AppCompatActivity	 {
 
 	ArrayList search_results = new ArrayList<DataObject>();
 	ArrayList mresults = new ArrayList<DataObject>();
@@ -59,14 +59,14 @@ public class SearchResultsActivity extends AppCompatActivity {
 		super.onCreate(savedInstanceState);
 
 		Log.d(LOG_TAG,"Inside oncreate of serachresults activity");
-		setContentView(R.layout.activity_card_view);
+		setContentView(R.layout.searchactivity_card_view);
 		handleIntent(getIntent());
 
 
 		new File("/storage/emulated/0/"+"mad").mkdirs();
 		
 
-		mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
+		mRecyclerView = (RecyclerView) findViewById(R.id.my_searchrecycler_view);
 		mRecyclerView.setHasFixedSize(true);
 
 		mLayoutManager = new LinearLayoutManager(SearchResultsActivity.this);
@@ -75,16 +75,22 @@ public class SearchResultsActivity extends AppCompatActivity {
 		mAdapter = new MyRecyclerViewAdapter(getDataSet());
 		mRecyclerView.setAdapter(mAdapter);
 		
-		actionBar.setTitle(search_results.size()+" results for '"+query+"'");
-		/*actionBar.setDisplayHomeAsUpEnabled(true);
-		actionBar.setHomeButtonEnabled(true);*/
-		mtoolbar.setNavigationIcon(R.drawable.ic_action_back_2);
+		if(search_results.size()<=1)
+			actionBar.setTitle(search_results.size()+" result for '"+query+"'");
+		else
+			actionBar.setTitle(search_results.size()+" results for '"+query+"'");	
+		
+		actionBar.setDisplayHomeAsUpEnabled(true);
+		
+		/*mtoolbar.setNavigationIcon(R.drawable.ic_action_back_2);*/
 		mtoolbar.setNavigationOnClickListener(new View.OnClickListener() {
 		    @Override
 		    public void onClick(View v) {
 		        onBackPressed();
 		    }
 		});
+		
+		/*actionBar.setHomeButtonEnabled(true);*/
 //		gatrack();
 //		getawsauth();
 

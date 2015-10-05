@@ -3355,36 +3355,37 @@ containing a value of this type.
         public static final int ic_action_back=0x7f020070;
         public static final int ic_action_back_2=0x7f020071;
         public static final int ic_action_headphones=0x7f020072;
-        public static final int ic_drawer=0x7f020073;
-        public static final int ic_launcher=0x7f020074;
-        public static final int ic_plusone_medium_off_client=0x7f020075;
-        public static final int ic_plusone_small_off_client=0x7f020076;
-        public static final int ic_plusone_standard_off_client=0x7f020077;
-        public static final int ic_plusone_tall_off_client=0x7f020078;
-        public static final int ic_search=0x7f020079;
-        public static final int messenger_bubble_large_blue=0x7f02007a;
-        public static final int messenger_bubble_large_white=0x7f02007b;
-        public static final int messenger_bubble_small_blue=0x7f02007c;
-        public static final int messenger_bubble_small_white=0x7f02007d;
-        public static final int messenger_button_blue_bg_round=0x7f02007e;
-        public static final int messenger_button_blue_bg_selector=0x7f02007f;
-        public static final int messenger_button_send_round_shadow=0x7f020080;
-        public static final int messenger_button_white_bg_round=0x7f020081;
-        public static final int messenger_button_white_bg_selector=0x7f020082;
-        public static final int mysearchview_edit_text_holo_light=0x7f020083;
-        public static final int mysearchview_textfield_activated_holo_light=0x7f020084;
-        public static final int mysearchview_textfield_default_holo_light=0x7f020085;
-        public static final int mysearchview_textfield_disabled_focused_holo_light=0x7f020086;
-        public static final int mysearchview_textfield_disabled_holo_light=0x7f020087;
-        public static final int mysearchview_textfield_focused_holo_light=0x7f020088;
-        public static final int notification_template_icon_bg=0x7f020090;
-        public static final int powered_by_google_dark=0x7f020089;
-        public static final int powered_by_google_light=0x7f02008a;
-        public static final int sample=0x7f02008b;
-        public static final int texfield_searchview_holo_light=0x7f02008c;
-        public static final int textfield_search_default_holo_light=0x7f02008d;
-        public static final int textfield_search_selected_holo_light=0x7f02008e;
-        public static final int tree=0x7f02008f;
+        public static final int ic_action_search=0x7f020073;
+        public static final int ic_drawer=0x7f020074;
+        public static final int ic_launcher=0x7f020075;
+        public static final int ic_plusone_medium_off_client=0x7f020076;
+        public static final int ic_plusone_small_off_client=0x7f020077;
+        public static final int ic_plusone_standard_off_client=0x7f020078;
+        public static final int ic_plusone_tall_off_client=0x7f020079;
+        public static final int ic_search=0x7f02007a;
+        public static final int messenger_bubble_large_blue=0x7f02007b;
+        public static final int messenger_bubble_large_white=0x7f02007c;
+        public static final int messenger_bubble_small_blue=0x7f02007d;
+        public static final int messenger_bubble_small_white=0x7f02007e;
+        public static final int messenger_button_blue_bg_round=0x7f02007f;
+        public static final int messenger_button_blue_bg_selector=0x7f020080;
+        public static final int messenger_button_send_round_shadow=0x7f020081;
+        public static final int messenger_button_white_bg_round=0x7f020082;
+        public static final int messenger_button_white_bg_selector=0x7f020083;
+        public static final int mysearchview_edit_text_holo_light=0x7f020084;
+        public static final int mysearchview_textfield_activated_holo_light=0x7f020085;
+        public static final int mysearchview_textfield_default_holo_light=0x7f020086;
+        public static final int mysearchview_textfield_disabled_focused_holo_light=0x7f020087;
+        public static final int mysearchview_textfield_disabled_holo_light=0x7f020088;
+        public static final int mysearchview_textfield_focused_holo_light=0x7f020089;
+        public static final int notification_template_icon_bg=0x7f020091;
+        public static final int powered_by_google_dark=0x7f02008a;
+        public static final int powered_by_google_light=0x7f02008b;
+        public static final int sample=0x7f02008c;
+        public static final int texfield_searchview_holo_light=0x7f02008d;
+        public static final int textfield_search_default_holo_light=0x7f02008e;
+        public static final int textfield_search_selected_holo_light=0x7f02008f;
+        public static final int tree=0x7f020090;
     }
     public static final class id {
         public static final int action0=0x7f0a0099;
@@ -3487,9 +3488,10 @@ containing a value of this type.
         public static final int multiply=0x7f0a0016;
         public static final int music_key=0x7f0a008b;
         public static final int my_recycler_view=0x7f0a0084;
+        public static final int my_searchrecycler_view=0x7f0a00a6;
         public static final int nav_view=0x7f0a0085;
-        public static final int navigation_item_1=0x7f0a00a7;
-        public static final int navigation_item_2=0x7f0a00a8;
+        public static final int navigation_item_1=0x7f0a00a8;
+        public static final int navigation_item_2=0x7f0a00a9;
         public static final int never=0x7f0a001e;
         public static final int never_display=0x7f0a004c;
         public static final int none=0x7f0a0011;
@@ -3513,7 +3515,7 @@ containing a value of this type.
         public static final int scroll=0x7f0a0036;
         public static final int scrollView=0x7f0a0065;
         public static final int scrollable=0x7f0a0025;
-        public static final int search=0x7f0a00a9;
+        public static final int search=0x7f0a00aa;
         public static final int search_badge=0x7f0a0077;
         public static final int search_bar=0x7f0a0076;
         public static final int search_button=0x7f0a0078;
@@ -3550,7 +3552,7 @@ containing a value of this type.
         public static final int time=0x7f0a009f;
         public static final int title=0x7f0a005f;
         public static final int title_template=0x7f0a0062;
-        public static final int toolbar=0x7f0a00a6;
+        public static final int toolbar=0x7f0a00a7;
         public static final int top=0x7f0a0032;
         public static final int topPanel=0x7f0a0061;
         public static final int unknown=0x7f0a0051;
@@ -3658,11 +3660,12 @@ containing a value of this type.
         public static final int notification_template_media=0x7f030038;
         public static final int notification_template_part_chronometer=0x7f030039;
         public static final int notification_template_part_time=0x7f03003a;
-        public static final int select_dialog_item_material=0x7f03003b;
-        public static final int select_dialog_multichoice_material=0x7f03003c;
-        public static final int select_dialog_singlechoice_material=0x7f03003d;
-        public static final int support_simple_spinner_dropdown_item=0x7f03003e;
-        public static final int toolbar=0x7f03003f;
+        public static final int searchactivity_card_view=0x7f03003b;
+        public static final int select_dialog_item_material=0x7f03003c;
+        public static final int select_dialog_multichoice_material=0x7f03003d;
+        public static final int select_dialog_singlechoice_material=0x7f03003e;
+        public static final int support_simple_spinner_dropdown_item=0x7f03003f;
+        public static final int toolbar=0x7f030040;
     }
     public static final class menu {
         public static final int drawer=0x7f0e0000;
@@ -3884,11 +3887,13 @@ containing a value of this type.
         Base application theme, dependent on API level. This theme is replaced
         by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
 
+
     
 
             Theme customizations available in newer API levels can go in
             res/values-vXX/styles.xml, while customizations related to
             backward-compatibility can go here.
+
 
         
 
@@ -3908,7 +3913,8 @@ containing a value of this type.
  All customizations that are NOT specific to a particular API-level can go here. 
          */
         public static final int AppTheme=0x7f0c015b;
-        /** trying to add toolbar instead of action bar
+        /** 
+    trying to add toolbar instead of action bar
     	NOT WORKING  
     <style name="Theme.MyApp" parent="Theme.AppCompat.Light.NoActionBar">
        <item name="windowActionBar">false</item>
@@ -3921,10 +3927,14 @@ containing a value of this type.
         <item name="android:colorBackground">@color/white</item>
     </style>
 
+    
  Base application theme. 
  Customize your theme here. 
          */
         public static final int AtoolTheme=0x7f0c0160;
+        /**  Customize your theme here. 
+         */
+        public static final int AtoolTheme_2=0x7f0c0161;
         public static final int Base_AlertDialog_AppCompat=0x7f0c00c8;
         public static final int Base_AlertDialog_AppCompat_Light=0x7f0c00c9;
         public static final int Base_Animation_AppCompat_Dialog=0x7f0c00c4;

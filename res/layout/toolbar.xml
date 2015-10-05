@@ -11,5 +11,6 @@
     android:background="@color/toolbar_color"
     android:minHeight="48dip"
     android:elevation="7dp" 
-/>
+    
+    />
 

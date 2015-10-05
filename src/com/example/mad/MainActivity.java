@@ -70,6 +70,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.SearchView;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.app.SearchableInfo;
 import android.content.ComponentName;
@@ -152,6 +153,8 @@ public class MainActivity extends AppCompatActivity  {
 	private NavigationView mNavigationView; 
 	private Toolbar mtoolbar;
 	static ActionBar actionBar;
+	
+	private ProgressDialog progress;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -173,7 +176,8 @@ public class MainActivity extends AppCompatActivity  {
 	    }*/
 
 
-
+		progress = new ProgressDialog(this);
+		progress.setCancelable(false);
 
 
 
@@ -329,6 +333,9 @@ public class MainActivity extends AppCompatActivity  {
 
 		TextView usrname=(TextView)this.findViewById(R.id.header_layout_username);
 		usrname.setText("Welcome, "+user_name);
+		progress.setTitle("Loading");
+		progress.setMessage("Wait while loading...");
+		progress.show();
 		getbucketlist();
 		
 	}
@@ -357,6 +364,8 @@ public class MainActivity extends AppCompatActivity  {
 
 			results.clear();
 			Map<String, String> logins = new HashMap<String, String>();
+			
+			
 			logins.put("graph.facebook.com", user_access_token/*AccessToken.getCurrentAccessToken().getToken()*/);
 
 			for (Map.Entry entry : logins.entrySet()) {
@@ -528,7 +537,7 @@ public class MainActivity extends AppCompatActivity  {
 			mAdapter = new MyRecyclerViewAdapter(getDataSet());
 			mRecyclerView.setAdapter(mAdapter);
 
-
+			
 
 			//
 			//			mAdapter = new MyRecyclerViewAdapter(getDataSet());
@@ -605,6 +614,8 @@ public class MainActivity extends AppCompatActivity  {
 			index++;
 			//}
 		}
+		// To dismiss the dialog
+					progress.dismiss();
 		return results;
 	}
 
@@ -848,8 +859,8 @@ public class MainActivity extends AppCompatActivity  {
 	    searchplate.setBackgroundResource(R.drawable.mysearchview_edit_text_holo_light);
 		//searchplate.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.black));
 		
-	    ImageView searchIcon = (ImageView)searchView.findViewById(android.support.v7.appcompat.R.id.search_mag_icon);
-	    searchIcon.setImageResource(R.drawable.hint_search);
+	    //ImageView searchIcon = (ImageView)searchView.findViewById(android.support.v7.appcompat.R.id.search_mag_icon);
+	    //searchIcon.setImageResource(R.drawable.hint_search);
 		
 		//binds search string and starts intent with ACTION_SEARCH
 		SearchableInfo searchableInfo = (searchManager.getSearchableInfo(
@@ -932,11 +943,17 @@ public class MainActivity extends AppCompatActivity  {
 			if(menuitem.getTitle().toString().contains("Tamil")){
 				 Log.d(LOG_TAG,"Loading bucket Tamil");
 				mBucket=Utils.BUCKET;
+				progress.setTitle("Loading");
+				progress.setMessage("Wait while loading...");
+				progress.show();
 				getbucketlist();
 			}
 			else if(menuitem.getTitle().toString().contains("English")){
 				Log.d(LOG_TAG,"Loading bucket English");
 				mBucket=Utils.BUCKET2;
+				progress.setTitle("Loading");
+				progress.setMessage("Wait while loading...");
+				progress.show();
 				getbucketlist();
 			}
 			closeNavDrawer();
