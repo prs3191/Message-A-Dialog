@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout 
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/com.example.mad"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -9,16 +8,16 @@
     android:gravity="bottom"
     android:orientation="vertical"
     android:padding="16dp"
-    
-    tools:context=".MainActivity" 
->
+    tools:context=".MainActivity" >
 
     <TextView
         android:id="@+id/header_layout_username"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Username"
-        android:textColor="#000000"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textColor="#000000" 
+       />
+
 
 </LinearLayout>
