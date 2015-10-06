@@ -16,6 +16,8 @@ import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.facebook.messenger.MessengerThreadParams;
+import com.facebook.messenger.MessengerUtils;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
@@ -38,17 +40,53 @@ public class fb_loginActivity extends Activity {
 	private String user_access_token;
 	private String user_id;
 	private String user_name;
+	private MessengerThreadParams mThreadParams;
+	private boolean mPicking;
+	private String LOG_TAG="fbLoginActivity";
+	private Intent intent;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		
+		//intent = getIntent();
+		/*	Log.d(LOG_TAG,"What is intent action received:\n"+intent.getAction());
+		if (Intent.ACTION_PICK.equals(intent.getAction())) {
+			
+			//mThreadParams = MessengerUtils.getMessengerThreadParamsForIntent(intent);
+			//mPicking = true;
+			
+			if(user_access_token!=null){
+				user_access_token=AccessToken.getCurrentAccessToken().getToken();
+				Log.d(LOG_TAG,"access_token from reply flow:\n"+user_access_token);
+			}
+			else
+			{
+				Log.d(LOG_TAG,"access_token from reply flow:\n"+user_access_token);
+				login();
+				
+			}
+			
+			// Note, if mThreadParams is non-null, it means the activity was launched from Messenger.
+			// It will contain the metadata associated with the original content, if there was content.
+		}
+		
+		*/
+		
 	}
 
 	@Override
 	protected void onResume()
 	{
 		super.onResume();
-
+		login();
+		
+	}
+	
+	private void login(){
+		
+		
 		FacebookSdk.sdkInitialize(this.getApplicationContext());
 		callbackManager = CallbackManager.Factory.create();
 
@@ -136,7 +174,7 @@ public class fb_loginActivity extends Activity {
 			}
 
 		});   
-
+		
 
 	}
 

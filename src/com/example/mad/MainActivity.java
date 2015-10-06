@@ -4,7 +4,9 @@ import java.io.File;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +38,7 @@ import com.example.mad.DataObject;
 import com.example.mad.MyRecyclerViewAdapter;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
+import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
@@ -143,17 +146,17 @@ public class MainActivity extends AppCompatActivity  {
 	//	private  DefaultSyncCallback syncCallback;
 
 	private DrawerLayout mDrawerLayout;
-//	private ListView mDrawerList;
+	//	private ListView mDrawerList;
 	private ActionBarDrawerToggle mDrawerToggle;
 
 	private CharSequence mDrawerTitle;
 	private CharSequence mTitle;
 	private String[] mdrawerItemTitles;
-	
+
 	private NavigationView mNavigationView; 
 	private Toolbar mtoolbar;
 	static ActionBar actionBar;
-	
+
 	private ProgressDialog progress;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -174,175 +177,183 @@ public class MainActivity extends AppCompatActivity  {
 	    } catch (NoSuchAlgorithmException e) {
 
 	    }*/
-
-
-		progress = new ProgressDialog(this);
-		progress.setCancelable(false);
-
-
-
-		new File("/storage/emulated/0/"+"mad").mkdirs();
-		setContentView(R.layout.activity_card_view);
-		
-		
-		
-		mtoolbar=(Toolbar) findViewById(R.id.toolbar);
-		setSupportActionBar(mtoolbar);
-		actionBar= getSupportActionBar();
-
-		mTitle = mDrawerTitle = getTitle();
-		mBucket=Utils.BUCKET;
-		Log.d(LOG_TAG,"Initially:\nmTitle:"+mTitle+" mDrawerTitle:"+mDrawerTitle);
-//		mdrawerItemTitles = getResources().getStringArray(R.array.drawerItem_array);
-		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-		//mDrawerList = (ListView) findViewById(R.id.left_drawer);
-		mNavigationView=(NavigationView) findViewById(R.id.nav_view);
-		// set a custom shadow that overlays the main content when the drawer opens
-		mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
-		// set up the drawer's list view with items and click listener
-	//	mDrawerList.setAdapter(new ArrayAdapter<String>(this,
-		//		R.layout.drawer_list_item, mdrawerItemTitles));
-		mNavigationView.setNavigationItemSelectedListener(new DrawerItemClickListener());
-		//mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
-
-		// enable ActionBar app icon to behave as action to toggle nav drawer
-		actionBar.setDisplayHomeAsUpEnabled(true);
-		actionBar.setHomeButtonEnabled(true);
-		mNavigationView.setItemTextColor(new ColorStateList(
-	            new int [] [] {
-	                    new int [] {android.R.attr.state_checked},
-	                    new int [] {-android.R.attr.state_checked},
-	                    new int [] {}
-	            },
-	            new int [] {
-	            		ContextCompat.getColor(getApplicationContext(), R.color.selected_text),
-	            		ContextCompat.getColor(getApplicationContext(), R.color.black),
-	            		ContextCompat.getColor(getApplicationContext(), R.color.black)
-	            }
-	    ));
-		
-		mNavigationView.setItemIconTintList(new ColorStateList(
-	            new int [] [] {
-	                    new int [] {android.R.attr.state_checked},
-	                    new int [] {-android.R.attr.state_checked},
-	                    new int [] {}
-	            },
-	            new int [] {
-	            		ContextCompat.getColor(getApplicationContext(), R.color.selected_text),
-	            		ContextCompat.getColor(getApplicationContext(), R.color.black),
-	            		ContextCompat.getColor(getApplicationContext(), R.color.black)
-	            }
-	    ));
-	
-		// ActionBarDrawerToggle ties together the the proper interactions
-		// between the sliding drawer and the action bar app icon
-		mDrawerToggle = new ActionBarDrawerToggle(
-				this,                  /* host Activity */
-				mDrawerLayout,         /* DrawerLayout object */
-				//R.drawable.ic_drawer,  /* nav drawer image to replace 'Up' caret */
-				mtoolbar,
-				R.string.drawer_open,  /* "open drawer" description for accessibility */
-				R.string.drawer_close  /* "close drawer" description for accessibility */
-				) {
-			public void onDrawerClosed(View view) {
-				
-				Log.d(LOG_TAG,"onDrawerClosed b4 setTitle:\nmTitle:"+mTitle+" mDrawerTitle"+mDrawerTitle);
-				//actionBar.setTitle(mTitle);
-				Log.d(LOG_TAG,"onDrawerClosed after setTitle:\nmTitle:"+mTitle+" mDrawerTitle"+mDrawerTitle);
-				invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-			}
-
-			public void onDrawerOpened(View drawerView) {
-				Log.d(LOG_TAG,"onDrawerOpened b4 setTitle:\nmTitle:"+mTitle+" mDrawerTitle"+mDrawerTitle);
-				//actionBar.setTitle(mDrawerTitle);
-				Log.d(LOG_TAG,"onDrawerOpened after setTitle:\nmTitle:"+mTitle+" mDrawerTitle"+mDrawerTitle);
-				invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-			}
-		};
-		mDrawerToggle.setDrawerIndicatorEnabled(true);
-		mDrawerLayout.setDrawerListener(mDrawerToggle);
-
-		if (savedInstanceState == null) {
-			//selectItem(0);
+		if(!FacebookSdk.isInitialized()){
+			Log.d(LOG_TAG,"fbsdk not init: so starting fbloginactivity");
+			//Intent i=new Intent(MainActivity.this,fb_loginActivity.class);
+			Intent i = getPackageManager().getLaunchIntentForPackage("com.example.mad");
+			startActivity(i);
+			finish();
 		}
-
-
-		mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
-		mRecyclerView.setHasFixedSize(true);
-
-		mLayoutManager = new LinearLayoutManager(MainActivity.this);
-		mRecyclerView.setLayoutManager(mLayoutManager);
-
-
-		results.clear();
-		mAdapter = new MyRecyclerViewAdapter(results);
-		mRecyclerView.setAdapter(mAdapter);
-
-
-
-		//callbackManager = CallbackManager.Factory.create();
-
-
-		// Code to Add an item with default animation
-		//((MyRecyclerViewAdapter) mAdapter).addItem(obj, index);
-
-		// Code to remove an item with default animation
-		//((MyRecyclerViewAdapter) mAdapter).deleteItem(index);
-
-		// If we received Intent.ACTION_PICK from Messenger, we were launched from a composer shortcut
-		// or the reply flow.
-		//else intent is received from LoginActivity, so get user_id,token,name
-
-		//handleIntent(getIntent());
-		Intent intent = getIntent();
-		Log.d("MainActivity","What is intent action received:\n"+intent.getAction());
-		if (Intent.ACTION_PICK.equals(intent.getAction())) {
-			
-			mThreadParams = MessengerUtils.getMessengerThreadParamsForIntent(intent);
-			mPicking = true;
-			
-			user_access_token=AccessToken.getCurrentAccessToken().getToken();
-			Log.d("MainActivity","access token after hit reply button:\n"+user_access_token);
-			// Note, if mThreadParams is non-null, it means the activity was launched from Messenger.
-			// It will contain the metadata associated with the original content, if there was content.
-		}
-		/*else if(Intent.ACTION_SEARCH.equals(intent.getAction())){
-			handleIntent(getIntent());
-
-		}*/
 		else{
-			user_access_token=intent.getStringExtra("user_access_token");
-			user_id=intent.getStringExtra("user_id");
-			user_name=intent.getStringExtra("user_name");
 
-			
-			// You only need to set User ID on a tracker once. By setting it on the tracker, the ID will be
-			// sent with all subsequent hits.
-			Log.d("MainActivity","access token after login button:\n"+user_access_token);
-			Log.d("MainActivity","accessing google tracker:"+MyApp.tracker().getClass());
-			MyApp.tracker().set("&uid", user_id);
+			Log.d(LOG_TAG,"fbsdk  init: so starting Mainactivity");
 
-			MyApp.tracker().send(new HitBuilders.EventBuilder()
-			.setCategory("UX")
-			.setAction("User Sign In").build());
-			GoogleAnalytics.getInstance(this).getLogger()
-			.setLogLevel(LogLevel.VERBOSE);
+			progress = new ProgressDialog(this);
+			progress.setCancelable(false);
 
+
+
+			new File("/storage/emulated/0/"+"mad").mkdirs();
+			setContentView(R.layout.activity_card_view);
+
+
+
+			mtoolbar=(Toolbar) findViewById(R.id.toolbar);
+			setSupportActionBar(mtoolbar);
+			actionBar= getSupportActionBar();
+
+			mTitle = mDrawerTitle = getTitle();
+			mBucket=Utils.BUCKET;
+			Log.d(LOG_TAG,"Initially:\nmTitle:"+mTitle+" mDrawerTitle:"+mDrawerTitle);
+			//			mdrawerItemTitles = getResources().getStringArray(R.array.drawerItem_array);
+			mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+			//mDrawerList = (ListView) findViewById(R.id.left_drawer);
+			mNavigationView=(NavigationView) findViewById(R.id.nav_view);
+			// set a custom shadow that overlays the main content when the drawer opens
+			mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
+			// set up the drawer's list view with items and click listener
+			//	mDrawerList.setAdapter(new ArrayAdapter<String>(this,
+			//		R.layout.drawer_list_item, mdrawerItemTitles));
+			mNavigationView.setNavigationItemSelectedListener(new DrawerItemClickListener());
+			//mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+
+			// enable ActionBar app icon to behave as action to toggle nav drawer
+			actionBar.setDisplayHomeAsUpEnabled(true);
+			actionBar.setHomeButtonEnabled(true);
+			mNavigationView.setItemTextColor(new ColorStateList(
+					new int [] [] {
+							new int [] {android.R.attr.state_checked},
+							new int [] {-android.R.attr.state_checked},
+							new int [] {}
+					},
+					new int [] {
+							ContextCompat.getColor(getApplicationContext(), R.color.selected_text),
+							ContextCompat.getColor(getApplicationContext(), R.color.black),
+							ContextCompat.getColor(getApplicationContext(), R.color.black)
+					}
+					));
+
+			mNavigationView.setItemIconTintList(new ColorStateList(
+					new int [] [] {
+							new int [] {android.R.attr.state_checked},
+							new int [] {-android.R.attr.state_checked},
+							new int [] {}
+					},
+					new int [] {
+							ContextCompat.getColor(getApplicationContext(), R.color.selected_text),
+							ContextCompat.getColor(getApplicationContext(), R.color.black),
+							ContextCompat.getColor(getApplicationContext(), R.color.black)
+					}
+					));
+
+			// ActionBarDrawerToggle ties together the the proper interactions
+			// between the sliding drawer and the action bar app icon
+			mDrawerToggle = new ActionBarDrawerToggle(
+					this,                  /* host Activity */
+					mDrawerLayout,         /* DrawerLayout object */
+					//R.drawable.ic_drawer,  /* nav drawer image to replace 'Up' caret */
+					mtoolbar,
+					R.string.drawer_open,  /* "open drawer" description for accessibility */
+					R.string.drawer_close  /* "close drawer" description for accessibility */
+					) {
+				public void onDrawerClosed(View view) {
+
+					Log.d(LOG_TAG,"onDrawerClosed b4 setTitle:\nmTitle:"+mTitle+" mDrawerTitle"+mDrawerTitle);
+					//actionBar.setTitle(mTitle);
+					Log.d(LOG_TAG,"onDrawerClosed after setTitle:\nmTitle:"+mTitle+" mDrawerTitle"+mDrawerTitle);
+					invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+				}
+
+				public void onDrawerOpened(View drawerView) {
+					Log.d(LOG_TAG,"onDrawerOpened b4 setTitle:\nmTitle:"+mTitle+" mDrawerTitle"+mDrawerTitle);
+					//actionBar.setTitle(mDrawerTitle);
+					Log.d(LOG_TAG,"onDrawerOpened after setTitle:\nmTitle:"+mTitle+" mDrawerTitle"+mDrawerTitle);
+					invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+				}
+			};
+			mDrawerToggle.setDrawerIndicatorEnabled(true);
+			mDrawerLayout.setDrawerListener(mDrawerToggle);
+
+			mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
+			mRecyclerView.setHasFixedSize(true);
+
+			mLayoutManager = new LinearLayoutManager(MainActivity.this);
+			mRecyclerView.setLayoutManager(mLayoutManager);
+
+
+			results.clear();
+			mAdapter = new MyRecyclerViewAdapter(results);
+			mRecyclerView.setAdapter(mAdapter);
+
+
+
+			//callbackManager = CallbackManager.Factory.create();
+
+
+			// Code to Add an item with default animation
+			//((MyRecyclerViewAdapter) mAdapter).addItem(obj, index);
+
+			// Code to remove an item with default animation
+			//((MyRecyclerViewAdapter) mAdapter).deleteItem(index);
+
+			// If we received Intent.ACTION_PICK from Messenger, we were launched from a composer shortcut
+			// or the reply flow.
+			//else intent is received from LoginActivity, so get user_id,token,name
+
+			//handleIntent(getIntent());
+			Intent intent = getIntent();
+			Log.d("MainActivity","What is intent action received:\n"+intent.getAction());
+			if (Intent.ACTION_PICK.equals(intent.getAction())) {
+
+
+				mThreadParams = MessengerUtils.getMessengerThreadParamsForIntent(intent);
+				mPicking = true;
+
+				user_access_token=AccessToken.getCurrentAccessToken().getToken();
+				Log.d("MainActivity","access token after hit reply button:\n"+user_access_token);
+				// Note, if mThreadParams is non-null, it means the activity was launched from Messenger.
+				// It will contain the metadata associated with the original content, if there was content.
+			}
+			/*else if(Intent.ACTION_SEARCH.equals(intent.getAction())){
+				handleIntent(getIntent());
+
+			}*/
+			else{
+				user_access_token=intent.getStringExtra("user_access_token");
+				user_id=intent.getStringExtra("user_id");
+				user_name=intent.getStringExtra("user_name");
+
+
+				// You only need to set User ID on a tracker once. By setting it on the tracker, the ID will be
+				// sent with all subsequent hits.
+				Log.d("MainActivity","access token after login button:\n"+user_access_token);
+				Log.d("MainActivity","accessing google tracker:"+MyApp.tracker().getClass());
+				MyApp.tracker().set("&uid", user_id);
+
+				MyApp.tracker().send(new HitBuilders.EventBuilder()
+				.setCategory("UX")
+				.setAction("User Sign In").build());
+				GoogleAnalytics.getInstance(this).getLogger()
+				.setLogLevel(LogLevel.VERBOSE);
+
+			}
+
+
+			TextView usrname=(TextView)this.findViewById(R.id.header_layout_username);
+			usrname.setText("Welcome, "+user_name);
+			progress.setTitle("Loading");
+			progress.setMessage("Wait while loading...");
+			progress.show();
+			getbucketlist();
 		}
 
 
-		TextView usrname=(TextView)this.findViewById(R.id.header_layout_username);
-		usrname.setText("Welcome, "+user_name);
-		progress.setTitle("Loading");
-		progress.setMessage("Wait while loading...");
-		progress.show();
-		getbucketlist();
-		
 	}
 
 
+
 	private void getbucketlist(){
-		
+
 		try{
 			new HttpTask().execute();
 		}
@@ -364,8 +375,8 @@ public class MainActivity extends AppCompatActivity  {
 
 			results.clear();
 			Map<String, String> logins = new HashMap<String, String>();
-			
-			
+
+
 			logins.put("graph.facebook.com", user_access_token/*AccessToken.getCurrentAccessToken().getToken()*/);
 
 			for (Map.Entry entry : logins.entrySet()) {
@@ -374,14 +385,14 @@ public class MainActivity extends AppCompatActivity  {
 
 			// Initialize the Amazon Cognito credentials provider
 			if (credentialsProvider==null){
-			 credentialsProvider = new CognitoCredentialsProvider(
-					//getApplicationContext(),
-					Utils.POOL_ID, // Identity Pool ID
-					Regions.US_EAST_1 // Region
-					);
-			credentialsProvider.setLogins(logins);
-			credentialsProvider.refresh();
-			Log.d("MainActivity","cred provider check:\n"+credentialsProvider.getIdentityId());
+				credentialsProvider = new CognitoCredentialsProvider(
+						//getApplicationContext(),
+						Utils.POOL_ID, // Identity Pool ID
+						Regions.US_EAST_1 // Region
+						);
+				credentialsProvider.setLogins(logins);
+				credentialsProvider.refresh();
+				Log.d("MainActivity","cred provider check:\n"+credentialsProvider.getIdentityId());
 			}
 			//CognitoCachingCredentialsProvider not updating properly when new user logs in.
 			//Including it because 3rd param of CognitoSyncManager requires it
@@ -443,6 +454,15 @@ public class MainActivity extends AppCompatActivity  {
 			parameters.putString("aggregateBy", "SUM");
 			parameters.putString("event_name", "fb_mobile_rate");
 			parameters.putString("period", "range");
+			parameters.putString("since", "2015-01-01");
+
+			Calendar c = Calendar.getInstance();
+			System.out.println("Current time => " + c.getTime());
+
+			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+			String formattedDate = df.format(c.getTime());
+			System.out.println("current date"+formattedDate);
+			parameters.putString("until", formattedDate);
 			/* make the API call */
 			new GraphRequest(
 					AccessToken.getCurrentAccessToken(),
@@ -537,7 +557,7 @@ public class MainActivity extends AppCompatActivity  {
 			mAdapter = new MyRecyclerViewAdapter(getDataSet());
 			mRecyclerView.setAdapter(mAdapter);
 
-			
+
 
 			//
 			//			mAdapter = new MyRecyclerViewAdapter(getDataSet());
@@ -615,7 +635,7 @@ public class MainActivity extends AppCompatActivity  {
 			//}
 		}
 		// To dismiss the dialog
-					progress.dismiss();
+		progress.dismiss();
 		return results;
 	}
 
@@ -841,37 +861,37 @@ public class MainActivity extends AppCompatActivity  {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
-		
+
 		Log.d(LOG_TAG,"onCreateOptionsMenu() searchViewid:"+menu.findItem(R.id.search).toString());
 		// Associate searchable configuration with the SearchView
 		SearchManager searchManager =(SearchManager) getSystemService(Context.SEARCH_SERVICE);
 		SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
 		Log.d(LOG_TAG,"onCreateOptionsMenu() searchView:"+searchView.toString());
-		
-		
-		SearchView.SearchAutoComplete searchAutoComplete = 
-		(SearchView.SearchAutoComplete)searchView.
-			findViewById(android.support.v7.appcompat.R.id.search_src_text);
-	    searchAutoComplete.setHintTextColor(ContextCompat.getColor(getApplicationContext(), R.color.hint_grey));
-	    searchAutoComplete.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.white));
 
-	    View searchplate = (View)searchView.findViewById(android.support.v7.appcompat.R.id.search_plate);
-	    searchplate.setBackgroundResource(R.drawable.mysearchview_edit_text_holo_light);
+
+		SearchView.SearchAutoComplete searchAutoComplete = 
+				(SearchView.SearchAutoComplete)searchView.
+				findViewById(android.support.v7.appcompat.R.id.search_src_text);
+		searchAutoComplete.setHintTextColor(ContextCompat.getColor(getApplicationContext(), R.color.hint_grey));
+		searchAutoComplete.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.white));
+
+		View searchplate = (View)searchView.findViewById(android.support.v7.appcompat.R.id.search_plate);
+		searchplate.setBackgroundResource(R.drawable.mysearchview_edit_text_holo_light);
 		//searchplate.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.black));
-		
-	    //ImageView searchIcon = (ImageView)searchView.findViewById(android.support.v7.appcompat.R.id.search_mag_icon);
-	    //searchIcon.setImageResource(R.drawable.hint_search);
-		
+
+		//ImageView searchIcon = (ImageView)searchView.findViewById(android.support.v7.appcompat.R.id.search_mag_icon);
+		//searchIcon.setImageResource(R.drawable.hint_search);
+
 		//binds search string and starts intent with ACTION_SEARCH
 		SearchableInfo searchableInfo = (searchManager.getSearchableInfo(
 				new ComponentName(getApplicationContext(),SearchResultsActivity.class)));
-		
-		Log.d(LOG_TAG,"onCreateOptionsMenu() searchableInfo:"+searchableInfo.toString());
-		
-		searchView.setSearchableInfo(searchableInfo);
-		
 
-		
+		Log.d(LOG_TAG,"onCreateOptionsMenu() searchableInfo:"+searchableInfo.toString());
+
+		searchView.setSearchableInfo(searchableInfo);
+
+
+
 		//Log.d(LOG_TAG,"onCreateOptionsMenu() getcomponent name:"+searchManager.getSearchableInfo(getComponentName())); //always gives null ??
 		Log.d(LOG_TAG,"onCreateOptionsMenu() seacrh in:"+searchableInfo.getSearchActivity().toString());
 		return true;
@@ -920,28 +940,28 @@ public class MainActivity extends AppCompatActivity  {
 		menu.findItem(R.id.search).setVisible(!drawerOpen);
 		return super.onPrepareOptionsMenu(menu);
 	}
-	
-	 protected boolean isNavDrawerOpen() {
-	     return mDrawerLayout != null && mDrawerLayout.isDrawerOpen(GravityCompat.START);
-	 }
-	 
-	 protected void closeNavDrawer() {
-	     if (mDrawerLayout != null) {
-	         mDrawerLayout.closeDrawer(GravityCompat.START);
-	     }
-	 }
+
+	protected boolean isNavDrawerOpen() {
+		return mDrawerLayout != null && mDrawerLayout.isDrawerOpen(GravityCompat.START);
+	}
+
+	protected void closeNavDrawer() {
+		if (mDrawerLayout != null) {
+			mDrawerLayout.closeDrawer(GravityCompat.START);
+		}
+	}
 	/* The click listner for ListView in the navigation drawer */
 	private class DrawerItemClickListener
-		    implements NavigationView.OnNavigationItemSelectedListener {
+	implements NavigationView.OnNavigationItemSelectedListener {
 		@Override
 		public boolean onNavigationItemSelected(MenuItem menuitem) {
 			//selectItem(position);
 			menuitem.setChecked(true);
-			
+
 			setTitle(menuitem.getTitle());
-			 Log.d(LOG_TAG,"Clicked title in Navig View:"+menuitem.getTitle().toString());
+			Log.d(LOG_TAG,"Clicked title in Navig View:"+menuitem.getTitle().toString());
 			if(menuitem.getTitle().toString().contains("Tamil")){
-				 Log.d(LOG_TAG,"Loading bucket Tamil");
+				Log.d(LOG_TAG,"Loading bucket Tamil");
 				mBucket=Utils.BUCKET;
 				progress.setTitle("Loading");
 				progress.setMessage("Wait while loading...");
@@ -960,39 +980,39 @@ public class MainActivity extends AppCompatActivity  {
 			return true;
 		}
 	}
-/*	private void selectItem(int position) {
+	/*	private void selectItem(int position) {
 		// update selected item and title, then close the drawer
-		
+
 		mDrawerList.setItemChecked(position, true);
 		setTitle(mdrawerItemTitles[position]);
 		mDrawerLayout.closeDrawer(mDrawerList);
 	}*/
-	
+
 	@Override
-    public void setTitle(CharSequence title) {
-        mTitle = title;
-        Log.d(LOG_TAG,"setting title:"+mTitle);
-        actionBar.setTitle(mTitle);
-    }
+	public void setTitle(CharSequence title) {
+		mTitle = title;
+		Log.d(LOG_TAG,"setting title:"+mTitle);
+		actionBar.setTitle(mTitle);
+	}
 
-    /**
-     * When using the ActionBarDrawerToggle, you must call it during
-     * onPostCreate() and onConfigurationChanged()...
-     */
+	/**
+	 * When using the ActionBarDrawerToggle, you must call it during
+	 * onPostCreate() and onConfigurationChanged()...
+	 */
 
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-        // Sync the toggle state after onRestoreInstanceState has occurred.
-        mDrawerToggle.syncState();
-    }
+	@Override
+	protected void onPostCreate(Bundle savedInstanceState) {
+		super.onPostCreate(savedInstanceState);
+		// Sync the toggle state after onRestoreInstanceState has occurred.
+		mDrawerToggle.syncState();
+	}
 
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        // Pass any configuration change to the drawer toggls
-        mDrawerToggle.onConfigurationChanged(newConfig);
-    }
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
+		// Pass any configuration change to the drawer toggls
+		mDrawerToggle.onConfigurationChanged(newConfig);
+	}
 
 
 
