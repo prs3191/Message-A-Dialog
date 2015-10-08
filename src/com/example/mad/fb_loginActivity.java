@@ -44,6 +44,7 @@ public class fb_loginActivity extends Activity {
 	private boolean mPicking;
 	private String LOG_TAG="fbLoginActivity";
 	private Intent intent;
+	
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {

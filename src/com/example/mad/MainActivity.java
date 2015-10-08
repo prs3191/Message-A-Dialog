@@ -177,7 +177,7 @@ public class MainActivity extends AppCompatActivity  {
 	    } catch (NoSuchAlgorithmException e) {
 
 	    }*/
-		if(!FacebookSdk.isInitialized()){
+		if( (!FacebookSdk.isInitialized()) || (AccessToken.getCurrentAccessToken()==null) ){
 			Log.d(LOG_TAG,"fbsdk not init: so starting fbloginactivity");
 			//Intent i=new Intent(MainActivity.this,fb_loginActivity.class);
 			Intent i = getPackageManager().getLaunchIntentForPackage("com.example.mad");
