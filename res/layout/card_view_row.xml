@@ -16,6 +16,7 @@
         android:layout_gravity="center"
         android:layout_margin="5dp"
         android:padding="8dp"
+        android:clickable="true"
         app:cardBackgroundColor="@color/card_color"
         card_view:cardCornerRadius="2dp"
         card_view:contentPadding="10dp" >

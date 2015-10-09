@@ -1,6 +1,7 @@
 package com.example.mad;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -85,26 +86,36 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.Signature;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnBufferingUpdateListener;
+import android.media.MediaPlayer.OnCompletionListener;
+import android.media.MediaPlayer.OnPreparedListener;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnTouchListener;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.MediaController;
+import android.widget.MediaController.MediaPlayerControl;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity  {
+public class MainActivity extends AppCompatActivity implements MediaPlayerControl {
 
 
 	List<S3ObjectSummary> summaries;
@@ -158,6 +169,9 @@ public class MainActivity extends AppCompatActivity  {
 	static ActionBar actionBar;
 
 	private ProgressDialog progress;
+
+	private MediaController mMediaController;
+	private MediaPlayer mMediaPlayer;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -285,7 +299,61 @@ public class MainActivity extends AppCompatActivity  {
 			mAdapter = new MyRecyclerViewAdapter(results);
 			mRecyclerView.setAdapter(mAdapter);
 
+			mMediaPlayer = new MediaPlayer();
+			mMediaController = new MediaController(MainActivity.this){
+				@Override
+				public void show(int timeout) {
+					super.show(0);
+				}
+			};
+			mMediaController.setMediaPlayer(MainActivity.this);
+			mMediaController.setAnchorView(findViewById(R.id.drawer_layout));
 
+			final Handler mHandler = new Handler();
+
+			String audioFile = "/storage/emulated/0/mad/Aiio_Raaama.mp3" ; 
+			//String audioFile ="http://www.stephaniequinn.com/Music/The%20Irish%20Washerwoman.mp3";
+			try 
+			{
+				//mMediaPlayer.setDataSource(MainActivity.this,Uri.parse(audioFile));
+				mMediaPlayer.setDataSource(audioFile);
+				mMediaPlayer.prepareAsync();
+				mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+			} catch (IOException e) {
+				Log.e("PlayAudioDemo", "Could not open file " + audioFile + " for playback.", e);
+			}
+
+			mMediaPlayer.setOnPreparedListener(new OnPreparedListener() {
+				@Override
+				public void onPrepared(MediaPlayer mp) {
+					Log.d("m","Media PLayer onPrepared:");
+					mHandler.post(new Runnable() {
+						public void run() {
+							Log.d("m","runnable:");
+							mMediaController.show();
+							//	mMediaPlayer.start();
+						}
+					});
+				}
+			});
+
+			mMediaPlayer.setOnCompletionListener(new OnCompletionListener() {
+
+				@Override
+				public void onCompletion(MediaPlayer mp) {
+					// TODO Auto-generated method stub
+					Log.d("m","onCompletion");
+					mMediaController.hide();
+				}
+			});
+			mMediaPlayer.setOnBufferingUpdateListener(new OnBufferingUpdateListener() {
+
+				@Override
+				public void onBufferingUpdate(MediaPlayer mp, int percent) {
+					// TODO Auto-generated method stub
+					Log.d("m","buffered percent:"+percent);
+				}
+			});
 
 			//callbackManager = CallbackManager.Factory.create();
 
@@ -743,10 +811,105 @@ public class MainActivity extends AppCompatActivity  {
 				}
 
 			}
-		}
-				);
+
+			@Override
+			public void onCardClick(int position, View v, SendButton sendbutton, MotionEvent event) {
+				// TODO Auto-generated method stub
+				Log.d(LOG_TAG,"onCardClick");
+
+
+
+				// TODO Auto-generated method stub
+				if (event.getAction() == android.view.MotionEvent.ACTION_DOWN) {
+					Log.d("TouchTest", "Touch down");
+					mMediaPlayer.start();
+					mMediaController.show();
+
+				} 
+				else if (event.getAction() == android.view.MotionEvent.ACTION_UP) {
+					Log.d("TouchTest", "Touch up");
+					//mMediaPlayer.stop();
+					mMediaPlayer.pause();
+					mMediaController.hide();
+
+				}
+
+			}
+		});
+	}
+
+	@Override
+	public void start() {
+		// TODO Auto-generated method stub
+		mMediaPlayer.start();
+	}
+	@Override
+	public void pause() {
+		// TODO Auto-generated method stub
+		if(mMediaPlayer.isPlaying())
+			mMediaPlayer.pause();
 
 	}
+	@Override
+	public int getDuration() {
+		// TODO Auto-generated method stub
+		//return 0;
+		return mMediaPlayer.getDuration();
+	}
+	@Override
+	public int getCurrentPosition() {
+		// TODO Auto-generated method stub
+		//return 0;
+		return mMediaPlayer.getCurrentPosition();
+	}
+	@Override
+	public void seekTo(int pos) {
+		// TODO Auto-generated method stub
+		mMediaPlayer.seekTo(pos);
+
+	}
+	@Override
+	public boolean isPlaying() {
+		// TODO Auto-generated method stub
+		//return false;
+		return mMediaPlayer.isPlaying();
+	}
+	@Override
+	public int getBufferPercentage() {
+		// TODO Auto-generated method stub
+		//int percentage = (mMediaPlayer.getCurrentPosition() * 100) / mMediaPlayer.getDuration();
+
+		//return percentage;
+		return 0;
+	}
+	@Override
+	public boolean canPause() {
+		// TODO Auto-generated method stub
+		return true;
+	}
+	@Override
+	public boolean canSeekBackward() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	@Override
+	public boolean canSeekForward() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	@Override
+	public int getAudioSessionId() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		mMediaPlayer.stop();
+		mMediaPlayer.release();
+	}
+
+
 
 	@Override
 	protected void onPause() { 

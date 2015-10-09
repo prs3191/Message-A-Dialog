@@ -3,6 +3,7 @@ package com.example.mad;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -21,6 +22,7 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
 
 	public interface MyClickListener {
 		public void onItemClick(int position, View v, SendButton sendbutton);
+		public void onCardClick(int position, View v, SendButton sendbutton, MotionEvent event);
 
 	}
 
@@ -29,11 +31,12 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
 		mDataset = myDataset;
 	}
 
-	public static class DataObjectHolder extends RecyclerView.ViewHolder implements View.OnClickListener
+	public static class DataObjectHolder extends RecyclerView.ViewHolder implements View.OnClickListener,View.OnTouchListener
 	{
 		TextView label;
 		TextView nots;
 		View mMessengerButton;
+		View mCardView;
 		SendButton sendbutton;
 		//ShareButton sendbutton;
 		public DataObjectHolder(View itemView) {
@@ -44,13 +47,24 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
 			//sendbutton = (SendButton)itemView.findViewById(R.id.fbsendButton);
 			// dateTime = (TextView) itemView.findViewById(R.id.textView2);
 			Log.i(LOG_TAG, "Adding Listener");
-			// itemView.setOnClickListener(this);
+			mCardView=itemView.findViewById(R.id.card_view);
+			mCardView.setOnTouchListener(this);
 			mMessengerButton.setOnClickListener(this);
 		}
 
 		@Override
 		public void onClick(View v) {
-			myClickListener.onItemClick(getAdapterPosition(), v, sendbutton);
+			if(v==mMessengerButton)
+				myClickListener.onItemClick(getAdapterPosition(), v, sendbutton);
+			//else if(v==mCardView)
+			//myClickListener.onCardClick(getAdapterPosition(), v, sendbutton);
+		}
+
+		@Override
+		public boolean onTouch(View v, MotionEvent event) {
+			// TODO Auto-generated method stub
+			myClickListener.onCardClick(getAdapterPosition(), v, sendbutton,event);
+			return false;
 		}
 
 	}
@@ -69,7 +83,7 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
 		// create a new view
 		View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_view_row, parent, false);
 		// set the view's size, margins, paddings and layout parameters
-		
+
 		Log.d("recyc adapter","parent layout -->"+parent.getContext());
 		DataObjectHolder dataObjectHolder = new DataObjectHolder(view);
 		return dataObjectHolder;

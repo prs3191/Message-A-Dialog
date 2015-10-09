@@ -30,6 +30,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
 
@@ -220,6 +221,13 @@ public class SearchResultsActivity extends AppCompatActivity	 {
 					onMessengerButtonClicked(position,v,sendbutton);
 
 				}
+			}
+
+			@Override
+			public void onCardClick(int position, View v,
+					SendButton sendbutton, MotionEvent event) {
+				// TODO Auto-generated method stub
+				
 			}
 
 		}
