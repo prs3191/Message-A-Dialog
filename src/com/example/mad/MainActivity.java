@@ -45,6 +45,7 @@ import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
 import com.facebook.appevents.AppEventsConstants;
 import com.facebook.appevents.AppEventsLogger;
+import com.facebook.login.LoginManager;
 import com.facebook.messenger.MessengerThreadParams;
 import com.facebook.messenger.MessengerUtils;
 import com.facebook.messenger.ShareToMessengerParams;
@@ -191,6 +192,7 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 	    } catch (NoSuchAlgorithmException e) {
 
 	    }*/
+		mMediaPlayer = new MediaPlayer();
 		if( (!FacebookSdk.isInitialized()) || (AccessToken.getCurrentAccessToken()==null) ){
 			Log.d(LOG_TAG,"fbsdk not init: so starting fbloginactivity");
 			//Intent i=new Intent(MainActivity.this,fb_loginActivity.class);
@@ -299,7 +301,7 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 			mAdapter = new MyRecyclerViewAdapter(results);
 			mRecyclerView.setAdapter(mAdapter);
 
-			mMediaPlayer = new MediaPlayer();
+			
 			mMediaController = new MediaController(MainActivity.this){
 				@Override
 				public void show(int timeout) {
@@ -327,13 +329,14 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 				@Override
 				public void onPrepared(MediaPlayer mp) {
 					Log.d("m","Media PLayer onPrepared:");
-					mHandler.post(new Runnable() {
+					/*throws window leaked error*/
+					/*mHandler.post(new Runnable() {
 						public void run() {
 							Log.d("m","runnable:");
 							mMediaController.show();
 							//	mMediaPlayer.start();
 						}
-					});
+					});*/
 				}
 			});
 
@@ -824,6 +827,7 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 					Log.d("TouchTest", "Touch down");
 					mMediaPlayer.start();
 					mMediaController.show();
+					
 
 				} 
 				else if (event.getAction() == android.view.MotionEvent.ACTION_UP) {
@@ -835,7 +839,7 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 				}
 
 			}
-		});
+		},getApplicationContext());
 	}
 
 	@Override
@@ -907,6 +911,9 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 		super.onDestroy();
 		mMediaPlayer.stop();
 		mMediaPlayer.release();
+		LoginManager.getInstance().logOut();
+		Log.d(LOG_TAG,"User logged out");
+		
 	}
 
 

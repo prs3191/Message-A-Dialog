@@ -1,5 +1,6 @@
 package com.example.mad;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -7,6 +8,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.view.GestureDetector;
+import android.view.GestureDetector.OnGestureListener;
 
 import java.util.ArrayList;
 
@@ -18,6 +21,8 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
 	private static String LOG_TAG = "MyRecyclerViewAdapter";
 	private ArrayList<DataObject> mDataset;
 	private static MyClickListener myClickListener;
+	//private GestureDetector gestureDetector;
+	private static Context context;
 	//private static SendButton sendbutton;
 
 	public interface MyClickListener {
@@ -31,7 +36,7 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
 		mDataset = myDataset;
 	}
 
-	public static class DataObjectHolder extends RecyclerView.ViewHolder implements View.OnClickListener,View.OnTouchListener
+	public static class DataObjectHolder extends RecyclerView.ViewHolder implements View.OnClickListener,View.OnTouchListener/*,OnGestureListener*/
 	{
 		TextView label;
 		TextView nots;
@@ -39,6 +44,7 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
 		View mCardView;
 		SendButton sendbutton;
 		//ShareButton sendbutton;
+		GestureDetector gestureDetector;
 		public DataObjectHolder(View itemView) {
 			super(itemView);
 			label = (TextView) itemView.findViewById(R.id.music_key);
@@ -50,6 +56,7 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
 			mCardView=itemView.findViewById(R.id.card_view);
 			mCardView.setOnTouchListener(this);
 			mMessengerButton.setOnClickListener(this);
+			//gestureDetector=new GestureDetector(context,this);
 		}
 
 		@Override
@@ -63,16 +70,58 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
 		@Override
 		public boolean onTouch(View v, MotionEvent event) {
 			// TODO Auto-generated method stub
-			myClickListener.onCardClick(getAdapterPosition(), v, sendbutton,event);
+			if(! (event.getAction() == android.view.MotionEvent.ACTION_SCROLL) && ! (event.getAction() == android.view.MotionEvent.ACTION_MOVE)
+					&& event.getAction() == android.view.MotionEvent.ACTION_DOWN || event.getAction() == android.view.MotionEvent.ACTION_UP)
+				myClickListener.onCardClick(getAdapterPosition(), v, sendbutton,event);
+			return false;
+		}
+/*
+		@Override
+		public boolean onDown(MotionEvent e) {
+			// TODO Auto-generated method stub
 			return false;
 		}
 
+		@Override
+		public void onShowPress(MotionEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public boolean onSingleTapUp(MotionEvent e) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		@Override
+		public boolean onScroll(MotionEvent e1, MotionEvent e2,
+				float distanceX, float distanceY) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		@Override
+		public void onLongPress(MotionEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
+				float velocityY) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+*/
 	}
 
 	//called from onResume()
-	public void setOnItemClickListener(MyClickListener myClickListener)
+	public void setOnItemClickListener(MyClickListener myClickListener,Context context)
 	{
 		this.myClickListener = myClickListener;
+		this.context=context;
+		
 	}
 
 
