@@ -27,7 +27,7 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
 
 	public interface MyClickListener {
 		public void onItemClick(int position, View v, SendButton sendbutton);
-		public void onCardClick(int position, View v, SendButton sendbutton, MotionEvent event);
+		public void onCardClick(int position/*, View v, SendButton sendbutton, MotionEvent event*/);
 
 	}
 
@@ -36,7 +36,7 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
 		mDataset = myDataset;
 	}
 
-	public static class DataObjectHolder extends RecyclerView.ViewHolder implements View.OnClickListener,View.OnTouchListener/*,OnGestureListener*/
+	public static class DataObjectHolder extends RecyclerView.ViewHolder implements View.OnClickListener,View.OnTouchListener,OnGestureListener
 	{
 		TextView label;
 		TextView nots;
@@ -45,6 +45,8 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
 		SendButton sendbutton;
 		//ShareButton sendbutton;
 		GestureDetector gestureDetector;
+		 private static final int SWIPE_DISTANCE_THRESHOLD = 100;
+	     private static final int SWIPE_VELOCITY_THRESHOLD = 100;
 		public DataObjectHolder(View itemView) {
 			super(itemView);
 			label = (TextView) itemView.findViewById(R.id.music_key);
@@ -56,7 +58,7 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
 			mCardView=itemView.findViewById(R.id.card_view);
 			mCardView.setOnTouchListener(this);
 			mMessengerButton.setOnClickListener(this);
-			//gestureDetector=new GestureDetector(context,this);
+			gestureDetector=new GestureDetector(context,this);
 		}
 
 		@Override
@@ -70,27 +72,32 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
 		@Override
 		public boolean onTouch(View v, MotionEvent event) {
 			// TODO Auto-generated method stub
-			if(! (event.getAction() == android.view.MotionEvent.ACTION_SCROLL) && ! (event.getAction() == android.view.MotionEvent.ACTION_MOVE)
+			/*if(! (event.getAction() == android.view.MotionEvent.ACTION_SCROLL) && ! (event.getAction() == android.view.MotionEvent.ACTION_MOVE)
 					&& event.getAction() == android.view.MotionEvent.ACTION_DOWN || event.getAction() == android.view.MotionEvent.ACTION_UP)
 				myClickListener.onCardClick(getAdapterPosition(), v, sendbutton,event);
-			return false;
+			return false;*/
+			return gestureDetector.onTouchEvent(event);
+			
 		}
-/*
+
 		@Override
 		public boolean onDown(MotionEvent e) {
 			// TODO Auto-generated method stub
-			return false;
+			Log.d(LOG_TAG,"ondown");
+			return true;
 		}
 
 		@Override
 		public void onShowPress(MotionEvent e) {
 			// TODO Auto-generated method stub
+			Log.d(LOG_TAG,"onShowPress");
 			
 		}
 
 		@Override
 		public boolean onSingleTapUp(MotionEvent e) {
 			// TODO Auto-generated method stub
+			Log.d(LOG_TAG,"onSingleTapUp");
 			return false;
 		}
 
@@ -98,12 +105,15 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
 		public boolean onScroll(MotionEvent e1, MotionEvent e2,
 				float distanceX, float distanceY) {
 			// TODO Auto-generated method stub
+			Log.d(LOG_TAG,"onScroll");
 			return false;
 		}
 
 		@Override
 		public void onLongPress(MotionEvent e) {
 			// TODO Auto-generated method stub
+			Log.d(LOG_TAG,"onLongPress");
+		 	myClickListener.onCardClick(getAdapterPosition());
 			
 		}
 
@@ -111,9 +121,19 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
 		public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
 				float velocityY) {
 			// TODO Auto-generated method stub
+			Log.d(LOG_TAG,"onFling");
+			/*float distanceX = e2.getX() - e1.getX();
+            float distanceY = e2.getY() - e1.getY();
+            if (Math.abs(distanceX) > Math.abs(distanceY) && Math.abs(distanceX) > SWIPE_DISTANCE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
+                if (distanceX < 0)
+                	myClickListener.onCardClick(getAdapterPosition());
+                
+                return true;
+            }*/
+            
 			return false;
 		}
-*/
+
 	}
 
 	//called from onResume()

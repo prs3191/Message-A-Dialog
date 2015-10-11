@@ -1,6 +1,7 @@
 package com.example.mad;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 
@@ -9,6 +10,7 @@ import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
 import com.facebook.appevents.AppEventsConstants;
 import com.facebook.appevents.AppEventsLogger;
+import com.facebook.login.LoginManager;
 import com.facebook.messenger.MessengerThreadParams;
 import com.facebook.messenger.MessengerUtils;
 import com.facebook.messenger.ShareToMessengerParams;
@@ -20,6 +22,12 @@ import com.google.android.gms.analytics.Logger.LogLevel;
 import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Intent;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnBufferingUpdateListener;
+import android.media.MediaPlayer.OnCompletionListener;
+import android.media.MediaPlayer.OnPreparedListener;
+import android.media.MediaPlayer.OnSeekCompleteListener;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -32,9 +40,11 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.MediaController;
+import android.widget.MediaController.MediaPlayerControl;
 import android.widget.Toast;
 
-public class SearchResultsActivity extends AppCompatActivity	 {
+public class SearchResultsActivity extends AppCompatActivity implements MediaPlayerControl	 {
 
 	ArrayList search_results = new ArrayList<DataObject>();
 	ArrayList mresults = new ArrayList<DataObject>();
@@ -54,6 +64,9 @@ public class SearchResultsActivity extends AppCompatActivity	 {
 	public String LOG_TAG="SearchResultsActivity";
 	private Toolbar mtoolbar;
 	static ActionBar actionBar;
+	
+	private MediaController mMediaController;
+	private MediaPlayer mMediaPlayer;
 
 	@Override
 	public void onCreate (Bundle savedInstanceState){
@@ -61,6 +74,7 @@ public class SearchResultsActivity extends AppCompatActivity	 {
 
 		Log.d(LOG_TAG,"Inside oncreate of serachresults activity");
 		setContentView(R.layout.searchactivity_card_view);
+		mMediaPlayer = new MediaPlayer();
 		handleIntent(getIntent());
 
 
@@ -90,6 +104,53 @@ public class SearchResultsActivity extends AppCompatActivity	 {
 		        onBackPressed();
 		    }
 		});
+		
+		
+		mMediaController = new MediaController(SearchResultsActivity.this){
+			@Override
+			public void show(int timeout) {
+				super.show(0);
+			}
+		};
+		mMediaController.setMediaPlayer(SearchResultsActivity.this);
+		mMediaController.setAnchorView(findViewById(R.id.search_relative_layout));
+		
+		mMediaPlayer.setOnPreparedListener(new OnPreparedListener() {
+			@Override
+			public void onPrepared(MediaPlayer mp) {
+				Log.d("m","Media PLayer onPrepared:");
+				/*throws window leaked error*/
+				/*mHandler.post(new Runnable() {
+					public void run() {
+						Log.d("m","runnable:");
+						mMediaController.show();
+						//	mMediaPlayer.start();
+					}
+				});*/
+				mMediaPlayer.start();
+				mMediaController.show();
+			}
+		});
+
+		mMediaPlayer.setOnCompletionListener(new OnCompletionListener() {
+
+			@Override
+			public void onCompletion(MediaPlayer mp) {
+				// TODO Auto-generated method stub
+				Log.d("m","onCompletion and resetting media player");
+				mMediaController.hide();
+				mMediaPlayer.reset();
+			}
+		});
+		mMediaPlayer.setOnBufferingUpdateListener(new OnBufferingUpdateListener() {
+
+			@Override
+			public void onBufferingUpdate(MediaPlayer mp, int percent) {
+				// TODO Auto-generated method stub
+				Log.d("m","buffered percent:"+percent);
+			}
+		});
+
 		
 		/*actionBar.setHomeButtonEnabled(true);*/
 //		gatrack();
@@ -178,7 +239,7 @@ public class SearchResultsActivity extends AppCompatActivity	 {
 				if(!local_stored_file.exists())
 				{
 
-					TransferObserver observer=MainActivity.transferUtility.download(Utils.BUCKET, music_file_key, local_stored_file);
+					TransferObserver observer=MainActivity.transferUtility.download(MainActivity.mBucket, music_file_key, local_stored_file);
 					observer.setTransferListener(new TransferListener() {
 
 
@@ -224,9 +285,26 @@ public class SearchResultsActivity extends AppCompatActivity	 {
 			}
 
 			@Override
-			public void onCardClick(int position, View v,
-					SendButton sendbutton, MotionEvent event) {
+			public void onCardClick(int position) {
 				// TODO Auto-generated method stub
+				Log.d(LOG_TAG,"onCardClick");
+				//String audioFile = "/storage/emulated/0/mad/Aiio_Raaama.mp3" ; 
+				//String audioFile ="http://www.stephaniequinn.com/Music/The%20Irish%20Washerwoman.mp3";
+				String audioFile =MainActivity.mlink+((ArrayList<DataObject>)search_results).get(position).getmText1();
+				
+				mMediaPlayer.reset();
+				try 
+				{	
+					
+					mMediaPlayer.setDataSource(SearchResultsActivity.this,Uri.parse(audioFile));
+					//mMediaPlayer.setDataSource(audioFile);
+					mMediaPlayer.prepareAsync();
+					mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+					
+				} catch (IOException e) {
+					Log.e("PlayAudioDemo", "Could not open file " + audioFile + " for playback.", e);
+				}
+				
 				
 			}
 
@@ -306,6 +384,82 @@ public class SearchResultsActivity extends AppCompatActivity	 {
 			}
 		}
 
+	}
+
+	@Override
+	public void start() {
+		// TODO Auto-generated method stub
+		mMediaPlayer.start();
+	}
+	@Override
+	public void pause() {
+		// TODO Auto-generated method stub
+		if(mMediaPlayer.isPlaying())
+			mMediaPlayer.pause();
+
+	}
+	@Override
+	public int getDuration() {
+		// TODO Auto-generated method stub
+		//return 0;
+
+			return mMediaPlayer.getDuration();
+
+	}
+	@Override
+	public int getCurrentPosition() {
+		// TODO Auto-generated method stub
+		//return 0;
+		return mMediaPlayer.getCurrentPosition();
+	}
+	@Override
+	public void seekTo(int pos) {
+		// TODO Auto-generated method stub
+		mMediaPlayer.seekTo(pos);
+
+	}
+	@Override
+	public boolean isPlaying() {
+		// TODO Auto-generated method stub
+		//return false;
+		return mMediaPlayer.isPlaying();
+	}
+	@Override
+	public int getBufferPercentage() {
+		// TODO Auto-generated method stub
+		//int percentage = (mMediaPlayer.getCurrentPosition() * 100) / mMediaPlayer.getDuration();
+
+		//return percentage;
+		return 0;
+	}
+	@Override
+	public boolean canPause() {
+		// TODO Auto-generated method stub
+		return true;
+	}
+	@Override
+	public boolean canSeekBackward() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	@Override
+	public boolean canSeekForward() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	@Override
+	public int getAudioSessionId() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		mMediaPlayer.stop();
+		mMediaPlayer.release();
+		//LoginManager.getInstance().logOut();
+		//Log.d(LOG_TAG,"User logged out");
+		
 	}
 
 

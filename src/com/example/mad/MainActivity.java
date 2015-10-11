@@ -146,7 +146,8 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 
 	static TransferUtility transferUtility  ;
 	private CognitoCredentialsProvider  credentialsProvider;
-	private static String mBucket;
+	public static String mBucket;
+	public static String mlink;
 	private static boolean  transfer_complete=false;
 	private static String user_access_token;
 	private Dataset dataset;
@@ -220,6 +221,7 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 
 			mTitle = mDrawerTitle = getTitle();
 			mBucket=Utils.BUCKET;
+			mlink=Utils.LINK+mBucket+"/";
 			Log.d(LOG_TAG,"Initially:\nmTitle:"+mTitle+" mDrawerTitle:"+mDrawerTitle);
 			//			mdrawerItemTitles = getResources().getStringArray(R.array.drawerItem_array);
 			mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -313,17 +315,17 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 
 			final Handler mHandler = new Handler();
 
-			String audioFile = "/storage/emulated/0/mad/Aiio_Raaama.mp3" ; 
-			//String audioFile ="http://www.stephaniequinn.com/Music/The%20Irish%20Washerwoman.mp3";
-			try 
-			{
-				//mMediaPlayer.setDataSource(MainActivity.this,Uri.parse(audioFile));
-				mMediaPlayer.setDataSource(audioFile);
-				mMediaPlayer.prepareAsync();
-				mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-			} catch (IOException e) {
-				Log.e("PlayAudioDemo", "Could not open file " + audioFile + " for playback.", e);
-			}
+//			String audioFile = "/storage/emulated/0/mad/Aiio_Raaama.mp3" ; 
+//			//String audioFile ="http://www.stephaniequinn.com/Music/The%20Irish%20Washerwoman.mp3";
+//			try 
+//			{
+//				//mMediaPlayer.setDataSource(MainActivity.this,Uri.parse(audioFile));
+//				mMediaPlayer.setDataSource(audioFile);
+//				mMediaPlayer.prepareAsync();
+//				mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+//			} catch (IOException e) {
+//				Log.e("PlayAudioDemo", "Could not open file " + audioFile + " for playback.", e);
+//			}
 
 			mMediaPlayer.setOnPreparedListener(new OnPreparedListener() {
 				@Override
@@ -337,6 +339,8 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 							//	mMediaPlayer.start();
 						}
 					});*/
+					mMediaPlayer.start();
+					mMediaController.show();
 				}
 			});
 
@@ -345,8 +349,9 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 				@Override
 				public void onCompletion(MediaPlayer mp) {
 					// TODO Auto-generated method stub
-					Log.d("m","onCompletion");
+					Log.d("m","onCompletion and resetting media player");
 					mMediaController.hide();
+					mMediaPlayer.reset();
 				}
 			});
 			mMediaPlayer.setOnBufferingUpdateListener(new OnBufferingUpdateListener() {
@@ -754,7 +759,7 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 				if(!local_stored_file.exists())
 				{
 
-					TransferObserver observer=transferUtility.download(Utils.BUCKET, music_file_key, local_stored_file);
+					TransferObserver observer=transferUtility.download(mBucket, music_file_key, local_stored_file);
 					observer.setTransferListener(new TransferListener() {
 
 
@@ -816,14 +821,29 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 			}
 
 			@Override
-			public void onCardClick(int position, View v, SendButton sendbutton, MotionEvent event) {
+			public void onCardClick(int position) {
 				// TODO Auto-generated method stub
 				Log.d(LOG_TAG,"onCardClick");
-
+				//String audioFile = "/storage/emulated/0/mad/Aiio_Raaama.mp3" ; 
+				//String audioFile ="http://www.stephaniequinn.com/Music/The%20Irish%20Washerwoman.mp3";
+				String audioFile =mlink+((ArrayList<DataObject>)results).get(position).getmText1();
+				mMediaPlayer.reset();
+				try 
+				{	
+					
+					mMediaPlayer.setDataSource(MainActivity.this,Uri.parse(audioFile));
+					//mMediaPlayer.setDataSource(audioFile);
+					mMediaPlayer.prepareAsync();
+					mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+					
+				} catch (IOException e) {
+					Log.e("PlayAudioDemo", "Could not open file " + audioFile + " for playback.", e);
+				}
+				
 
 
 				// TODO Auto-generated method stub
-				if (event.getAction() == android.view.MotionEvent.ACTION_DOWN) {
+				/*if (event.getAction() == android.view.MotionEvent.ACTION_DOWN) {
 					Log.d("TouchTest", "Touch down");
 					mMediaPlayer.start();
 					mMediaController.show();
@@ -836,7 +856,7 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 					mMediaPlayer.pause();
 					mMediaController.hide();
 
-				}
+				}*/
 
 			}
 		},getApplicationContext());
@@ -857,7 +877,7 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 	@Override
 	public int getDuration() {
 		// TODO Auto-generated method stub
-		//return 0;
+		//return -1;
 		return mMediaPlayer.getDuration();
 	}
 	@Override
@@ -1133,6 +1153,7 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 			if(menuitem.getTitle().toString().contains("Tamil")){
 				Log.d(LOG_TAG,"Loading bucket Tamil");
 				mBucket=Utils.BUCKET;
+				mlink=Utils.LINK+mBucket+"/";
 				progress.setTitle("Loading");
 				progress.setMessage("Wait while loading...");
 				progress.show();
@@ -1141,6 +1162,7 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 			else if(menuitem.getTitle().toString().contains("English")){
 				Log.d(LOG_TAG,"Loading bucket English");
 				mBucket=Utils.BUCKET2;
+				mlink=Utils.LINK2+mBucket+"/";
 				progress.setTitle("Loading");
 				progress.setMessage("Wait while loading...");
 				progress.show();

@@ -840,10 +840,10 @@ int id monochrome 0x7f0a0049
 int id multiply 0x7f0a0016
 int id music_key 0x7f0a008b
 int id my_recycler_view 0x7f0a0084
-int id my_searchrecycler_view 0x7f0a00a6
+int id my_searchrecycler_view 0x7f0a00a7
 int id nav_view 0x7f0a0085
-int id navigation_item_1 0x7f0a00a8
-int id navigation_item_2 0x7f0a00a9
+int id navigation_item_1 0x7f0a00a9
+int id navigation_item_2 0x7f0a00aa
 int id never 0x7f0a001e
 int id never_display 0x7f0a004c
 int id none 0x7f0a0011
@@ -867,7 +867,7 @@ int id screen 0x7f0a0017
 int id scroll 0x7f0a0036
 int id scrollView 0x7f0a0065
 int id scrollable 0x7f0a0025
-int id search 0x7f0a00aa
+int id search 0x7f0a00ab
 int id search_badge 0x7f0a0077
 int id search_bar 0x7f0a0076
 int id search_button 0x7f0a0078
@@ -876,6 +876,7 @@ int id search_edit_frame 0x7f0a0079
 int id search_go_btn 0x7f0a007f
 int id search_mag_icon 0x7f0a007a
 int id search_plate 0x7f0a007b
+int id search_relative_layout 0x7f0a00a6
 int id search_src_text 0x7f0a007c
 int id search_voice_btn 0x7f0a0080
 int id select_dialog_listview 0x7f0a0081
@@ -904,7 +905,7 @@ int id textSpacerNoButtons 0x7f0a0066
 int id time 0x7f0a009f
 int id title 0x7f0a005f
 int id title_template 0x7f0a0062
-int id toolbar 0x7f0a00a7
+int id toolbar 0x7f0a00a8
 int id top 0x7f0a0032
 int id topPanel 0x7f0a0061
 int id unknown 0x7f0a0051

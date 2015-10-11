@@ -3488,10 +3488,10 @@ containing a value of this type.
         public static final int multiply=0x7f0a0016;
         public static final int music_key=0x7f0a008b;
         public static final int my_recycler_view=0x7f0a0084;
-        public static final int my_searchrecycler_view=0x7f0a00a6;
+        public static final int my_searchrecycler_view=0x7f0a00a7;
         public static final int nav_view=0x7f0a0085;
-        public static final int navigation_item_1=0x7f0a00a8;
-        public static final int navigation_item_2=0x7f0a00a9;
+        public static final int navigation_item_1=0x7f0a00a9;
+        public static final int navigation_item_2=0x7f0a00aa;
         public static final int never=0x7f0a001e;
         public static final int never_display=0x7f0a004c;
         public static final int none=0x7f0a0011;
@@ -3515,7 +3515,7 @@ containing a value of this type.
         public static final int scroll=0x7f0a0036;
         public static final int scrollView=0x7f0a0065;
         public static final int scrollable=0x7f0a0025;
-        public static final int search=0x7f0a00aa;
+        public static final int search=0x7f0a00ab;
         public static final int search_badge=0x7f0a0077;
         public static final int search_bar=0x7f0a0076;
         public static final int search_button=0x7f0a0078;
@@ -3524,6 +3524,7 @@ containing a value of this type.
         public static final int search_go_btn=0x7f0a007f;
         public static final int search_mag_icon=0x7f0a007a;
         public static final int search_plate=0x7f0a007b;
+        public static final int search_relative_layout=0x7f0a00a6;
         public static final int search_src_text=0x7f0a007c;
         public static final int search_voice_btn=0x7f0a0080;
         public static final int select_dialog_listview=0x7f0a0081;
@@ -3552,7 +3553,7 @@ containing a value of this type.
         public static final int time=0x7f0a009f;
         public static final int title=0x7f0a005f;
         public static final int title_template=0x7f0a0062;
-        public static final int toolbar=0x7f0a00a7;
+        public static final int toolbar=0x7f0a00a8;
         public static final int top=0x7f0a0032;
         public static final int topPanel=0x7f0a0061;
         public static final int unknown=0x7f0a0051;

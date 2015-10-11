@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res/com.example.mad"
-    android:id="@+id/relative_layout"
+    android:id="@+id/search_relative_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent" 
     >
