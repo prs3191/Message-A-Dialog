@@ -26,6 +26,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnBufferingUpdateListener;
 import android.media.MediaPlayer.OnCompletionListener;
+import android.media.MediaPlayer.OnErrorListener;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.media.MediaPlayer.OnSeekCompleteListener;
 import android.net.Uri;
@@ -64,7 +65,7 @@ public class SearchResultsActivity extends AppCompatActivity implements MediaPla
 	public String LOG_TAG="SearchResultsActivity";
 	private Toolbar mtoolbar;
 	static ActionBar actionBar;
-	
+
 	private MediaController mMediaController;
 	private MediaPlayer mMediaPlayer;
 
@@ -79,7 +80,7 @@ public class SearchResultsActivity extends AppCompatActivity implements MediaPla
 
 
 		new File("/storage/emulated/0/"+"mad").mkdirs();
-		
+
 
 		mRecyclerView = (RecyclerView) findViewById(R.id.my_searchrecycler_view);
 		mRecyclerView.setHasFixedSize(true);
@@ -89,23 +90,29 @@ public class SearchResultsActivity extends AppCompatActivity implements MediaPla
 
 		mAdapter = new MyRecyclerViewAdapter(getDataSet());
 		mRecyclerView.setAdapter(mAdapter);
-		
+
 		if(search_results.size()<=1)
 			actionBar.setTitle(search_results.size()+" result for '"+query+"'");
 		else
 			actionBar.setTitle(search_results.size()+" results for '"+query+"'");	
-		
+
 		actionBar.setDisplayHomeAsUpEnabled(true);
-		
+
 		/*mtoolbar.setNavigationIcon(R.drawable.ic_action_back_2);*/
 		mtoolbar.setNavigationOnClickListener(new View.OnClickListener() {
-		    @Override
-		    public void onClick(View v) {
-		        onBackPressed();
-		    }
+			@Override
+			public void onClick(View v) {
+				if(!mMediaPlayer.isPlaying())
+					onBackPressed();
+				else
+				{	
+					mMediaController.hide();
+					mMediaPlayer.stop();
+				}
+			}
 		});
-		
-		
+
+
 		mMediaController = new MediaController(SearchResultsActivity.this){
 			@Override
 			public void show(int timeout) {
@@ -114,11 +121,11 @@ public class SearchResultsActivity extends AppCompatActivity implements MediaPla
 		};
 		mMediaController.setMediaPlayer(SearchResultsActivity.this);
 		mMediaController.setAnchorView(findViewById(R.id.search_relative_layout));
-		
+
 		mMediaPlayer.setOnPreparedListener(new OnPreparedListener() {
 			@Override
 			public void onPrepared(MediaPlayer mp) {
-				Log.d("m","Media PLayer onPrepared:");
+				Log.d(LOG_TAG,"Media PLayer onPrepared:");
 				/*throws window leaked error*/
 				/*mHandler.post(new Runnable() {
 					public void run() {
@@ -137,7 +144,7 @@ public class SearchResultsActivity extends AppCompatActivity implements MediaPla
 			@Override
 			public void onCompletion(MediaPlayer mp) {
 				// TODO Auto-generated method stub
-				Log.d("m","onCompletion and resetting media player");
+				Log.d(LOG_TAG,"onCompletion and resetting media player");
 				mMediaController.hide();
 				mMediaPlayer.reset();
 			}
@@ -147,14 +154,24 @@ public class SearchResultsActivity extends AppCompatActivity implements MediaPla
 			@Override
 			public void onBufferingUpdate(MediaPlayer mp, int percent) {
 				// TODO Auto-generated method stub
-				Log.d("m","buffered percent:"+percent);
+				Log.d(LOG_TAG,"buffered percent:"+percent);
 			}
 		});
 
-		
+		mMediaPlayer.setOnErrorListener(new OnErrorListener() {
+
+			@Override
+			public boolean onError(MediaPlayer mp, int what, int extra) {
+				// TODO Auto-generated method stub
+				Log.d(LOG_TAG,"error code what:"+what+"error code extra:"+extra);
+				//mp.pause();
+				return false;
+			}
+		});
+
 		/*actionBar.setHomeButtonEnabled(true);*/
-//		gatrack();
-//		getawsauth();
+		//		gatrack();
+		//		getawsauth();
 
 	}
 
@@ -169,12 +186,12 @@ public class SearchResultsActivity extends AppCompatActivity implements MediaPla
 		if(Intent.ACTION_SEARCH.equals(intent.getAction())){
 			query = intent.getStringExtra(SearchManager.QUERY);
 			Log.d(LOG_TAG,"queried string:"+query);
-			
+
 			mtoolbar=(Toolbar) findViewById(R.id.toolbar);
 			Log.d(LOG_TAG,"mtoolbar:"+mtoolbar.toString());
 			setSupportActionBar(mtoolbar);
 			actionBar= getSupportActionBar();
-			
+
 			//Log.d(LOG_TAG,"actionbar:"+actionBar.toString());
 
 		}
@@ -185,7 +202,7 @@ public class SearchResultsActivity extends AppCompatActivity implements MediaPla
 	private ArrayList<DataObject> getDataSet() {
 		mresults=MainActivity.results;
 		msize=mresults.size();
-		
+
 		int index1=0;int index2=0;
 		Log.d(LOG_TAG,"inside getdataset\nfile_list_size:"+msize);
 		while(index1 < msize){
@@ -291,25 +308,25 @@ public class SearchResultsActivity extends AppCompatActivity implements MediaPla
 				//String audioFile = "/storage/emulated/0/mad/Aiio_Raaama.mp3" ; 
 				//String audioFile ="http://www.stephaniequinn.com/Music/The%20Irish%20Washerwoman.mp3";
 				String audioFile =MainActivity.mlink+((ArrayList<DataObject>)search_results).get(position).getmText1();
-				
+
 				mMediaPlayer.reset();
 				try 
 				{	
-					
+
 					mMediaPlayer.setDataSource(SearchResultsActivity.this,Uri.parse(audioFile));
 					//mMediaPlayer.setDataSource(audioFile);
 					mMediaPlayer.prepareAsync();
 					mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-					
+
 				} catch (IOException e) {
 					Log.e("PlayAudioDemo", "Could not open file " + audioFile + " for playback.", e);
 				}
-				
-				
+
+
 			}
 
 		}
-				,getApplicationContext());
+		,getApplicationContext());
 
 	}
 
@@ -402,8 +419,9 @@ public class SearchResultsActivity extends AppCompatActivity implements MediaPla
 	public int getDuration() {
 		// TODO Auto-generated method stub
 		//return 0;
-
+		if(mMediaPlayer!=null)
 			return mMediaPlayer.getDuration();
+		return -1;
 
 	}
 	@Override
@@ -427,10 +445,10 @@ public class SearchResultsActivity extends AppCompatActivity implements MediaPla
 	@Override
 	public int getBufferPercentage() {
 		// TODO Auto-generated method stub
-		//int percentage = (mMediaPlayer.getCurrentPosition() * 100) / mMediaPlayer.getDuration();
-
-		//return percentage;
-		return 0;
+		int percentage = (mMediaPlayer.getCurrentPosition() * 100) / mMediaPlayer.getDuration();
+		Log.d(LOG_TAG,"getBufferPercentage():"+percentage);
+		return percentage;
+		//return 0;
 	}
 	@Override
 	public boolean canPause() {
@@ -459,7 +477,7 @@ public class SearchResultsActivity extends AppCompatActivity implements MediaPla
 		mMediaPlayer.release();
 		//LoginManager.getInstance().logOut();
 		//Log.d(LOG_TAG,"User logged out");
-		
+
 	}
 
 

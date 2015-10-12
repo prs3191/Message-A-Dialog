@@ -91,6 +91,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnBufferingUpdateListener;
 import android.media.MediaPlayer.OnCompletionListener;
+import android.media.MediaPlayer.OnErrorListener;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -303,7 +304,7 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 			mAdapter = new MyRecyclerViewAdapter(results);
 			mRecyclerView.setAdapter(mAdapter);
 
-			
+
 			mMediaController = new MediaController(MainActivity.this){
 				@Override
 				public void show(int timeout) {
@@ -315,17 +316,17 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 
 			final Handler mHandler = new Handler();
 
-//			String audioFile = "/storage/emulated/0/mad/Aiio_Raaama.mp3" ; 
-//			//String audioFile ="http://www.stephaniequinn.com/Music/The%20Irish%20Washerwoman.mp3";
-//			try 
-//			{
-//				//mMediaPlayer.setDataSource(MainActivity.this,Uri.parse(audioFile));
-//				mMediaPlayer.setDataSource(audioFile);
-//				mMediaPlayer.prepareAsync();
-//				mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-//			} catch (IOException e) {
-//				Log.e("PlayAudioDemo", "Could not open file " + audioFile + " for playback.", e);
-//			}
+			//			String audioFile = "/storage/emulated/0/mad/Aiio_Raaama.mp3" ; 
+			//			//String audioFile ="http://www.stephaniequinn.com/Music/The%20Irish%20Washerwoman.mp3";
+			//			try 
+			//			{
+			//				//mMediaPlayer.setDataSource(MainActivity.this,Uri.parse(audioFile));
+			//				mMediaPlayer.setDataSource(audioFile);
+			//				mMediaPlayer.prepareAsync();
+			//				mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+			//			} catch (IOException e) {
+			//				Log.e("PlayAudioDemo", "Could not open file " + audioFile + " for playback.", e);
+			//			}
 
 			mMediaPlayer.setOnPreparedListener(new OnPreparedListener() {
 				@Override
@@ -360,6 +361,17 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 				public void onBufferingUpdate(MediaPlayer mp, int percent) {
 					// TODO Auto-generated method stub
 					Log.d("m","buffered percent:"+percent);
+				}
+			});
+
+			mMediaPlayer.setOnErrorListener(new OnErrorListener() {
+
+				@Override
+				public boolean onError(MediaPlayer mp, int what, int extra) {
+					// TODO Auto-generated method stub
+					Log.d(LOG_TAG,"error code what:"+what+" error code extra:"+extra);
+					//mp.pause();
+					return false;
 				}
 			});
 
@@ -830,16 +842,16 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 				mMediaPlayer.reset();
 				try 
 				{	
-					
+
 					mMediaPlayer.setDataSource(MainActivity.this,Uri.parse(audioFile));
 					//mMediaPlayer.setDataSource(audioFile);
 					mMediaPlayer.prepareAsync();
 					mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-					
+
 				} catch (IOException e) {
 					Log.e("PlayAudioDemo", "Could not open file " + audioFile + " for playback.", e);
 				}
-				
+
 
 
 				// TODO Auto-generated method stub
@@ -847,7 +859,7 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 					Log.d("TouchTest", "Touch down");
 					mMediaPlayer.start();
 					mMediaController.show();
-					
+
 
 				} 
 				else if (event.getAction() == android.view.MotionEvent.ACTION_UP) {
@@ -878,7 +890,9 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 	public int getDuration() {
 		// TODO Auto-generated method stub
 		//return -1;
-		return mMediaPlayer.getDuration();
+		if(mMediaPlayer!=null)
+			return mMediaPlayer.getDuration();
+		return -1;
 	}
 	@Override
 	public int getCurrentPosition() {
@@ -901,10 +915,10 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 	@Override
 	public int getBufferPercentage() {
 		// TODO Auto-generated method stub
-		//int percentage = (mMediaPlayer.getCurrentPosition() * 100) / mMediaPlayer.getDuration();
-
-		//return percentage;
-		return 0;
+		int percentage = (mMediaPlayer.getCurrentPosition() * 100) / mMediaPlayer.getDuration();
+		Log.d(LOG_TAG,"getBufferPercentage():"+percentage);
+		return percentage;
+		//return 0;
 	}
 	@Override
 	public boolean canPause() {
@@ -933,7 +947,7 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 		mMediaPlayer.release();
 		LoginManager.getInstance().logOut();
 		Log.d(LOG_TAG,"User logged out");
-		
+
 	}
 
 
