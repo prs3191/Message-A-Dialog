@@ -169,12 +169,14 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 
 	private NavigationView mNavigationView; 
 	private Toolbar mtoolbar;
+	private MenuItem mMenuItem;
 	static ActionBar actionBar;
 
 	private ProgressDialog progress;
 
 	private MediaController mMediaController;
 	private MediaPlayer mMediaPlayer;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -219,8 +221,9 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 			mtoolbar=(Toolbar) findViewById(R.id.toolbar);
 			setSupportActionBar(mtoolbar);
 			actionBar= getSupportActionBar();
+			
 
-			mTitle = mDrawerTitle = getTitle();
+			
 			mBucket=Utils.BUCKET;
 			mlink=Utils.LINK+mBucket+"/";
 			Log.d(LOG_TAG,"Initially:\nmTitle:"+mTitle+" mDrawerTitle:"+mDrawerTitle);
@@ -235,10 +238,11 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 			//		R.layout.drawer_list_item, mdrawerItemTitles));
 			mNavigationView.setNavigationItemSelectedListener(new DrawerItemClickListener());
 			//mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
-
+			mTitle = mDrawerTitle = getTitle()+" > "+mNavigationView.getMenu().getItem(0);
 			// enable ActionBar app icon to behave as action to toggle nav drawer
 			actionBar.setDisplayHomeAsUpEnabled(true);
 			actionBar.setHomeButtonEnabled(true);
+			actionBar.setTitle(mTitle);
 			mNavigationView.setItemTextColor(new ColorStateList(
 					new int [] [] {
 							new int [] {android.R.attr.state_checked},
@@ -1198,7 +1202,7 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 	public void setTitle(CharSequence title) {
 		mTitle = title;
 		Log.d(LOG_TAG,"setting title:"+mTitle);
-		actionBar.setTitle(mTitle);
+		actionBar.setTitle("MAD > "+mTitle);
 	}
 
 	/**
