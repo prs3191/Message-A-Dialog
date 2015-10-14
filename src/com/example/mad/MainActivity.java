@@ -432,7 +432,7 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 
 
 			TextView usrname=(TextView)this.findViewById(R.id.header_layout_username);
-			usrname.setText("Welcome, "+user_name);
+			usrname.setText(user_name);
 			progress.setTitle("Loading");
 			progress.setMessage("Wait while loading...");
 			progress.show();
