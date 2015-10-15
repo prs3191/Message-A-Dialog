@@ -24,10 +24,11 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
 	//private GestureDetector gestureDetector;
 	private static Context context;
 	//private static SendButton sendbutton;
+	
 
 	public interface MyClickListener {
 		public void onItemClick(int position, View v, SendButton sendbutton);
-		public void onCardClick(int position/*, View v, SendButton sendbutton, MotionEvent event*/);
+		public void onCardClick(int position, View v/*, SendButton sendbutton, MotionEvent event*/);
 
 	}
 
@@ -45,6 +46,7 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
 		SendButton sendbutton;
 		//ShareButton sendbutton;
 		GestureDetector gestureDetector;
+		private View view;
 		 private static final int SWIPE_DISTANCE_THRESHOLD = 100;
 	     private static final int SWIPE_VELOCITY_THRESHOLD = 100;
 		public DataObjectHolder(View itemView) {
@@ -76,6 +78,7 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
 					&& event.getAction() == android.view.MotionEvent.ACTION_DOWN || event.getAction() == android.view.MotionEvent.ACTION_UP)
 				myClickListener.onCardClick(getAdapterPosition(), v, sendbutton,event);
 			return false;*/
+			this.view=v;
 			return gestureDetector.onTouchEvent(event);
 			
 		}
@@ -113,7 +116,7 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
 		public void onLongPress(MotionEvent e) {
 			// TODO Auto-generated method stub
 			Log.d(LOG_TAG,"onLongPress");
-		 	myClickListener.onCardClick(getAdapterPosition());
+		 	myClickListener.onCardClick(getAdapterPosition(),this.view);
 			
 		}
 

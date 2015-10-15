@@ -837,12 +837,13 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 			}
 
 			@Override
-			public void onCardClick(int position) {
+			public void onCardClick(int position, View v) {
 				// TODO Auto-generated method stub
 				Log.d(LOG_TAG,"onCardClick");
 				//String audioFile = "/storage/emulated/0/mad/Aiio_Raaama.mp3" ; 
 				//String audioFile ="http://www.stephaniequinn.com/Music/The%20Irish%20Washerwoman.mp3";
-				String audioFile =mlink+((ArrayList<DataObject>)results).get(position).getmText1();
+				String audioFilename=((ArrayList<DataObject>)results).get(position).getmText1();
+				String audioFile =mlink+audioFilename;
 				mMediaPlayer.reset();
 				try 
 				{	
@@ -851,6 +852,16 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 					//mMediaPlayer.setDataSource(audioFile);
 					mMediaPlayer.prepareAsync();
 					mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+					
+					AppEventsLogger logger = AppEventsLogger.newLogger(v.getContext());
+					Bundle parameters = new Bundle();
+					parameters.putString(AppEventsConstants.EVENT_PARAM_MAX_RATING_VALUE, "1");
+					parameters.putString(AppEventsConstants.EVENT_PARAM_CONTENT_TYPE, "mp3");
+					parameters.putString(AppEventsConstants.EVENT_PARAM_CONTENT_ID, user_id);
+					parameters.putString(AppEventsConstants.EVENT_PARAM_DESCRIPTION, audioFilename);
+					//parameters.putString("app_event_parameter1", music_file_key);
+					//logger.logEvent("Custom_Rating2", 1,parameters);
+					logger.logEvent("fb_mobile_music_played", 1,parameters);
 
 				} catch (IOException e) {
 					Log.e("PlayAudioDemo", "Could not open file " + audioFile + " for playback.", e);
@@ -1035,7 +1046,7 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 
 
 
-			MyApp.tracker().send(new HitBuilders.EventBuilder("tamil", "send")
+			MyApp.tracker().send(new HitBuilders.EventBuilder(actionBar.getTitle()+"", "send")
 			.setLabel(music_file_key)
 			//.setValue(1)
 			.build()
