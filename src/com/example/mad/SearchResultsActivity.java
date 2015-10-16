@@ -321,6 +321,7 @@ public class SearchResultsActivity extends AppCompatActivity implements MediaPla
 					
 					AppEventsLogger logger = AppEventsLogger.newLogger(v.getContext());
 					Bundle parameters = new Bundle();
+					parameters.putString("fields", " ");
 					parameters.putString(AppEventsConstants.EVENT_PARAM_MAX_RATING_VALUE, "1");
 					parameters.putString(AppEventsConstants.EVENT_PARAM_CONTENT_TYPE, "mp3");
 					parameters.putString(AppEventsConstants.EVENT_PARAM_CONTENT_ID, MainActivity.user_id);
@@ -376,6 +377,7 @@ public class SearchResultsActivity extends AppCompatActivity implements MediaPla
 			//working in all flows
 			AppEventsLogger logger = AppEventsLogger.newLogger(v.getContext());
 			Bundle parameters = new Bundle();
+			parameters.putString("fields", " ");
 			parameters.putString(AppEventsConstants.EVENT_PARAM_MAX_RATING_VALUE, "1");
 			parameters.putString(AppEventsConstants.EVENT_PARAM_CONTENT_TYPE, "mp3");
 			parameters.putString(AppEventsConstants.EVENT_PARAM_CONTENT_ID, MainActivity.user_id);

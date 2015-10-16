@@ -542,11 +542,13 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 			}
 
 			Bundle parameters = new Bundle();
+			parameters.putString("fields", " ");
 			parameters.putString("breakdowns[0]", "fb_description");
 			parameters.putString("aggregateBy", "SUM");
 			parameters.putString("event_name", "fb_mobile_rate");
 			parameters.putString("period", "range");
 			parameters.putString("since", "2015-01-01");
+			
 
 			Calendar c = Calendar.getInstance();
 			System.out.println("Current time => " + c.getTime());
@@ -855,6 +857,7 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 					
 					AppEventsLogger logger = AppEventsLogger.newLogger(v.getContext());
 					Bundle parameters = new Bundle();
+					parameters.putString("fields", " ");
 					parameters.putString(AppEventsConstants.EVENT_PARAM_MAX_RATING_VALUE, "1");
 					parameters.putString(AppEventsConstants.EVENT_PARAM_CONTENT_TYPE, "mp3");
 					parameters.putString(AppEventsConstants.EVENT_PARAM_CONTENT_ID, user_id);
@@ -1035,6 +1038,7 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 			//working in all flows
 			AppEventsLogger logger = AppEventsLogger.newLogger(v.getContext());
 			Bundle parameters = new Bundle();
+			parameters.putString("fields", " ");
 			parameters.putString(AppEventsConstants.EVENT_PARAM_MAX_RATING_VALUE, "1");
 			parameters.putString(AppEventsConstants.EVENT_PARAM_CONTENT_TYPE, "mp3");
 			parameters.putString(AppEventsConstants.EVENT_PARAM_CONTENT_ID, user_id);
