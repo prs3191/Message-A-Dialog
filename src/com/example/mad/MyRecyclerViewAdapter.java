@@ -1,5 +1,6 @@
 package com.example.mad;
 
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -24,6 +25,7 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
 	//private GestureDetector gestureDetector;
 	private static Context context;
 	//private static SendButton sendbutton;
+	private int mPreviousposition=0;
 	
 
 	public interface MyClickListener {
@@ -170,6 +172,24 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
 		if(mDataset.get(position).getmText2()==null)
 			mDataset.get(position).setmText2("0");
 		holder.nots.setText(mDataset.get(position).getmText2()+" NoTS");
+		
+		Log.d(LOG_TAG,"PrevPosition:"+mPreviousposition);
+		//add transition if scrolled down
+		if(position>mPreviousposition)
+		{
+			ObjectAnimator animatorTranslateY = ObjectAnimator.ofFloat(holder.itemView, "translationY",300, 0);
+			animatorTranslateY.start();
+		}
+		//add transition if scrolled up
+		else
+		{
+			
+			//ObjectAnimator animatorTranslateY = ObjectAnimator.ofFloat(holder.itemView, "translationY",-300, 0);
+			//animatorTranslateY.start();
+		}
+		mPreviousposition = position;
+		Log.d(LOG_TAG,"position:"+position);
+			
 	}
 
 	public void addItem(DataObject dataObj, int index)

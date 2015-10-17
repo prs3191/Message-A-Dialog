@@ -20,6 +20,7 @@ import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Logger.LogLevel;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.media.AudioManager;
@@ -69,11 +70,16 @@ public class SearchResultsActivity extends AppCompatActivity implements MediaPla
 	private MediaController mMediaController;
 	private MediaPlayer mMediaPlayer;
 
+	private ProgressDialog progress;
 	@Override
 	public void onCreate (Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 
 		Log.d(LOG_TAG,"Inside oncreate of serachresults activity");
+
+		progress = new ProgressDialog(this);
+		progress.setCancelable(false);
+
 		setContentView(R.layout.searchactivity_card_view);
 		mMediaPlayer = new MediaPlayer();
 		handleIntent(getIntent());
@@ -191,7 +197,10 @@ public class SearchResultsActivity extends AppCompatActivity implements MediaPla
 			Log.d(LOG_TAG,"mtoolbar:"+mtoolbar.toString());
 			setSupportActionBar(mtoolbar);
 			actionBar= getSupportActionBar();
-
+			
+			progress.setTitle("Searching");
+			//progress.setMessage("...");
+			progress.show();
 			//Log.d(LOG_TAG,"actionbar:"+actionBar.toString());
 
 		}
@@ -218,6 +227,7 @@ public class SearchResultsActivity extends AppCompatActivity implements MediaPla
 			}
 			index1++;
 		}
+		progress.dismiss();
 		return search_results;
 	}
 
