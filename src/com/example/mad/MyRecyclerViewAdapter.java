@@ -181,11 +181,11 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
 			animatorTranslateY.start();
 		}
 		//add transition if scrolled up
-		else
+		else if (position<mPreviousposition)
 		{
 			
-			//ObjectAnimator animatorTranslateY = ObjectAnimator.ofFloat(holder.itemView, "translationY",-300, 0);
-			//animatorTranslateY.start();
+			ObjectAnimator animatorTranslateY = ObjectAnimator.ofFloat(holder.itemView, "translationY",-300, 0);
+			animatorTranslateY.start();
 		}
 		mPreviousposition = position;
 		Log.d(LOG_TAG,"position:"+position);

@@ -164,7 +164,7 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 	private ActionBarDrawerToggle mDrawerToggle;
 
 	private CharSequence mDrawerTitle;
-	private CharSequence mTitle;
+	private static CharSequence mTitle;
 	private String[] mdrawerItemTitles;
 
 	private NavigationView mNavigationView; 

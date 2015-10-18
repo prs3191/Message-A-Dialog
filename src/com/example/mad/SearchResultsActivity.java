@@ -496,7 +496,8 @@ public class SearchResultsActivity extends AppCompatActivity implements MediaPla
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		mMediaPlayer.stop();
+		if (mMediaPlayer.isPlaying())
+			mMediaPlayer.stop();
 		mMediaPlayer.release();
 		//LoginManager.getInstance().logOut();
 		//Log.d(LOG_TAG,"User logged out");
