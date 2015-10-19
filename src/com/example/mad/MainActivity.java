@@ -137,9 +137,9 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 	private static final int REQUEST_CODE_SHARE_TO_MESSENGER = 1;
 
 	private View mMessengerButton;
-	private MessengerThreadParams mThreadParams;
+	static MessengerThreadParams mThreadParams;
 
-	private boolean mPicking;
+	 static boolean mPicking;
 	private boolean isReply, isCompose;
 	private String threadToken;
 
@@ -963,7 +963,7 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 		super.onDestroy();
 		mMediaPlayer.stop();
 		mMediaPlayer.release();
-		LoginManager.getInstance().logOut();
+		//LoginManager.getInstance().logOut();
 		Log.d(LOG_TAG,"User logged out");
 
 	}

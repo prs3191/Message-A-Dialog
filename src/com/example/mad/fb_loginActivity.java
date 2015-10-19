@@ -1,19 +1,24 @@
 package com.example.mad;
 
 
+import java.util.Arrays;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 
 import org.json.JSONObject;
 
 import com.facebook.AccessToken;
+import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
+import com.facebook.FacebookSdk.InitializeCallback;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
+import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.facebook.messenger.MessengerThreadParams;
@@ -45,20 +50,23 @@ public class fb_loginActivity extends Activity {
 	private String LOG_TAG="fbLoginActivity";
 	private Intent intent;
 	
+	private AccessTokenTracker accessTokenTracker;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
 		
-		//intent = getIntent();
-		/*	Log.d(LOG_TAG,"What is intent action received:\n"+intent.getAction());
+		intent = getIntent();
+			Log.d(LOG_TAG,"What is intent action received:\n"+intent.getAction());
 		if (Intent.ACTION_PICK.equals(intent.getAction())) {
 			
-			//mThreadParams = MessengerUtils.getMessengerThreadParamsForIntent(intent);
+			Log.d(LOG_TAG,"Inside if cond"+intent.getAction());
+			MainActivity.mPicking=true;
+			MainActivity.mThreadParams = MessengerUtils.getMessengerThreadParamsForIntent(intent);
 			//mPicking = true;
 			
-			if(user_access_token!=null){
+			/*if(user_access_token!=null){
 				user_access_token=AccessToken.getCurrentAccessToken().getToken();
 				Log.d(LOG_TAG,"access_token from reply flow:\n"+user_access_token);
 			}
@@ -67,13 +75,14 @@ public class fb_loginActivity extends Activity {
 				Log.d(LOG_TAG,"access_token from reply flow:\n"+user_access_token);
 				login();
 				
-			}
+			}*/
+			
 			
 			// Note, if mThreadParams is non-null, it means the activity was launched from Messenger.
 			// It will contain the metadata associated with the original content, if there was content.
 		}
 		
-		*/
+		
 		
 	}
 
@@ -88,18 +97,49 @@ public class fb_loginActivity extends Activity {
 	private void login(){
 		
 		
-		FacebookSdk.sdkInitialize(this.getApplicationContext());
+		
+		FacebookSdk.sdkInitialize(getApplicationContext(),new InitializeCallback() {
+			
+			@Override
+			public void onInitialized() {
+				// TODO Auto-generated method stub
+				Log.d(LOG_TAG,"fbsdk init");
+				
+			}
+		});
+		
+		if(AccessToken.getCurrentAccessToken()==null)
+		{
+			Log.d(LOG_TAG,"access token null-----: so starting fbloginactivity");
+	
+		}
+		else
+		{
+			Log.d(LOG_TAG,"access token not null-----: so not starting fbloginactivity");
+		}
+			
+		accessTokenTracker = new AccessTokenTracker() {
+	        @Override
+	        protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken, AccessToken newAccessToken) {
+	            updateWithToken(newAccessToken);
+	        }
+	    };
+		
+		
+		
+		
+		
 		callbackManager = CallbackManager.Factory.create();
 
 		
-		setContentView(R.layout.fb_login);
+		//setContentView(R.layout.fb_login);
 
-		loginButton = (LoginButton) findViewById(R.id.login_button);
-		loginButton.setReadPermissions("read_insights");
+//		loginButton = (LoginButton) findViewById(R.id.login_button);
+//		loginButton.setReadPermissions("read_insights");
 
 		// Callback registration
-		loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
-
+		//loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+		LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
 			@Override
 			public void onSuccess(LoginResult result) {
 				// TODO Auto-generated method stub
@@ -141,6 +181,7 @@ public class fb_loginActivity extends Activity {
 								i.putExtra("user_id",user_id);
 								i.putExtra("user_name",user_name);
 								startActivity(i);
+								finish();
 							}
 
 						});
@@ -177,9 +218,25 @@ public class fb_loginActivity extends Activity {
 
 		});   
 		
+		LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("read_insights"));
 
 	}
+	
+	private void updateWithToken(AccessToken currentAccessToken)
+	{
 
+		if(currentAccessToken==null)
+		{
+			Log.d(LOG_TAG,"access token null: so starting fbloginactivity");
+	
+		}
+		else
+		{
+			Log.d(LOG_TAG,"access token not null: so not starting fbloginactivity");
+		}
+		
+	}
+	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data)
 	{

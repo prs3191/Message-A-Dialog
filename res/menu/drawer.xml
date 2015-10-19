@@ -2,26 +2,25 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res/com.example.mad"
     xmlns:tools="http://schemas.android.com/tools"
-    
-     tools:context=".MainActivity"
+    android:paddingBottom="8dp"
     android:paddingTop="8dp"
-    android:paddingBottom="8dp">
+    tools:context=".MainActivity" >
 
-    <group 
-        android:checkableBehavior="single" 
-        android:visible="true"
-        >
+    <group
+        android:checkableBehavior="single"
+        android:visible="true" >
         <item
             android:id="@+id/navigation_item_1"
             android:checked="true"
             android:icon="@drawable/ic_action_headphones"
-            android:title="@string/nav1"
-            />
+            android:title="@string/nav1"/>
         <item
             android:id="@+id/navigation_item_2"
             android:icon="@drawable/ic_action_headphones"
-            android:title="@string/nav2"
-           />
-    </group>
+            android:title="@string/nav2"/>
 
+    </group>
+	
+
+    
 </menu>

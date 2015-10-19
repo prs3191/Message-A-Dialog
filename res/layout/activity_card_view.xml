@@ -11,8 +11,8 @@
     <RelativeLayout
         android:id="@+id/relative_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" 
-        android:animateLayoutChanges="true">
+        android:layout_height="match_parent"
+        android:animateLayoutChanges="true" >
 
         <include layout="@layout/toolbar" >
         </include>
@@ -37,10 +37,10 @@
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/drawer_header"
         app:itemBackground="@layout/activated_background"
-        app:menu="@menu/drawer"
-        >
+        app:menu="@menu/drawer" >
 
-  
+
+
         <!--
          android:layout_gravity="start" tells DrawerLayout to treat
          this as a sliding drawer on the left side for left-to-right
