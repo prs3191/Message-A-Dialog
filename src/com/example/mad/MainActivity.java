@@ -7,12 +7,14 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.amazonaws.AmazonClientException;
@@ -39,6 +41,8 @@ import com.example.mad.DataObject;
 import com.example.mad.MyRecyclerViewAdapter;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
@@ -46,6 +50,7 @@ import com.facebook.HttpMethod;
 import com.facebook.appevents.AppEventsConstants;
 import com.facebook.appevents.AppEventsLogger;
 import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
 import com.facebook.messenger.MessengerThreadParams;
 import com.facebook.messenger.MessengerUtils;
 import com.facebook.messenger.ShareToMessengerParams;
@@ -139,7 +144,7 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 	private View mMessengerButton;
 	static MessengerThreadParams mThreadParams;
 
-	 static boolean mPicking;
+	private boolean mPicking;
 	private boolean isReply, isCompose;
 	private String threadToken;
 
@@ -177,6 +182,7 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 	private MediaController mMediaController;
 	private MediaPlayer mMediaPlayer;
 	
+	private static boolean gotaccesstoken=false;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -197,250 +203,378 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 
 	    }*/
 		mMediaPlayer = new MediaPlayer();
-		if( (!FacebookSdk.isInitialized()) || (AccessToken.getCurrentAccessToken()==null) ){
+				
+		
+	
+		if( (!FacebookSdk.isInitialized()) || (AccessToken.getCurrentAccessToken()==null) )
+		{
 			Log.d(LOG_TAG,"fbsdk not init: so starting fbloginactivity");
+			FacebookSdk.sdkInitialize(getApplicationContext());
+			
 			//Intent i=new Intent(MainActivity.this,fb_loginActivity.class);
-			Intent i = getPackageManager().getLaunchIntentForPackage("com.example.mad");
-			startActivity(i);
-			finish();
+			//Intent i = getPackageManager().getLaunchIntentForPackage("com.example.mad");
+			//startActivity(i);
+			//finish();
+			//fb_loginActivity.login();
+			callbackManager = CallbackManager.Factory.create();
+			LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+				@Override
+				public void onSuccess(LoginResult result) {
+					// TODO Auto-generated method stub
+					Log.d(LOG_TAG,"login_activity:"+result);
+					Log.d(LOG_TAG,"login_activity:"+
+							"User ID: "
+							+ result.getAccessToken().getUserId() 
+							+ "\n" +
+							"Auth Token: "
+							+ result.getAccessToken().getToken()
+							);
+
+					user_access_token=result.getAccessToken().getToken();
+					user_id=result.getAccessToken().getUserId();
+
+					//graph api to get user name after getting Accesstoken
+					GraphRequest request = GraphRequest.newMeRequest(
+							result.getAccessToken(),
+							new GraphRequest.GraphJSONObjectCallback() {
+
+								@Override
+								public void onCompleted(JSONObject jsonObject,
+										GraphResponse response) {
+									Log.d("after sdk init","onCompleted jsonObject: "+jsonObject);
+									Log.d("after sdk init","onCompleted response: "+response);
+									try {
+										user_name=(String)jsonObject.getString("name");
+										Log.d("MainActivity Graph api",""+user_name);
+										
+									} catch (JSONException e) {
+										// TODO Auto-generated catch block
+										Log.d("Graph api json error",""+e);
+									}
+									gotaccesstoken=true;
+									//buildui();
+								}
+
+							});
+					Bundle parameters = new Bundle();
+					parameters.putString("fields", "name"/*,id,link,cover,email*/);
+					request.setParameters(parameters);
+					request.executeAndWait();
+
+
+				}
+
+				@Override
+				public void onCancel() {
+					// TODO Auto-generated method stub
+					Log.d(LOG_TAG,"login_activity:Oncancel()");
+					Toast.makeText(getApplicationContext(), "FB Login Cancelled. Try Again !", 
+							Toast.LENGTH_SHORT).show();
+					
+				}
+
+				@Override
+				public void onError(FacebookException error) {
+					// TODO Auto-generated method stub
+					
+					Log.d(LOG_TAG,"login_activity:"+error);
+					Toast.makeText(getApplicationContext(), "FB Login Failed. Try Again !", 
+							Toast.LENGTH_SHORT).show();
+				}
+			
+			});
+			LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("read_insights"));
+			
 		}
 		else{
+			gotaccesstoken=true;
+			//buildui();
+		}
+		
+		if(gotaccesstoken)
+		{
+		
+		
+		
+		
+		progress = new ProgressDialog(this);
+		progress.setCancelable(false);
 
-			Log.d(LOG_TAG,"fbsdk  init: so starting Mainactivity");
+		
+		new File("/storage/emulated/0/"+"mad").mkdirs();
+		setContentView(R.layout.activity_card_view);
+		mtoolbar=(Toolbar) findViewById(R.id.toolbar);
+		setSupportActionBar(mtoolbar);
+		actionBar= getSupportActionBar();
+		
+		mBucket=Utils.BUCKET;
+		mlink=Utils.LINK+mBucket+"/";
 
-			progress = new ProgressDialog(this);
-			progress.setCancelable(false);
-
-
-
-			new File("/storage/emulated/0/"+"mad").mkdirs();
-			setContentView(R.layout.activity_card_view);
-
-
-
-			mtoolbar=(Toolbar) findViewById(R.id.toolbar);
-			setSupportActionBar(mtoolbar);
-			actionBar= getSupportActionBar();
-			
-
-			
-			mBucket=Utils.BUCKET;
-			mlink=Utils.LINK+mBucket+"/";
-			Log.d(LOG_TAG,"Initially:\nmTitle:"+mTitle+" mDrawerTitle:"+mDrawerTitle);
-			//			mdrawerItemTitles = getResources().getStringArray(R.array.drawerItem_array);
-			mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-			//mDrawerList = (ListView) findViewById(R.id.left_drawer);
-			mNavigationView=(NavigationView) findViewById(R.id.nav_view);
-			// set a custom shadow that overlays the main content when the drawer opens
-			mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
-			// set up the drawer's list view with items and click listener
-			//	mDrawerList.setAdapter(new ArrayAdapter<String>(this,
-			//		R.layout.drawer_list_item, mdrawerItemTitles));
-			mNavigationView.setNavigationItemSelectedListener(new DrawerItemClickListener());
-			//mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
-			mTitle = mDrawerTitle = getTitle()+" > "+mNavigationView.getMenu().getItem(0);
-			// enable ActionBar app icon to behave as action to toggle nav drawer
-			actionBar.setDisplayHomeAsUpEnabled(true);
-			actionBar.setHomeButtonEnabled(true);
-			actionBar.setTitle(mTitle);
-			mNavigationView.setItemTextColor(new ColorStateList(
-					new int [] [] {
-							new int [] {android.R.attr.state_checked},
-							new int [] {-android.R.attr.state_checked},
-							new int [] {}
-					},
-					new int [] {
-							ContextCompat.getColor(getApplicationContext(), R.color.selected_text),
-							ContextCompat.getColor(getApplicationContext(), R.color.black),
-							ContextCompat.getColor(getApplicationContext(), R.color.black)
-					}
-					));
-
-			mNavigationView.setItemIconTintList(new ColorStateList(
-					new int [] [] {
-							new int [] {android.R.attr.state_checked},
-							new int [] {-android.R.attr.state_checked},
-							new int [] {}
-					},
-					new int [] {
-							ContextCompat.getColor(getApplicationContext(), R.color.selected_text),
-							ContextCompat.getColor(getApplicationContext(), R.color.black),
-							ContextCompat.getColor(getApplicationContext(), R.color.black)
-					}
-					));
-
-			// ActionBarDrawerToggle ties together the the proper interactions
-			// between the sliding drawer and the action bar app icon
-			mDrawerToggle = new ActionBarDrawerToggle(
-					this,                  /* host Activity */
-					mDrawerLayout,         /* DrawerLayout object */
-					//R.drawable.ic_drawer,  /* nav drawer image to replace 'Up' caret */
-					mtoolbar,
-					R.string.drawer_open,  /* "open drawer" description for accessibility */
-					R.string.drawer_close  /* "close drawer" description for accessibility */
-					) {
-				public void onDrawerClosed(View view) {
-
-					Log.d(LOG_TAG,"onDrawerClosed b4 setTitle:\nmTitle:"+mTitle+" mDrawerTitle"+mDrawerTitle);
-					//actionBar.setTitle(mTitle);
-					Log.d(LOG_TAG,"onDrawerClosed after setTitle:\nmTitle:"+mTitle+" mDrawerTitle"+mDrawerTitle);
-					invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+		
+		
+		// set a custom shadow that overlays the main content when the drawer opens
+		mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
+		
+		
+		mNavigationView=(NavigationView) findViewById(R.id.nav_view);
+		
+		// set up the drawer's list view with items and click listener
+		mNavigationView.setNavigationItemSelectedListener(new DrawerItemClickListener());
+		
+		mTitle = mDrawerTitle = "MAD > "+mNavigationView.getMenu().getItem(0);
+		actionBar.setTitle(mTitle);
+		actionBar.setDisplayHomeAsUpEnabled(true);
+		actionBar.setHomeButtonEnabled(true);
+		
+		mNavigationView.setItemTextColor(new ColorStateList(
+				new int [] [] {
+						new int [] {android.R.attr.state_checked},
+						new int [] {-android.R.attr.state_checked},
+						new int [] {}
+				},
+				new int [] {
+						ContextCompat.getColor(getApplicationContext(), R.color.selected_text),
+						ContextCompat.getColor(getApplicationContext(), R.color.black),
+						ContextCompat.getColor(getApplicationContext(), R.color.black)
 				}
+				));
 
-				public void onDrawerOpened(View drawerView) {
-					Log.d(LOG_TAG,"onDrawerOpened b4 setTitle:\nmTitle:"+mTitle+" mDrawerTitle"+mDrawerTitle);
-					//actionBar.setTitle(mDrawerTitle);
-					Log.d(LOG_TAG,"onDrawerOpened after setTitle:\nmTitle:"+mTitle+" mDrawerTitle"+mDrawerTitle);
-					invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+		mNavigationView.setItemIconTintList(new ColorStateList(
+				new int [] [] {
+						new int [] {android.R.attr.state_checked},
+						new int [] {-android.R.attr.state_checked},
+						new int [] {}
+				},
+				new int [] {
+						ContextCompat.getColor(getApplicationContext(), R.color.selected_text),
+						ContextCompat.getColor(getApplicationContext(), R.color.black),
+						ContextCompat.getColor(getApplicationContext(), R.color.black)
 				}
-			};
-			mDrawerToggle.setDrawerIndicatorEnabled(true);
-			mDrawerLayout.setDrawerListener(mDrawerToggle);
+				));
+		
+		// ActionBarDrawerToggle ties together the the proper interactions
+		// between the sliding drawer and the action bar app icon
+		mDrawerToggle = new ActionBarDrawerToggle(
+				this,                  /* host Activity */
+				mDrawerLayout,         /* DrawerLayout object */
+				//R.drawable.ic_drawer,  /* nav drawer image to replace 'Up' caret */
+				mtoolbar,
+				R.string.drawer_open,  /* "open drawer" description for accessibility */
+				R.string.drawer_close  /* "close drawer" description for accessibility */
+				) {
+			public void onDrawerClosed(View view) {
 
-			mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
-			mRecyclerView.setHasFixedSize(true);
-
-			mLayoutManager = new LinearLayoutManager(MainActivity.this);
-			mRecyclerView.setLayoutManager(mLayoutManager);
-
-
-			results.clear();
-			mAdapter = new MyRecyclerViewAdapter(results);
-			mRecyclerView.setAdapter(mAdapter);
-
-
-			mMediaController = new MediaController(MainActivity.this){
-				@Override
-				public void show(int timeout) {
-					super.show(0);
-				}
-			};
-			mMediaController.setMediaPlayer(MainActivity.this);
-			mMediaController.setAnchorView(findViewById(R.id.drawer_layout));
-
-			final Handler mHandler = new Handler();
-
-			//			String audioFile = "/storage/emulated/0/mad/Aiio_Raaama.mp3" ; 
-			//			//String audioFile ="http://www.stephaniequinn.com/Music/The%20Irish%20Washerwoman.mp3";
-			//			try 
-			//			{
-			//				//mMediaPlayer.setDataSource(MainActivity.this,Uri.parse(audioFile));
-			//				mMediaPlayer.setDataSource(audioFile);
-			//				mMediaPlayer.prepareAsync();
-			//				mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-			//			} catch (IOException e) {
-			//				Log.e("PlayAudioDemo", "Could not open file " + audioFile + " for playback.", e);
-			//			}
-
-			mMediaPlayer.setOnPreparedListener(new OnPreparedListener() {
-				@Override
-				public void onPrepared(MediaPlayer mp) {
-					Log.d("m","Media PLayer onPrepared:");
-					/*throws window leaked error*/
-					/*mHandler.post(new Runnable() {
-						public void run() {
-							Log.d("m","runnable:");
-							mMediaController.show();
-							//	mMediaPlayer.start();
-						}
-					});*/
-					mMediaPlayer.start();
-					mMediaController.show();
-				}
-			});
-
-			mMediaPlayer.setOnCompletionListener(new OnCompletionListener() {
-
-				@Override
-				public void onCompletion(MediaPlayer mp) {
-					// TODO Auto-generated method stub
-					Log.d("m","onCompletion and resetting media player");
-					mMediaController.hide();
-					mMediaPlayer.reset();
-				}
-			});
-			mMediaPlayer.setOnBufferingUpdateListener(new OnBufferingUpdateListener() {
-
-				@Override
-				public void onBufferingUpdate(MediaPlayer mp, int percent) {
-					// TODO Auto-generated method stub
-					Log.d("m","buffered percent:"+percent);
-				}
-			});
-
-			mMediaPlayer.setOnErrorListener(new OnErrorListener() {
-
-				@Override
-				public boolean onError(MediaPlayer mp, int what, int extra) {
-					// TODO Auto-generated method stub
-					Log.d(LOG_TAG,"error code what:"+what+" error code extra:"+extra);
-					//mp.pause();
-					return false;
-				}
-			});
-
-			//callbackManager = CallbackManager.Factory.create();
-
-
-			// Code to Add an item with default animation
-			//((MyRecyclerViewAdapter) mAdapter).addItem(obj, index);
-
-			// Code to remove an item with default animation
-			//((MyRecyclerViewAdapter) mAdapter).deleteItem(index);
-
-			// If we received Intent.ACTION_PICK from Messenger, we were launched from a composer shortcut
-			// or the reply flow.
-			//else intent is received from LoginActivity, so get user_id,token,name
-
-			//handleIntent(getIntent());
-			Intent intent = getIntent();
-			Log.d("MainActivity","What is intent action received:\n"+intent.getAction());
-			if (Intent.ACTION_PICK.equals(intent.getAction())) {
-
-
-				mThreadParams = MessengerUtils.getMessengerThreadParamsForIntent(intent);
-				mPicking = true;
-
-				user_access_token=AccessToken.getCurrentAccessToken().getToken();
-				Log.d("MainActivity","access token after hit reply button:\n"+user_access_token);
-				// Note, if mThreadParams is non-null, it means the activity was launched from Messenger.
-				// It will contain the metadata associated with the original content, if there was content.
-			}
-			/*else if(Intent.ACTION_SEARCH.equals(intent.getAction())){
-				handleIntent(getIntent());
-
-			}*/
-			else{
-				user_access_token=intent.getStringExtra("user_access_token");
-				user_id=intent.getStringExtra("user_id");
-				user_name=intent.getStringExtra("user_name");
-
-
-				// You only need to set User ID on a tracker once. By setting it on the tracker, the ID will be
-				// sent with all subsequent hits.
-				Log.d("MainActivity","access token after login button:\n"+user_access_token);
-				Log.d("MainActivity","accessing google tracker:"+MyApp.tracker().getClass());
-				MyApp.tracker().set("&uid", user_id);
-
-				MyApp.tracker().send(new HitBuilders.EventBuilder()
-				.setCategory("UX")
-				.setAction("User Sign In").build());
-				GoogleAnalytics.getInstance(this).getLogger()
-				.setLogLevel(LogLevel.VERBOSE);
-
+				Log.d(LOG_TAG,"onDrawerClosed b4 setTitle:\nmTitle:"+mTitle+" mDrawerTitle"+mDrawerTitle);
+				//actionBar.setTitle(mTitle);
+				Log.d(LOG_TAG,"onDrawerClosed after setTitle:\nmTitle:"+mTitle+" mDrawerTitle"+mDrawerTitle);
+				invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
 			}
 
+			public void onDrawerOpened(View drawerView) {
+				Log.d(LOG_TAG,"onDrawerOpened b4 setTitle:\nmTitle:"+mTitle+" mDrawerTitle"+mDrawerTitle);
+				//actionBar.setTitle(mDrawerTitle);
+				Log.d(LOG_TAG,"onDrawerOpened after setTitle:\nmTitle:"+mTitle+" mDrawerTitle"+mDrawerTitle);
+				invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+			}
+		};
+		
+		mDrawerToggle.setDrawerIndicatorEnabled(true);
+		mDrawerLayout.setDrawerListener(mDrawerToggle);
+		
+		
+		mDrawerToggle.syncState();
+		
+		
+		mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
+		mRecyclerView.setHasFixedSize(true);
 
-			TextView usrname=(TextView)this.findViewById(R.id.header_layout_username);
-			usrname.setText(user_name);
-			progress.setTitle("Loading");
-			progress.setMessage("Wait while loading...");
-			progress.show();
-			getbucketlist();
+		
+		mLayoutManager = new LinearLayoutManager(MainActivity.this);
+		mRecyclerView.setLayoutManager(mLayoutManager);
+
+
+		results.clear();
+		mAdapter = new MyRecyclerViewAdapter(results);
+		mRecyclerView.setAdapter(mAdapter);
+
+
+		mMediaController = new MediaController(MainActivity.this){
+			@Override
+			public void show(int timeout) {
+				super.show(0);
+			}
+		};
+		mMediaController.setMediaPlayer(MainActivity.this);
+		mMediaController.setAnchorView(findViewById(R.id.drawer_layout));
+
+		final Handler mHandler = new Handler();
+
+		//			String audioFile = "/storage/emulated/0/mad/Aiio_Raaama.mp3" ; 
+		//			//String audioFile ="http://www.stephaniequinn.com/Music/The%20Irish%20Washerwoman.mp3";
+		//			try 
+		//			{
+		//				//mMediaPlayer.setDataSource(MainActivity.this,Uri.parse(audioFile));
+		//				mMediaPlayer.setDataSource(audioFile);
+		//				mMediaPlayer.prepareAsync();
+		//				mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+		//			} catch (IOException e) {
+		//				Log.e("PlayAudioDemo", "Could not open file " + audioFile + " for playback.", e);
+		//			}
+
+		mMediaPlayer.setOnPreparedListener(new OnPreparedListener() {
+			@Override
+			public void onPrepared(MediaPlayer mp) {
+				Log.d("m","Media PLayer onPrepared:");
+				/*throws window leaked error*/
+				/*mHandler.post(new Runnable() {
+					public void run() {
+						Log.d("m","runnable:");
+						mMediaController.show();
+						//	mMediaPlayer.start();
+					}
+				});*/
+				mMediaPlayer.start();
+				mMediaController.show();
+			}
+		});
+
+		mMediaPlayer.setOnCompletionListener(new OnCompletionListener() {
+
+			@Override
+			public void onCompletion(MediaPlayer mp) {
+				// TODO Auto-generated method stub
+				Log.d("m","onCompletion and resetting media player");
+				mMediaController.hide();
+				mMediaPlayer.reset();
+			}
+		});
+		mMediaPlayer.setOnBufferingUpdateListener(new OnBufferingUpdateListener() {
+
+			@Override
+			public void onBufferingUpdate(MediaPlayer mp, int percent) {
+				// TODO Auto-generated method stub
+				Log.d("m","buffered percent:"+percent);
+			}
+		});
+
+		mMediaPlayer.setOnErrorListener(new OnErrorListener() {
+
+			@Override
+			public boolean onError(MediaPlayer mp, int what, int extra) {
+				// TODO Auto-generated method stub
+				Log.d(LOG_TAG,"error code what:"+what+" error code extra:"+extra);
+				//mp.pause();
+				return false;
+			}
+		});
+		
+		
+		Intent intent = getIntent();
+		Log.d("MainActivity","What is intent action received:\n"+intent.getAction());
+		if (Intent.ACTION_PICK.equals(intent.getAction())) {
+
+
+			mThreadParams = MessengerUtils.getMessengerThreadParamsForIntent(intent);
+			mPicking = true;
+
+			user_access_token=AccessToken.getCurrentAccessToken().getToken();
+			Log.d("MainActivity","access token after hit reply button:\n"+user_access_token);
+			user_id=intent.getStringExtra("user_id");
+			user_name=intent.getStringExtra("user_name");
+			// Note, if mThreadParams is non-null, it means the activity was launched from Messenger.
+			// It will contain the metadata associated with the original content, if there was content.
+		}
+		/*else if(Intent.ACTION_SEARCH.equals(intent.getAction())){
+			handleIntent(getIntent());
+
+		}*/
+		else{
+			user_access_token=intent.getStringExtra("user_access_token");
+			user_id=intent.getStringExtra("user_id");
+			user_name=intent.getStringExtra("user_name");
+
+
+			// You only need to set User ID on a tracker once. By setting it on the tracker, the ID will be
+			// sent with all subsequent hits.
+			Log.d("MainActivity","access token after login button:\n"+user_access_token);
+			Log.d("MainActivity","accessing google tracker:"+MyApp.tracker().getClass());
+			MyApp.tracker().set("&uid", user_id);
+
+			MyApp.tracker().send(new HitBuilders.EventBuilder()
+			.setCategory("UX")
+			.setAction("User Sign In").build());
+			GoogleAnalytics.getInstance(this).getLogger()
+			.setLogLevel(LogLevel.VERBOSE);
+
 		}
 
 
+		TextView usrname=(TextView)this.findViewById(R.id.header_layout_username);
+		usrname.setText(user_name);
+		progress.setTitle("Loading");
+		progress.setMessage("Wait while loading...");
+		progress.show();
+		getbucketlist();
+		
+		
+		}
+		
 	}
+		//else{
+		public void buildui()
+		{
+
+//			Intent intent = getIntent();
+//			Log.d("MainActivity","What is intent action received:\n"+intent.getAction());
+//			if (Intent.ACTION_PICK.equals(intent.getAction())) {
+//
+//
+//				mThreadParams = MessengerUtils.getMessengerThreadParamsForIntent(intent);
+//				mPicking = true;
+//
+//				user_access_token=AccessToken.getCurrentAccessToken().getToken();
+//				Log.d("MainActivity","access token after hit reply button:\n"+user_access_token);
+//				user_id=intent.getStringExtra("user_id");
+//				user_name=intent.getStringExtra("user_name");
+//				// Note, if mThreadParams is non-null, it means the activity was launched from Messenger.
+//				// It will contain the metadata associated with the original content, if there was content.
+//			}
+//			/*else if(Intent.ACTION_SEARCH.equals(intent.getAction())){
+//				handleIntent(getIntent());
+//
+//			}*/
+//			else{
+//				user_access_token=intent.getStringExtra("user_access_token");
+//				user_id=intent.getStringExtra("user_id");
+//				user_name=intent.getStringExtra("user_name");
+//
+//
+//				// You only need to set User ID on a tracker once. By setting it on the tracker, the ID will be
+//				// sent with all subsequent hits.
+//				Log.d("MainActivity","access token after login button:\n"+user_access_token);
+//				Log.d("MainActivity","accessing google tracker:"+MyApp.tracker().getClass());
+//				MyApp.tracker().set("&uid", user_id);
+//
+//				MyApp.tracker().send(new HitBuilders.EventBuilder()
+//				.setCategory("UX")
+//				.setAction("User Sign In").build());
+//				GoogleAnalytics.getInstance(this).getLogger()
+//				.setLogLevel(LogLevel.VERBOSE);
+//
+//			}
+//
+//
+//			TextView usrname=(TextView)this.findViewById(R.id.header_layout_username);
+//			usrname.setText(user_name);
+//			progress.setTitle("Loading");
+//			progress.setMessage("Wait while loading...");
+//			progress.show();
+//			getbucketlist();
+		}
+
+
+	//}
 
 
 
@@ -748,7 +882,7 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 	{
 		super.onResume();
 		AppEventsLogger.activateApp(this); 
-
+		//mDrawerToggle.syncState();
 
 		((MyRecyclerViewAdapter) mAdapter).setOnItemClickListener(new MyRecyclerViewAdapter.MyClickListener()
 		{
@@ -1229,13 +1363,15 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 	protected void onPostCreate(Bundle savedInstanceState) {
 		super.onPostCreate(savedInstanceState);
 		// Sync the toggle state after onRestoreInstanceState has occurred.
-		mDrawerToggle.syncState();
+		Log.d(LOG_TAG,"onpostcreate...");
+		//mDrawerToggle.syncState();
 	}
 
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
 		// Pass any configuration change to the drawer toggls
+		Log.d(LOG_TAG,"onconfigchanged...");
 		mDrawerToggle.onConfigurationChanged(newConfig);
 	}
 

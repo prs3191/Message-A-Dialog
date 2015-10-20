@@ -62,8 +62,8 @@ public class fb_loginActivity extends Activity {
 		if (Intent.ACTION_PICK.equals(intent.getAction())) {
 			
 			Log.d(LOG_TAG,"Inside if cond"+intent.getAction());
-			MainActivity.mPicking=true;
-			MainActivity.mThreadParams = MessengerUtils.getMessengerThreadParamsForIntent(intent);
+			//MainActivity.mPicking=true;
+			//MainActivity.mThreadParams = MessengerUtils.getMessengerThreadParamsForIntent(intent);
 			//mPicking = true;
 			
 			/*if(user_access_token!=null){
@@ -94,7 +94,7 @@ public class fb_loginActivity extends Activity {
 		
 	}
 	
-	private void login(){
+	public void login(){
 		
 		
 		
@@ -180,6 +180,8 @@ public class fb_loginActivity extends Activity {
 								i.putExtra("user_access_token",user_access_token);
 								i.putExtra("user_id",user_id);
 								i.putExtra("user_name",user_name);
+								//if(MainActivity.mPicking)
+									//i.setAction("com.example.mad.PICK");
 								startActivity(i);
 								finish();
 							}
