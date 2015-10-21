@@ -181,8 +181,8 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 
 	private MediaController mMediaController;
 	private MediaPlayer mMediaPlayer;
-	
-	private static boolean gotaccesstoken=false;
+
+	static boolean gotaccesstoken=false;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -203,14 +203,21 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 
 	    }*/
 		mMediaPlayer = new MediaPlayer();
-				
-		
-	
-		if( (!FacebookSdk.isInitialized()) || (AccessToken.getCurrentAccessToken()==null) )
+		if(gotaccesstoken==true)
+			buildui();
+		else
+			login();
+
+	}
+
+	public void login(){
+
+
+		if( (!FacebookSdk.isInitialized()) || (AccessToken.getCurrentAccessToken()==null || gotaccesstoken==false) )
 		{
-			Log.d(LOG_TAG,"fbsdk not init: so starting fbloginactivity");
+			Log.d(LOG_TAG,"fbsdk not init: so inting fbsdk");
 			FacebookSdk.sdkInitialize(getApplicationContext());
-			
+
 			//Intent i=new Intent(MainActivity.this,fb_loginActivity.class);
 			//Intent i = getPackageManager().getLaunchIntentForPackage("com.example.mad");
 			//startActivity(i);
@@ -246,20 +253,22 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 									try {
 										user_name=(String)jsonObject.getString("name");
 										Log.d("MainActivity Graph api",""+user_name);
-										
+
 									} catch (JSONException e) {
 										// TODO Auto-generated catch block
 										Log.d("Graph api json error",""+e);
 									}
-									gotaccesstoken=true;
-									//buildui();
+									if(user_name!=null && gotaccesstoken==false){
+										gotaccesstoken=true;
+										buildui();
+									}
 								}
 
 							});
 					Bundle parameters = new Bundle();
 					parameters.putString("fields", "name"/*,id,link,cover,email*/);
 					request.setParameters(parameters);
-					request.executeAndWait();
+					request.executeAsync();
 
 
 				}
@@ -270,313 +279,251 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 					Log.d(LOG_TAG,"login_activity:Oncancel()");
 					Toast.makeText(getApplicationContext(), "FB Login Cancelled. Try Again !", 
 							Toast.LENGTH_SHORT).show();
-					
+
 				}
 
 				@Override
 				public void onError(FacebookException error) {
 					// TODO Auto-generated method stub
-					
+
 					Log.d(LOG_TAG,"login_activity:"+error);
 					Toast.makeText(getApplicationContext(), "FB Login Failed. Try Again !", 
 							Toast.LENGTH_SHORT).show();
 				}
-			
+
 			});
 			LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("read_insights"));
-			
+			Log.d(LOG_TAG,"loginwithread permi called....");
+
 		}
 		else{
 			gotaccesstoken=true;
-			//buildui();
+			buildui();
 		}
-		
+	}
+
+
+	public void buildui()
+	{
+
 		if(gotaccesstoken)
 		{
-		
-		
-		
-		
-		progress = new ProgressDialog(this);
-		progress.setCancelable(false);
 
-		
-		new File("/storage/emulated/0/"+"mad").mkdirs();
-		setContentView(R.layout.activity_card_view);
-		mtoolbar=(Toolbar) findViewById(R.id.toolbar);
-		setSupportActionBar(mtoolbar);
-		actionBar= getSupportActionBar();
-		
-		mBucket=Utils.BUCKET;
-		mlink=Utils.LINK+mBucket+"/";
 
-		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-		
-		
-		// set a custom shadow that overlays the main content when the drawer opens
-		mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
-		
-		
-		mNavigationView=(NavigationView) findViewById(R.id.nav_view);
-		
-		// set up the drawer's list view with items and click listener
-		mNavigationView.setNavigationItemSelectedListener(new DrawerItemClickListener());
-		
-		mTitle = mDrawerTitle = "MAD > "+mNavigationView.getMenu().getItem(0);
-		actionBar.setTitle(mTitle);
-		actionBar.setDisplayHomeAsUpEnabled(true);
-		actionBar.setHomeButtonEnabled(true);
-		
-		mNavigationView.setItemTextColor(new ColorStateList(
-				new int [] [] {
-						new int [] {android.R.attr.state_checked},
-						new int [] {-android.R.attr.state_checked},
-						new int [] {}
-				},
-				new int [] {
-						ContextCompat.getColor(getApplicationContext(), R.color.selected_text),
-						ContextCompat.getColor(getApplicationContext(), R.color.black),
-						ContextCompat.getColor(getApplicationContext(), R.color.black)
+
+
+			progress = new ProgressDialog(this);
+			progress.setCancelable(false);
+
+
+			new File("/storage/emulated/0/"+"mad").mkdirs();
+			setContentView(R.layout.activity_card_view);
+			mtoolbar=(Toolbar) findViewById(R.id.toolbar);
+			setSupportActionBar(mtoolbar);
+			actionBar= getSupportActionBar();
+
+			mBucket=Utils.BUCKET;
+			mlink=Utils.LINK+mBucket+"/";
+
+			mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+
+
+			// set a custom shadow that overlays the main content when the drawer opens
+			mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
+
+
+			mNavigationView=(NavigationView) findViewById(R.id.nav_view);
+
+			// set up the drawer's list view with items and click listener
+			mNavigationView.setNavigationItemSelectedListener(new DrawerItemClickListener());
+
+			mTitle = mDrawerTitle = "MAD > "+mNavigationView.getMenu().getItem(0);
+			actionBar.setTitle(mTitle);
+			actionBar.setDisplayHomeAsUpEnabled(true);
+			actionBar.setHomeButtonEnabled(true);
+
+			mNavigationView.setItemTextColor(new ColorStateList(
+					new int [] [] {
+							new int [] {android.R.attr.state_checked},
+							new int [] {-android.R.attr.state_checked},
+							new int [] {}
+					},
+					new int [] {
+							ContextCompat.getColor(getApplicationContext(), R.color.selected_text),
+							ContextCompat.getColor(getApplicationContext(), R.color.black),
+							ContextCompat.getColor(getApplicationContext(), R.color.black)
+					}
+					));
+
+			mNavigationView.setItemIconTintList(new ColorStateList(
+					new int [] [] {
+							new int [] {android.R.attr.state_checked},
+							new int [] {-android.R.attr.state_checked},
+							new int [] {}
+					},
+					new int [] {
+							ContextCompat.getColor(getApplicationContext(), R.color.selected_text),
+							ContextCompat.getColor(getApplicationContext(), R.color.black),
+							ContextCompat.getColor(getApplicationContext(), R.color.black)
+					}
+					));
+
+			// ActionBarDrawerToggle ties together the the proper interactions
+			// between the sliding drawer and the action bar app icon
+			mDrawerToggle = new ActionBarDrawerToggle(
+					this,                  /* host Activity */
+					mDrawerLayout,         /* DrawerLayout object */
+					//R.drawable.ic_drawer,  /* nav drawer image to replace 'Up' caret */
+					mtoolbar,
+					R.string.drawer_open,  /* "open drawer" description for accessibility */
+					R.string.drawer_close  /* "close drawer" description for accessibility */
+					) {
+				public void onDrawerClosed(View view) {
+
+					Log.d(LOG_TAG,"onDrawerClosed b4 setTitle:\nmTitle:"+mTitle+" mDrawerTitle"+mDrawerTitle);
+					//actionBar.setTitle(mTitle);
+					Log.d(LOG_TAG,"onDrawerClosed after setTitle:\nmTitle:"+mTitle+" mDrawerTitle"+mDrawerTitle);
+					invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
 				}
-				));
 
-		mNavigationView.setItemIconTintList(new ColorStateList(
-				new int [] [] {
-						new int [] {android.R.attr.state_checked},
-						new int [] {-android.R.attr.state_checked},
-						new int [] {}
-				},
-				new int [] {
-						ContextCompat.getColor(getApplicationContext(), R.color.selected_text),
-						ContextCompat.getColor(getApplicationContext(), R.color.black),
-						ContextCompat.getColor(getApplicationContext(), R.color.black)
+				public void onDrawerOpened(View drawerView) {
+					Log.d(LOG_TAG,"onDrawerOpened b4 setTitle:\nmTitle:"+mTitle+" mDrawerTitle"+mDrawerTitle);
+					//actionBar.setTitle(mDrawerTitle);
+					Log.d(LOG_TAG,"onDrawerOpened after setTitle:\nmTitle:"+mTitle+" mDrawerTitle"+mDrawerTitle);
+					invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
 				}
-				));
-		
-		// ActionBarDrawerToggle ties together the the proper interactions
-		// between the sliding drawer and the action bar app icon
-		mDrawerToggle = new ActionBarDrawerToggle(
-				this,                  /* host Activity */
-				mDrawerLayout,         /* DrawerLayout object */
-				//R.drawable.ic_drawer,  /* nav drawer image to replace 'Up' caret */
-				mtoolbar,
-				R.string.drawer_open,  /* "open drawer" description for accessibility */
-				R.string.drawer_close  /* "close drawer" description for accessibility */
-				) {
-			public void onDrawerClosed(View view) {
+			};
 
-				Log.d(LOG_TAG,"onDrawerClosed b4 setTitle:\nmTitle:"+mTitle+" mDrawerTitle"+mDrawerTitle);
-				//actionBar.setTitle(mTitle);
-				Log.d(LOG_TAG,"onDrawerClosed after setTitle:\nmTitle:"+mTitle+" mDrawerTitle"+mDrawerTitle);
-				invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-			}
-
-			public void onDrawerOpened(View drawerView) {
-				Log.d(LOG_TAG,"onDrawerOpened b4 setTitle:\nmTitle:"+mTitle+" mDrawerTitle"+mDrawerTitle);
-				//actionBar.setTitle(mDrawerTitle);
-				Log.d(LOG_TAG,"onDrawerOpened after setTitle:\nmTitle:"+mTitle+" mDrawerTitle"+mDrawerTitle);
-				invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-			}
-		};
-		
-		mDrawerToggle.setDrawerIndicatorEnabled(true);
-		mDrawerLayout.setDrawerListener(mDrawerToggle);
-		
-		
-		mDrawerToggle.syncState();
-		
-		
-		mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
-		mRecyclerView.setHasFixedSize(true);
-
-		
-		mLayoutManager = new LinearLayoutManager(MainActivity.this);
-		mRecyclerView.setLayoutManager(mLayoutManager);
+			mDrawerToggle.setDrawerIndicatorEnabled(true);
+			mDrawerLayout.setDrawerListener(mDrawerToggle);
 
 
-		results.clear();
-		mAdapter = new MyRecyclerViewAdapter(results);
-		mRecyclerView.setAdapter(mAdapter);
+			mDrawerToggle.syncState();
 
 
-		mMediaController = new MediaController(MainActivity.this){
-			@Override
-			public void show(int timeout) {
-				super.show(0);
-			}
-		};
-		mMediaController.setMediaPlayer(MainActivity.this);
-		mMediaController.setAnchorView(findViewById(R.id.drawer_layout));
+			mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
+			mRecyclerView.setHasFixedSize(true);
 
-		final Handler mHandler = new Handler();
 
-		//			String audioFile = "/storage/emulated/0/mad/Aiio_Raaama.mp3" ; 
-		//			//String audioFile ="http://www.stephaniequinn.com/Music/The%20Irish%20Washerwoman.mp3";
-		//			try 
-		//			{
-		//				//mMediaPlayer.setDataSource(MainActivity.this,Uri.parse(audioFile));
-		//				mMediaPlayer.setDataSource(audioFile);
-		//				mMediaPlayer.prepareAsync();
-		//				mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-		//			} catch (IOException e) {
-		//				Log.e("PlayAudioDemo", "Could not open file " + audioFile + " for playback.", e);
-		//			}
+			mLayoutManager = new LinearLayoutManager(MainActivity.this);
+			mRecyclerView.setLayoutManager(mLayoutManager);
 
-		mMediaPlayer.setOnPreparedListener(new OnPreparedListener() {
-			@Override
-			public void onPrepared(MediaPlayer mp) {
-				Log.d("m","Media PLayer onPrepared:");
-				/*throws window leaked error*/
-				/*mHandler.post(new Runnable() {
+
+			results.clear();
+			mAdapter = new MyRecyclerViewAdapter(results);
+			mRecyclerView.setAdapter(mAdapter);
+
+
+			mMediaController = new MediaController(MainActivity.this){
+				@Override
+				public void show(int timeout) {
+					super.show(0);
+				}
+			};
+			mMediaController.setMediaPlayer(MainActivity.this);
+			mMediaController.setAnchorView(findViewById(R.id.drawer_layout));
+
+			final Handler mHandler = new Handler();
+
+
+			mMediaPlayer.setOnPreparedListener(new OnPreparedListener() {
+				@Override
+				public void onPrepared(MediaPlayer mp) {
+					Log.d("m","Media PLayer onPrepared:");
+					/*throws window leaked error*/
+					/*mHandler.post(new Runnable() {
 					public void run() {
 						Log.d("m","runnable:");
 						mMediaController.show();
 						//	mMediaPlayer.start();
 					}
 				});*/
-				mMediaPlayer.start();
-				mMediaController.show();
+					mMediaPlayer.start();
+					mMediaController.show();
+				}
+			});
+
+			mMediaPlayer.setOnCompletionListener(new OnCompletionListener() {
+
+				@Override
+				public void onCompletion(MediaPlayer mp) {
+					// TODO Auto-generated method stub
+					Log.d("m","onCompletion and resetting media player");
+					mMediaController.hide();
+					mMediaPlayer.reset();
+				}
+			});
+			mMediaPlayer.setOnBufferingUpdateListener(new OnBufferingUpdateListener() {
+
+				@Override
+				public void onBufferingUpdate(MediaPlayer mp, int percent) {
+					// TODO Auto-generated method stub
+					Log.d("m","buffered percent:"+percent);
+				}
+			});
+
+			mMediaPlayer.setOnErrorListener(new OnErrorListener() {
+
+				@Override
+				public boolean onError(MediaPlayer mp, int what, int extra) {
+					// TODO Auto-generated method stub
+					Log.d(LOG_TAG,"error code what:"+what+" error code extra:"+extra);
+					//mp.pause();
+					return false;
+				}
+			});
+
+
+			Intent intent = getIntent();
+			Log.d("MainActivity","What is intent action received:\n"+intent.getAction());
+			if (Intent.ACTION_PICK.equals(intent.getAction())) {
+
+
+				mThreadParams = MessengerUtils.getMessengerThreadParamsForIntent(intent);
+				mPicking = true;
+
+				user_access_token=AccessToken.getCurrentAccessToken().getToken();
+				Log.d("MainActivity","access token after hit reply button:\n"+user_access_token);
+
+				// Note, if mThreadParams is non-null, it means the activity was launched from Messenger.
+				// It will contain the metadata associated with the original content, if there was content.
 			}
-		});
-
-		mMediaPlayer.setOnCompletionListener(new OnCompletionListener() {
-
-			@Override
-			public void onCompletion(MediaPlayer mp) {
-				// TODO Auto-generated method stub
-				Log.d("m","onCompletion and resetting media player");
-				mMediaController.hide();
-				mMediaPlayer.reset();
-			}
-		});
-		mMediaPlayer.setOnBufferingUpdateListener(new OnBufferingUpdateListener() {
-
-			@Override
-			public void onBufferingUpdate(MediaPlayer mp, int percent) {
-				// TODO Auto-generated method stub
-				Log.d("m","buffered percent:"+percent);
-			}
-		});
-
-		mMediaPlayer.setOnErrorListener(new OnErrorListener() {
-
-			@Override
-			public boolean onError(MediaPlayer mp, int what, int extra) {
-				// TODO Auto-generated method stub
-				Log.d(LOG_TAG,"error code what:"+what+" error code extra:"+extra);
-				//mp.pause();
-				return false;
-			}
-		});
-		
-		
-		Intent intent = getIntent();
-		Log.d("MainActivity","What is intent action received:\n"+intent.getAction());
-		if (Intent.ACTION_PICK.equals(intent.getAction())) {
-
-
-			mThreadParams = MessengerUtils.getMessengerThreadParamsForIntent(intent);
-			mPicking = true;
-
-			user_access_token=AccessToken.getCurrentAccessToken().getToken();
-			Log.d("MainActivity","access token after hit reply button:\n"+user_access_token);
-			user_id=intent.getStringExtra("user_id");
-			user_name=intent.getStringExtra("user_name");
-			// Note, if mThreadParams is non-null, it means the activity was launched from Messenger.
-			// It will contain the metadata associated with the original content, if there was content.
-		}
-		/*else if(Intent.ACTION_SEARCH.equals(intent.getAction())){
+			/*else if(Intent.ACTION_SEARCH.equals(intent.getAction())){
 			handleIntent(getIntent());
 
 		}*/
-		else{
-			user_access_token=intent.getStringExtra("user_access_token");
-			user_id=intent.getStringExtra("user_id");
-			user_name=intent.getStringExtra("user_name");
+			else{
+				user_access_token=intent.getStringExtra("user_access_token");
+				user_id=intent.getStringExtra("user_id");
+				user_name=intent.getStringExtra("user_name");
 
 
-			// You only need to set User ID on a tracker once. By setting it on the tracker, the ID will be
-			// sent with all subsequent hits.
-			Log.d("MainActivity","access token after login button:\n"+user_access_token);
-			Log.d("MainActivity","accessing google tracker:"+MyApp.tracker().getClass());
-			MyApp.tracker().set("&uid", user_id);
+				// You only need to set User ID on a tracker once. By setting it on the tracker, the ID will be
+				// sent with all subsequent hits.
+				Log.d("MainActivity","access token after login button:\n"+user_access_token);
+				Log.d("MainActivity","accessing google tracker:"+MyApp.tracker().getClass());
+				MyApp.tracker().set("&uid", user_id);
 
-			MyApp.tracker().send(new HitBuilders.EventBuilder()
-			.setCategory("UX")
-			.setAction("User Sign In").build());
-			GoogleAnalytics.getInstance(this).getLogger()
-			.setLogLevel(LogLevel.VERBOSE);
+				MyApp.tracker().send(new HitBuilders.EventBuilder()
+				.setCategory("UX")
+				.setAction("User Sign In").build());
+				GoogleAnalytics.getInstance(this).getLogger()
+				.setLogLevel(LogLevel.VERBOSE);
+
+			}
+
+
+			TextView usrname=(TextView)this.findViewById(R.id.header_layout_username);
+			usrname.setText(user_name);
+			progress.setTitle("Loading");
+			progress.setMessage("Wait while loading...");
+			progress.show();
+			getbucketlist();
+
 
 		}
 
-
-		TextView usrname=(TextView)this.findViewById(R.id.header_layout_username);
-		usrname.setText(user_name);
-		progress.setTitle("Loading");
-		progress.setMessage("Wait while loading...");
-		progress.show();
-		getbucketlist();
-		
-		
-		}
-		
 	}
-		//else{
-		public void buildui()
-		{
-
-//			Intent intent = getIntent();
-//			Log.d("MainActivity","What is intent action received:\n"+intent.getAction());
-//			if (Intent.ACTION_PICK.equals(intent.getAction())) {
-//
-//
-//				mThreadParams = MessengerUtils.getMessengerThreadParamsForIntent(intent);
-//				mPicking = true;
-//
-//				user_access_token=AccessToken.getCurrentAccessToken().getToken();
-//				Log.d("MainActivity","access token after hit reply button:\n"+user_access_token);
-//				user_id=intent.getStringExtra("user_id");
-//				user_name=intent.getStringExtra("user_name");
-//				// Note, if mThreadParams is non-null, it means the activity was launched from Messenger.
-//				// It will contain the metadata associated with the original content, if there was content.
-//			}
-//			/*else if(Intent.ACTION_SEARCH.equals(intent.getAction())){
-//				handleIntent(getIntent());
-//
-//			}*/
-//			else{
-//				user_access_token=intent.getStringExtra("user_access_token");
-//				user_id=intent.getStringExtra("user_id");
-//				user_name=intent.getStringExtra("user_name");
-//
-//
-//				// You only need to set User ID on a tracker once. By setting it on the tracker, the ID will be
-//				// sent with all subsequent hits.
-//				Log.d("MainActivity","access token after login button:\n"+user_access_token);
-//				Log.d("MainActivity","accessing google tracker:"+MyApp.tracker().getClass());
-//				MyApp.tracker().set("&uid", user_id);
-//
-//				MyApp.tracker().send(new HitBuilders.EventBuilder()
-//				.setCategory("UX")
-//				.setAction("User Sign In").build());
-//				GoogleAnalytics.getInstance(this).getLogger()
-//				.setLogLevel(LogLevel.VERBOSE);
-//
-//			}
-//
-//
-//			TextView usrname=(TextView)this.findViewById(R.id.header_layout_username);
-//			usrname.setText(user_name);
-//			progress.setTitle("Loading");
-//			progress.setMessage("Wait while loading...");
-//			progress.show();
-//			getbucketlist();
-		}
-
-
-	//}
-
-
 
 	private void getbucketlist(){
 
@@ -595,9 +542,6 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 		@Override
 		protected String doInBackground(URL... params)
 		{
-
-			//		if(!DOWNLOAD_CLICKED)
-			//	{
 
 			results.clear();
 			Map<String, String> logins = new HashMap<String, String>();
@@ -641,12 +585,6 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 
 			AmazonS3 s3 = new AmazonS3Client(credentialsProvider);
 
-
-
-
-			//			Log.d("Access Token from fb to aws:",""+logins);
-
-
 			//transferManager = new TransferManager(credentialsProvider);
 			transferUtility= new TransferUtility(s3, getApplicationContext());
 			try{
@@ -682,7 +620,7 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 			parameters.putString("event_name", "fb_mobile_rate");
 			parameters.putString("period", "range");
 			parameters.putString("since", "2015-01-01");
-			
+
 
 			Calendar c = Calendar.getInstance();
 			System.out.println("Current time => " + c.getTime());
@@ -723,45 +661,6 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 					).executeAndWait();
 
 			return null;	
-			//			}
-			//		else
-			//			{
-			//				String music_file_key=((ArrayList<DataObject>)results).get(send_button_position).getmText1();
-			//				Log.i(LOG_TAG,"storage loc:"+Environment.getExternalStorageDirectory());
-			//
-			//				File local_storage_loc=new File(Environment.getExternalStorageDirectory()
-			//						+File.separator
-			//						+"Music" 
-			//						+File.separator
-			//						+music_file_key);
-			//				Log.i(LOG_TAG,"music file key:"+music_file_key);
-			//				TransferObserver observer=transferUtility.download(Utils.BUCKET, music_file_key, local_storage_loc);
-			//				observer.setTransferListener(new TransferListener() {
-			//
-			//					@Override
-			//					public void onError(int arg0, Exception arg1) {
-			//						// TODO Auto-generated method stub
-			//						Log.i(LOG_TAG,"transfer error:"+arg0+" arg1:"+arg1);
-			//					}
-			//
-			//					@Override
-			//					public void onProgressChanged(int arg0, long arg1, long arg2) {
-			//						// TODO Auto-generated method stub
-			//						Log.i(LOG_TAG,"transfer progress:"+arg0+" arg1:"+arg1+" arg2:"+arg2);
-			//					}
-			//
-			//					@Override
-			//					public void onStateChanged(int arg0, TransferState arg1) {
-			//						// TODO Auto-generated method stub
-			//						Log.i(LOG_TAG,"transfer state:"+arg0+" arg1:"+arg1);
-			//					}
-			//
-			//				});
-			//
-			//				//DOWNLOAD_CLICKED=true;
-			//				return null;
-			//
-			//			}
 
 		}
 
@@ -769,78 +668,14 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 		protected void onPostExecute(String result) {
 			publishProgress(false);
 
-			//			if(!DOWNLOAD_CLICKED)
-			//		{
-			//			setContentView(R.layout.activity_card_view);
-			//
-			//
-			//			mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
-			//			mRecyclerView.setHasFixedSize(true);
-			//
-			//			mLayoutManager = new LinearLayoutManager(MainActivity.this);
-			//			mRecyclerView.setLayoutManager(mLayoutManager);
-			//
-			//
-			//
 			mAdapter = new MyRecyclerViewAdapter(getDataSet());
 			mRecyclerView.setAdapter(mAdapter);
 
-
-
-			//
-			//			mAdapter = new MyRecyclerViewAdapter(getDataSet());
-			//			mRecyclerView.setAdapter(mAdapter);
-
-			/*	try {
-				RadioGroup radioGroup = (RadioGroup)findViewById(R.id.rg_mainactivity);
-				LinearLayout.LayoutParams layoutParams = new 
-						RadioGroup.LayoutParams( 
-								RadioGroup.LayoutParams.WRAP_CONTENT, 
-								RadioGroup.LayoutParams.WRAP_CONTENT); 
-
-				for(S3ObjectSummary summary : summaries)
-				{
-
-						RadioButton radioButton = new RadioButton(MainActivity.this);
-
-						radioButton.setText(summary.getKey().toString());
-						radioGroup.addView(radioButton,layoutParams);
-
-					//source.setText(node.text()); 
-
-				}
-				//ViewGroup line =(ViewGroup)findViewById(R.id.mainlayout);;
-				//line.addView(radioGroup);
+			Log.d(LOG_TAG,"mAdapter is set with data");
+			if(mPicking==true){
+				onResume();
 			}
-			catch(Exception e){
-				Log.d("list_files_mainactivity_rg",""+e);
-			}
-			try
-			{
-				RadioGroup radioGroup = (RadioGroup)findViewById(R.id.rg_mainactivity);
 
-				radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-					public void onCheckedChanged(RadioGroup rg, int checkedId) {
-						// for(int i=0; i<rg.getChildCount(); i++) {
-						RadioButton btn = (RadioButton)findViewById(checkedId);
-						// if(btn.getId() == checkedId) {
-
-						TextView txt=(TextView)findViewById(R.id.list_files_txtv);
-						txt.setText(btn.getText().toString());
-						//    break;
-						// }
-						//  }
-					}
-				});
-
-			}
-			catch(Exception e){
-				Log.d("list_files_mainactivity_rb select",""+e);
-			}
-			 */
-
-
-			//		}
 		}
 
 	}
@@ -867,23 +702,26 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 		return results;
 	}
 
-	//	private ArrayList<DataObject> getDataSet2() {
-	//        ArrayList results = new ArrayList<DataObject>();
-	//        for (int index = 0; index < 20; index++) {
-	//            DataObject obj = new DataObject("Some Primary Text " + index,
-	//                    "Secondary " + index);
-	//            results.add(index, obj);
-	//        }
-	//        return results;
-	//    }
+
 
 	@Override
 	protected void onResume()
 	{
 		super.onResume();
 		AppEventsLogger.activateApp(this); 
+		if(gotaccesstoken==false)
+		{	}//login();}
 		//mDrawerToggle.syncState();
+		else{
+			Log.d(LOG_TAG,"gotacesstoken=true and inside onresume()");			
+			adapterlistener();	
+		}
+	}	
 
+	private void adapterlistener(){
+
+		Log.d(LOG_TAG,"inside adapterlistener()");
+		mDrawerToggle.syncState();
 		((MyRecyclerViewAdapter) mAdapter).setOnItemClickListener(new MyRecyclerViewAdapter.MyClickListener()
 		{
 			@Override
@@ -933,13 +771,6 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 							Log.i(LOG_TAG,"transfer state:"+arg0+" arg1:"+arg1);
 							if(arg1.toString()=="COMPLETED"){
 								transfer_complete=true;
-								//								Uri uri =Uri.parse(link);
-								//								ShareToMessengerParams shareToMessengerParams =
-								//										ShareToMessengerParams.newBuilder(uri, "audio/*")
-								//										//.setMetaData("{ \"audio\" : \"tre\" }")
-								//										//.setExternalUri(uri)
-								//										.build();
-								//								onMessengerButtonClicked(position,v,sendbutton);
 								Log.i(LOG_TAG,"written to:"+link);
 								Toast.makeText(getApplicationContext(), "Tap Again !", 
 										Toast.LENGTH_SHORT).show();
@@ -956,15 +787,6 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 
 				}
 				else{
-					//					// Create the parameters for what we want to send to Messenger.
-					//					Log.i(LOG_TAG,"file status:"+"already exists");
-					//					Uri uri =Uri.parse(link);
-					//					ShareToMessengerParams shareToMessengerParams =
-					//							ShareToMessengerParams.newBuilder(uri, "audio/*")
-					//							//.setMetaData("{ \"audio\" : \"tre\" }")
-					//							//.setExternalUri(uri)
-					//							.build();
-					//	
 					Log.i(LOG_TAG, " File Already EXISTS ?" + "YES");
 					onMessengerButtonClicked(position,v,sendbutton);
 
@@ -988,7 +810,7 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 					//mMediaPlayer.setDataSource(audioFile);
 					mMediaPlayer.prepareAsync();
 					mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-					
+
 					AppEventsLogger logger = AppEventsLogger.newLogger(v.getContext());
 					Bundle parameters = new Bundle();
 					parameters.putString("fields", " ");
@@ -1004,27 +826,12 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 					Log.e("PlayAudioDemo", "Could not open file " + audioFile + " for playback.", e);
 				}
 
-
-
-				// TODO Auto-generated method stub
-				/*if (event.getAction() == android.view.MotionEvent.ACTION_DOWN) {
-					Log.d("TouchTest", "Touch down");
-					mMediaPlayer.start();
-					mMediaController.show();
-
-
-				} 
-				else if (event.getAction() == android.view.MotionEvent.ACTION_UP) {
-					Log.d("TouchTest", "Touch up");
-					//mMediaPlayer.stop();
-					mMediaPlayer.pause();
-					mMediaController.hide();
-
-				}*/
-
 			}
 		},getApplicationContext());
 	}
+
+
+
 
 	@Override
 	public void start() {
@@ -1127,14 +934,6 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 		if(local_stored_file.exists())
 		{
 
-
-
-
-			//String link="android.resource://com.example.mad/drawable/"+R.drawable.sample;
-			//		Uri uri =Uri.parse(link);
-			/*Uri uri =Uri.parse("https://www.google.co.in/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png");*/
-			//Uri.parse(Utils.LINK+((ArrayList<DataObject>)results).get(position).getmText1());
-
 			// Create the parameters for what we want to send to Messenger.
 			Uri uri =Uri.parse(link);
 			ShareToMessengerParams shareToMessengerParams =
@@ -1142,31 +941,7 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 					//.setMetaData("{ \"audio\" : \"tre\" }")
 					//.setExternalUri(uri)
 					.build();
-			//logger.logEvent("button_count_"+music_file_key,1);
 
-			/*Uri videoFileUri = Uri.parse(link);
-		ShareVideo video = new ShareVideo.Builder()
-									.setLocalUrl(videoFileUri)
-									.build();
-		ShareVideoContent content = new ShareVideoContent.Builder()
-										.setVideo(video)
-										.build();
-		 Log.i(LOG_TAG,"uri:"+Uri.parse(link));
-		 Log.i(LOG_TAG,"video:"+video);
-		 Log.i(LOG_TAG,"content:"+content);*/
-
-			/*ShareButton shareButton = (ShareButton)mMessengerButton;
-		 shareButton.setShareContent(content);*/
-
-
-			// MessageDialog messageDialog = new MessageDialog(this);
-			// MessageDialog.show(this, content);
-
-			/*ShareLinkContent content = new ShareLinkContent.Builder()
-		.setContentUrl(Uri.parse(link))
-		.build();*/
-
-			//sendbutton.setShareContent(content);
 
 			//track events
 			//working in all flows
@@ -1240,8 +1015,7 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 		//searchIcon.setImageResource(R.drawable.hint_search);
 
 		//binds search string and starts intent with ACTION_SEARCH
-		SearchableInfo searchableInfo = (searchManager.getSearchableInfo(
-				new ComponentName(getApplicationContext(),SearchResultsActivity.class)));
+		SearchableInfo searchableInfo = (searchManager.getSearchableInfo(new ComponentName(getApplicationContext(),SearchResultsActivity.class)));
 
 		Log.d(LOG_TAG,"onCreateOptionsMenu() searchableInfo:"+searchableInfo.toString());
 
@@ -1254,24 +1028,6 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 		return true;
 	}
 
-	/*	@Override
-		protected void onNewIntent(Intent intent){
-			handleIntent(intent);
-
-		}
-
-		private void handleIntent(Intent intent){
-
-			if(Intent.ACTION_SEARCH.equals(intent.getAction())){
-				Log.d(LOG_TAG,"Inside oncreate of serachresults activity");
-				String query = intent.getStringExtra(SearchManager.QUERY);
-				Log.d(LOG_TAG,"queried string"+query);
-				String music_file_key=((ArrayList<DataObject>)results).get(1).getmText1();
-				Log.i(LOG_TAG,"music file key:"+music_file_key);
-
-			}
-		}
-	 */
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// Handle action bar item clicks here. The action bar will
@@ -1339,13 +1095,6 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 			return true;
 		}
 	}
-	/*	private void selectItem(int position) {
-		// update selected item and title, then close the drawer
-
-		mDrawerList.setItemChecked(position, true);
-		setTitle(mdrawerItemTitles[position]);
-		mDrawerLayout.closeDrawer(mDrawerList);
-	}*/
 
 	@Override
 	public void setTitle(CharSequence title) {
@@ -1376,6 +1125,16 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 	}
 
 
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data)
+	{
+		super.onActivityResult(requestCode, resultCode, data);
+		//The CallbackManager manages the callbacks into the FacebookSdk from an 
+		//  Activity's 
+		//  or Fragment's onActivityResult() method.
+		callbackManager.onActivityResult(requestCode, resultCode, data);
+	}
 
 
 }
