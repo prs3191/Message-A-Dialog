@@ -1015,7 +1015,7 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 		//searchIcon.setImageResource(R.drawable.hint_search);
 
 		//binds search string and starts intent with ACTION_SEARCH
-		SearchableInfo searchableInfo = (searchManager.getSearchableInfo(new ComponentName(getApplicationContext(),SearchResultsActivity.class)));
+		SearchableInfo searchableInfo = (searchManager.getSearchableInfo(getComponentName()/*new ComponentName(MainActivity.this,SearchResultsActivity.class)*/));
 
 		Log.d(LOG_TAG,"onCreateOptionsMenu() searchableInfo:"+searchableInfo.toString());
 
@@ -1023,7 +1023,7 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 
 
 
-		//Log.d(LOG_TAG,"onCreateOptionsMenu() getcomponent name:"+searchManager.getSearchableInfo(getComponentName())); //always gives null ??
+		Log.d(LOG_TAG,"onCreateOptionsMenu() getcomponent name:"+searchManager.getSearchableInfo(getComponentName())); //always gives null ??
 		Log.d(LOG_TAG,"onCreateOptionsMenu() seacrh in:"+searchableInfo.getSearchActivity().toString());
 		return true;
 	}
