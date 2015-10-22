@@ -59,6 +59,7 @@ public class fb_loginActivity extends Activity {
 
 		intent = getIntent();
 		Log.d(LOG_TAG,"What is intent action received:\n"+intent.getAction());
+		login();
 
 	}
 

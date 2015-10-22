@@ -109,7 +109,10 @@ public class SearchResultsActivity extends AppCompatActivity implements MediaPla
 			@Override
 			public void onClick(View v) {
 				if(!mMediaPlayer.isPlaying())
+				{	
 					onBackPressed();
+					
+				}
 				else
 				{	
 					mMediaController.hide();
@@ -180,7 +183,7 @@ public class SearchResultsActivity extends AppCompatActivity implements MediaPla
 		//		getawsauth();
 
 	}
-
+	
 	@Override
 	protected void onNewIntent(Intent intent){
 		handleIntent(intent);
@@ -206,7 +209,11 @@ public class SearchResultsActivity extends AppCompatActivity implements MediaPla
 		}
 	}
 
-
+	  @Override
+	    public void onBackPressed() {
+	            super.onBackPressed();
+	            this.finish();
+	    }
 
 	private ArrayList<DataObject> getDataSet() {
 		mresults=MainActivity.results;
