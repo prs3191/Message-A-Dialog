@@ -248,15 +248,15 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 								@Override
 								public void onCompleted(JSONObject jsonObject,
 										GraphResponse response) {
-									Log.d("after sdk init","onCompleted jsonObject: "+jsonObject);
-									Log.d("after sdk init","onCompleted response: "+response);
+									Log.d("after sdk init "+LOG_TAG,"onCompleted jsonObject: "+jsonObject);
+									Log.d("after sdk init "+LOG_TAG,"onCompleted response: "+response);
 									try {
 										user_name=(String)jsonObject.getString("name");
-										Log.d("MainActivity Graph api",""+user_name);
+										Log.d(LOG_TAG+" Graph api",""+user_name);
 
 									} catch (JSONException e) {
 										// TODO Auto-generated catch block
-										Log.d("Graph api json error",""+e);
+										Log.d(LOG_TAG+"Graph api json error",""+e);
 									}
 									if(user_name!=null && gotaccesstoken==false){
 										gotaccesstoken=true;
@@ -483,7 +483,12 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 				mPicking = true;
 
 				user_access_token=AccessToken.getCurrentAccessToken().getToken();
-				Log.d("MainActivity","access token after hit reply button:\n"+user_access_token);
+				Log.d(LOG_TAG,"access token after hit reply button:\n"+user_access_token);
+				Log.d(LOG_TAG,"username after hit reply button:\n"+user_name);
+				Log.d(LOG_TAG,"user_id after hit reply button:\n"+user_id);
+				//user_id=intent.getStringExtra("user_id");
+				//user_name=intent.getStringExtra("user_name");
+
 
 				// Note, if mThreadParams is non-null, it means the activity was launched from Messenger.
 				// It will contain the metadata associated with the original content, if there was content.
@@ -995,6 +1000,7 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 		getMenuInflater().inflate(R.menu.main, menu);
 
 		Log.d(LOG_TAG,"onCreateOptionsMenu() searchViewid:"+menu.findItem(R.id.search).toString());
+
 		// Associate searchable configuration with the SearchView
 		SearchManager searchManager =(SearchManager) getSystemService(Context.SEARCH_SERVICE);
 		SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
@@ -1021,9 +1027,8 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 
 		searchView.setSearchableInfo(searchableInfo);
 
-
-
-		Log.d(LOG_TAG,"onCreateOptionsMenu() getcomponent name:"+searchManager.getSearchableInfo(getComponentName())); //always gives null ??
+		Log.d(LOG_TAG,"onCreateOptionsMenu() searchableInfo:"+searchManager.getSearchableInfo(getComponentName())); //always gives null ??
+		Log.d(LOG_TAG,"onCreateOptionsMenu() getcomponent name:"+getComponentName()); //always gives null ??
 		Log.d(LOG_TAG,"onCreateOptionsMenu() seacrh in:"+searchableInfo.getSearchActivity().toString());
 		return true;
 	}

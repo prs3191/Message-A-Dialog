@@ -152,13 +152,13 @@ public class fb_loginActivity extends Activity {
 
 
 									// Application code
-									Intent i=new Intent(fb_loginActivity.this,MainActivity.class);
+									Intent i=new Intent(fb_loginActivity.this,MainActivity2.class);
 									i.putExtra("user_access_token",user_access_token);
 									i.putExtra("user_id",user_id);
 									i.putExtra("user_name",user_name);
 									//if(MainActivity.mPicking)
 									//i.setAction("com.example.mad.PICK");
-									MainActivity.gotaccesstoken=true;
+									MainActivity2.gotaccesstoken=true;
 									startActivity(i);
 									finish();
 								}
