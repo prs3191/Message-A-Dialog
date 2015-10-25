@@ -193,9 +193,12 @@ public class SearchResultsActivity extends AppCompatActivity implements MediaPla
 	private void handleIntent(Intent intent){
 
 		if(Intent.ACTION_SEARCH.equals(intent.getAction())){
-			query = intent.getStringExtra(SearchManager.QUERY);
+			//query = intent.getStringExtra(SearchManager.QUERY);
+			query=intent.getStringExtra("query");
+			mPicking=intent.getBooleanExtra("mPicking",false);
 			Log.d(LOG_TAG,"queried string:"+query);
-
+			Log.d(LOG_TAG,"reply flow?:"+mPicking);
+			Log.d(LOG_TAG,"category size:"+intent.getCategories().size());
 			mtoolbar=(Toolbar) findViewById(R.id.toolbar);
 			Log.d(LOG_TAG,"mtoolbar:"+mtoolbar.toString());
 			setSupportActionBar(mtoolbar);
@@ -256,7 +259,7 @@ public class SearchResultsActivity extends AppCompatActivity implements MediaPla
 				//Log.i(LOG_TAG, " Sendbutton ID " + sendbutton.getId());
 
 
-				String music_file_key=((ArrayList<DataObject>)mresults).get(position).getmText1();
+				String music_file_key=((ArrayList<DataObject>)search_results).get(position).getmText1();
 				Log.i(LOG_TAG,"storage loc:\n"+Environment.getExternalStorageDirectory());
 
 				link="file:///storage/emulated/0/mad/"+music_file_key;
@@ -369,7 +372,7 @@ public class SearchResultsActivity extends AppCompatActivity implements MediaPla
 		// The URI can reference a file://, content://, or android.resource. Here we use
 		// android.resource for sample purposes.
 
-		String music_file_key=((ArrayList<DataObject>)mresults).get(position).getmText1();
+		String music_file_key=((ArrayList<DataObject>)search_results).get(position).getmText1();
 		File local_stored_file=new File(Environment.getExternalStorageDirectory()
 				+File.separator
 				+"mad" 
@@ -415,6 +418,7 @@ public class SearchResultsActivity extends AppCompatActivity implements MediaPla
 			if (mPicking) {
 				// If we were launched from Messenger, we call MessengerUtils.finishShareToMessenger to return
 				// the content to Messenger.
+				Log.d(LOG_TAG,"parentActivity:"+MainActivity.class);
 				MessengerUtils.finishShareToMessenger(this, shareToMessengerParams);
 				Log.d(LOG_TAG,"After send button clicked reply flow");
 
@@ -510,6 +514,20 @@ public class SearchResultsActivity extends AppCompatActivity implements MediaPla
 		//Log.d(LOG_TAG,"User logged out");
 
 	}
-
+	
+	public void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+		Log.d(LOG_TAG,"onActivityResult");
+	    if (resultCode == RESULT_OK) {
+	    	Log.d(LOG_TAG,"onActivityResult..Result_OK");
+	    	this.setResult(Activity.RESULT_OK, data);
+	    }
+		if (resultCode == RESULT_CANCELED){
+			Log.d(LOG_TAG,"onActivityResult..RESULT_CANCELED");
+	    	this.setResult(Activity.RESULT_CANCELED, data);
+		}
+		
+    }
+	
 
 }

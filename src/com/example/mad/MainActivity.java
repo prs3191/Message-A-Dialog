@@ -70,6 +70,7 @@ import com.google.android.gms.analytics.Logger.LogLevel;
 import android.support.design.widget.NavigationView;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
@@ -77,6 +78,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView.OnQueryTextListener;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.SearchView;
 import android.app.Activity;
@@ -92,6 +94,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.Signature;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
+import android.graphics.Path.FillType;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnBufferingUpdateListener;
@@ -181,6 +184,7 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 
 	private MediaController mMediaController;
 	private MediaPlayer mMediaPlayer;
+	private String query;
 
 	static boolean gotaccesstoken=false;
 	@Override
@@ -216,6 +220,13 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 		if( (!FacebookSdk.isInitialized()) || (AccessToken.getCurrentAccessToken()==null || gotaccesstoken==false) )
 		{
 			Log.d(LOG_TAG,"fbsdk not init: so inting fbsdk");
+			Log.d(LOG_TAG,"getApplicationContext() "+getApplicationContext());
+			Log.d(LOG_TAG,"getCompnent() "+getComponentName());
+			Log.d(LOG_TAG,"getcallingpackage() "+getCallingPackage());
+			Log.d(LOG_TAG,"this getPackagename() "+getPackageName());
+			Log.d(LOG_TAG,"getcallingactivity() "+getCallingActivity());
+			Log.d(LOG_TAG,"getParent() "+getParent());
+			
 			FacebookSdk.sdkInitialize(getApplicationContext());
 
 			//Intent i=new Intent(MainActivity.this,fb_loginActivity.class);
@@ -975,7 +986,11 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 			if (mPicking) {
 				// If we were launched from Messenger, we call MessengerUtils.finishShareToMessenger to return
 				// the content to Messenger.
-				MessengerUtils.finishShareToMessenger(this, shareToMessengerParams);
+				//MessengerUtils.finishShareToMessenger(this, shareToMessengerParams);
+				Intent intent=new Intent(this,dummy.class);
+				intent.putExtra("hello", "hello");
+				intent.setAction(Intent.ACTION_SEND);
+				startActivity(intent);
 				Log.d("Main_Activity","After send button clicked reply flow");
 
 			} else {
@@ -1003,7 +1018,8 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 
 		// Associate searchable configuration with the SearchView
 		SearchManager searchManager =(SearchManager) getSystemService(Context.SEARCH_SERVICE);
-		SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
+		//SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
+		SearchView searchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.search));
 		Log.d(LOG_TAG,"onCreateOptionsMenu() searchView:"+searchView.toString());
 
 
@@ -1019,20 +1035,56 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 
 		//ImageView searchIcon = (ImageView)searchView.findViewById(android.support.v7.appcompat.R.id.search_mag_icon);
 		//searchIcon.setImageResource(R.drawable.hint_search);
-
+		
+		Log.d(LOG_TAG,"pkg_name: "+getApplicationContext().getPackageName());
+		
 		//binds search string and starts intent with ACTION_SEARCH
-		SearchableInfo searchableInfo = (searchManager.getSearchableInfo(getComponentName()/*new ComponentName(MainActivity.this,SearchResultsActivity.class)*/));
+		//SearchableInfo searchableInfo = (searchManager.getSearchableInfo(/*getComponentName()*/new ComponentName("com.example.mad","com.example.mad.SearchResultsActivity")));
 
-		Log.d(LOG_TAG,"onCreateOptionsMenu() searchableInfo:"+searchableInfo.toString());
+		//Log.d(LOG_TAG,"onCreateOptionsMenu() searchableInfo:"+searchableInfo.toString());
 
-		searchView.setSearchableInfo(searchableInfo);
+		//searchView.setSearchableInfo(searchableInfo);
 
 		Log.d(LOG_TAG,"onCreateOptionsMenu() searchableInfo:"+searchManager.getSearchableInfo(getComponentName())); //always gives null ??
 		Log.d(LOG_TAG,"onCreateOptionsMenu() getcomponent name:"+getComponentName()); //always gives null ??
-		Log.d(LOG_TAG,"onCreateOptionsMenu() seacrh in:"+searchableInfo.getSearchActivity().toString());
-		return true;
-	}
+		//Log.d(LOG_TAG,"onCreateOptionsMenu() seacrh in:"+searchableInfo.getSearchActivity().toString());
+		
+		
+		searchView.setOnQueryTextListener(new OnQueryTextListener() {
 
+		    @Override
+		    public boolean onQueryTextSubmit(String query) {
+		    	Log.d(LOG_TAG,"onQueryTextSubmit called");
+		        onSearchRequested();
+		        return false;
+		    }
+
+		    @Override
+		    public boolean onQueryTextChange(String newText) {
+		        // TODO Auto-generated method stub
+		    	Log.d(LOG_TAG,"onQueryTextChange called");
+		    	query=newText;
+		        return false;
+		    }
+		});
+		return super.onCreateOptionsMenu(menu);
+	}
+	
+	@Override
+	public boolean onSearchRequested() {
+	    Log.d(LOG_TAG,"onsearchRequested called");
+	    Intent intent=new Intent(this,SearchResultsActivity.class);
+		//intent.putExtra("hello", "hello");
+		intent.setAction(Intent.ACTION_SEARCH);
+		intent.putExtra("query",query );
+		intent.putExtra("mPicking",mPicking);
+		intent.fillIn(getIntent(), Intent.FILL_IN_CATEGORIES);
+		Log.d(LOG_TAG,"swithing to dummy from onSearchRequested");
+		startActivityForResult(intent,101);
+		
+	    return true/*super.onSearchRequested()*/;
+	}
+	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// Handle action bar item clicks here. The action bar will
@@ -1134,6 +1186,17 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data)
 	{
+		
+		if(requestCode==101){
+			if (resultCode == RESULT_OK) {
+		    	Log.d(LOG_TAG,"onActivityResult..Result_OK");
+		    	this.setResult(Activity.RESULT_OK, data);
+		    }
+			if (resultCode == RESULT_CANCELED){
+				Log.d(LOG_TAG,"onActivityResult..RESULT_CANCELED");
+		    	this.setResult(Activity.RESULT_CANCELED, data);
+			}
+		}
 		super.onActivityResult(requestCode, resultCode, data);
 		//The CallbackManager manages the callbacks into the FacebookSdk from an 
 		//  Activity's 
