@@ -162,6 +162,7 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 	private Dataset dataset;
 	static String user_id;
 	static String user_name;
+	static Activity act;
 
 	private Map<String, String> times_sent = new HashMap<String, String>();
 	static Map<String,String> all_files_wnots = new HashMap<String,String>();
@@ -1079,8 +1080,10 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 		intent.putExtra("query",query );
 		intent.putExtra("mPicking",mPicking);
 		intent.fillIn(getIntent(), Intent.FILL_IN_CATEGORIES);
+		intent.putExtra("callingact","Replyflowmain");
 		Log.d(LOG_TAG,"swithing to dummy from onSearchRequested");
-		startActivityForResult(intent,101);
+		act=this;
+		startActivity(intent);
 		
 	    return true/*super.onSearchRequested()*/;
 	}
@@ -1186,17 +1189,7 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data)
 	{
-		
-		if(requestCode==101){
-			if (resultCode == RESULT_OK) {
-		    	Log.d(LOG_TAG,"onActivityResult..Result_OK");
-		    	this.setResult(Activity.RESULT_OK, data);
-		    }
-			if (resultCode == RESULT_CANCELED){
-				Log.d(LOG_TAG,"onActivityResult..RESULT_CANCELED");
-		    	this.setResult(Activity.RESULT_CANCELED, data);
-			}
-		}
+
 		super.onActivityResult(requestCode, resultCode, data);
 		//The CallbackManager manages the callbacks into the FacebookSdk from an 
 		//  Activity's 

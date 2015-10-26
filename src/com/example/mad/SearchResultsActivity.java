@@ -71,6 +71,8 @@ public class SearchResultsActivity extends AppCompatActivity implements MediaPla
 	private MediaPlayer mMediaPlayer;
 
 	private ProgressDialog progress;
+	private String callingactivity;
+	
 	@Override
 	public void onCreate (Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
@@ -198,7 +200,11 @@ public class SearchResultsActivity extends AppCompatActivity implements MediaPla
 			mPicking=intent.getBooleanExtra("mPicking",false);
 			Log.d(LOG_TAG,"queried string:"+query);
 			Log.d(LOG_TAG,"reply flow?:"+mPicking);
-			Log.d(LOG_TAG,"category size:"+intent.getCategories().size());
+			//Log.d(LOG_TAG,"category size:"+intent.getCategories().size());
+			
+			callingactivity=intent.getStringExtra("callingact");
+			Log.d(LOG_TAG,"callingActivity: "+callingactivity);
+			
 			mtoolbar=(Toolbar) findViewById(R.id.toolbar);
 			Log.d(LOG_TAG,"mtoolbar:"+mtoolbar.toString());
 			setSupportActionBar(mtoolbar);
@@ -219,7 +225,10 @@ public class SearchResultsActivity extends AppCompatActivity implements MediaPla
 	    }
 
 	private ArrayList<DataObject> getDataSet() {
-		mresults=MainActivity.results;
+		if(callingactivity!=null && callingactivity.equals("Replyflowmain"))
+			mresults=MainActivity.results;
+		else
+			mresults=MainActivity2.results;
 		msize=mresults.size();
 
 		int index1=0;int index2=0;
@@ -418,9 +427,10 @@ public class SearchResultsActivity extends AppCompatActivity implements MediaPla
 			if (mPicking) {
 				// If we were launched from Messenger, we call MessengerUtils.finishShareToMessenger to return
 				// the content to Messenger.
-				Log.d(LOG_TAG,"parentActivity:"+MainActivity.class);
-				MessengerUtils.finishShareToMessenger(this, shareToMessengerParams);
+				Log.d(LOG_TAG,"parentActivity:"+MainActivity.act);
+				MessengerUtils.finishShareToMessenger(MainActivity.act, shareToMessengerParams);
 				Log.d(LOG_TAG,"After send button clicked reply flow");
+				finish();
 
 			} else {
 				// Otherwise, we were launched directly (for example, user clicked the launcher icon). We
