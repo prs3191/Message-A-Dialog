@@ -987,11 +987,11 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 			if (mPicking) {
 				// If we were launched from Messenger, we call MessengerUtils.finishShareToMessenger to return
 				// the content to Messenger.
-				//MessengerUtils.finishShareToMessenger(this, shareToMessengerParams);
-				Intent intent=new Intent(this,dummy.class);
+				MessengerUtils.finishShareToMessenger(this, shareToMessengerParams);
+				/*Intent intent=new Intent(this,dummy.class);
 				intent.putExtra("hello", "hello");
 				intent.setAction(Intent.ACTION_SEND);
-				startActivity(intent);
+				startActivity(intent);*/
 				Log.d("Main_Activity","After send button clicked reply flow");
 
 			} else {

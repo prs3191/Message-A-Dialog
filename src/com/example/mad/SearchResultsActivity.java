@@ -72,6 +72,7 @@ public class SearchResultsActivity extends AppCompatActivity implements MediaPla
 
 	private ProgressDialog progress;
 	private String callingactivity;
+	private String mlink;
 	
 	@Override
 	public void onCreate (Bundle savedInstanceState){
@@ -226,9 +227,15 @@ public class SearchResultsActivity extends AppCompatActivity implements MediaPla
 
 	private ArrayList<DataObject> getDataSet() {
 		if(callingactivity!=null && callingactivity.equals("Replyflowmain"))
+		{
 			mresults=MainActivity.results;
+			mlink=MainActivity.mlink;
+		}
 		else
+		{
 			mresults=MainActivity2.results;
+			mlink=MainActivity2.mlink;
+		}
 		msize=mresults.size();
 
 		int index1=0;int index2=0;
@@ -337,7 +344,7 @@ public class SearchResultsActivity extends AppCompatActivity implements MediaPla
 				//String audioFile = "/storage/emulated/0/mad/Aiio_Raaama.mp3" ; 
 				//String audioFile ="http://www.stephaniequinn.com/Music/The%20Irish%20Washerwoman.mp3";
 				String audioFilename=((ArrayList<DataObject>)search_results).get(position).getmText1();
-				String audioFile =MainActivity.mlink+audioFilename;
+				String audioFile =mlink+audioFilename;
 
 				mMediaPlayer.reset();
 				try 
