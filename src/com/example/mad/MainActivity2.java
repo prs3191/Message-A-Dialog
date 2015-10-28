@@ -216,7 +216,7 @@ public class MainActivity2 extends AppCompatActivity implements MediaPlayerContr
 		if( (!FacebookSdk.isInitialized()) || (AccessToken.getCurrentAccessToken()==null || gotaccesstoken==false) )
 		{
 			Log.d(LOG_TAG,"fbsdk not init: so inting fbsdk");
-			FacebookSdk.sdkInitialize(getApplicationContext());
+			/*FacebookSdk.sdkInitialize(getApplicationContext());
 
 			//Intent i=new Intent(MainActivity.this,fb_loginActivity.class);
 			//Intent i = getPackageManager().getLaunchIntentForPackage("com.example.mad");
@@ -266,7 +266,7 @@ public class MainActivity2 extends AppCompatActivity implements MediaPlayerContr
 
 							});
 					Bundle parameters = new Bundle();
-					parameters.putString("fields", "name"/*,id,link,cover,email*/);
+					parameters.putString("fields", "name"/*,id,link,cover,email/);
 					request.setParameters(parameters);
 					request.executeAsync();
 
@@ -293,7 +293,7 @@ public class MainActivity2 extends AppCompatActivity implements MediaPlayerContr
 
 			});
 			LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("read_insights"));
-			Log.d(LOG_TAG,"loginwithread permi called....");
+			Log.d(LOG_TAG,"loginwithread permi called....");*/
 
 		}
 		else{
@@ -713,7 +713,7 @@ public class MainActivity2 extends AppCompatActivity implements MediaPlayerContr
 		super.onResume();
 		AppEventsLogger.activateApp(this); 
 		if(gotaccesstoken==false)
-		{	}//login();}
+		{	Log.d(LOG_TAG,"gotacesstoken=false and inside onresume()");}//login();}
 		//mDrawerToggle.syncState();
 		else{
 			Log.d(LOG_TAG,"gotacesstoken=true and inside onresume()");			
@@ -1129,7 +1129,7 @@ public class MainActivity2 extends AppCompatActivity implements MediaPlayerContr
 
 
 
-	@Override
+	/*@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data)
 	{
 		super.onActivityResult(requestCode, resultCode, data);
@@ -1137,7 +1137,7 @@ public class MainActivity2 extends AppCompatActivity implements MediaPlayerContr
 		//  Activity's 
 		//  or Fragment's onActivityResult() method.
 		callbackManager.onActivityResult(requestCode, resultCode, data);
-	}
+	}*/
 
 
 }
