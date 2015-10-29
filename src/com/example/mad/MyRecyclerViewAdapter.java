@@ -2,6 +2,7 @@ package com.example.mad;
 
 import android.animation.ObjectAnimator;
 import android.content.Context;
+import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -9,6 +10,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.view.GestureDetector;
 import android.view.GestureDetector.OnGestureListener;
 
@@ -26,8 +28,9 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
 	private static Context context;
 	//private static SendButton sendbutton;
 	private int mPreviousposition=0;
+	private int no_of_cards;
+	private static Toast toast;
 	
-
 	public interface MyClickListener {
 		public void onItemClick(int position, View v, SendButton sendbutton);
 		public void onCardClick(int position, View v/*, SendButton sendbutton, MotionEvent event*/);
@@ -37,6 +40,9 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
 	// Provide a suitable constructor (depends on the kind of dataset)
 	public MyRecyclerViewAdapter(ArrayList<DataObject> myDataset) {
 		mDataset = myDataset;
+		this.no_of_cards=getItemCount();
+		Log.d(LOG_TAG,"no_of_cards in setOnItemClickListener:"+no_of_cards);
+		
 	}
 
 	public static class DataObjectHolder extends RecyclerView.ViewHolder implements View.OnClickListener,View.OnTouchListener,OnGestureListener
@@ -147,6 +153,7 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
 		this.myClickListener = myClickListener;
 		this.context=context;
 		
+		
 	}
 
 
@@ -167,6 +174,8 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
 	@Override
 	public void onBindViewHolder(DataObjectHolder holder, int position)
 	{
+		if(toast!=null)
+			toast.cancel();
 		holder.label.setText(mDataset.get(position).getmText1());
 		//means graph api has returned null due to some error
 		if(mDataset.get(position).getmText2()==null)
@@ -189,6 +198,18 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
 		}
 		mPreviousposition = position;
 		Log.d(LOG_TAG,"position:"+position);
+		toast=Toast.makeText(context, ""+(position+1)+" of "+ no_of_cards, Toast.LENGTH_SHORT);
+		toast.show();
+		
+		Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+           @Override
+           public void run() {
+               toast.cancel(); 
+           }
+        }, 500);
+		
+		
 			
 	}
 
