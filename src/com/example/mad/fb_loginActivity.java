@@ -29,7 +29,11 @@ import com.google.android.gms.analytics.Tracker;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
@@ -49,7 +53,8 @@ public class fb_loginActivity extends Activity {
 	private boolean mPicking;
 	private String LOG_TAG="fbLoginActivity";
 	private Intent intent;
-
+	private static boolean isConnected=false;
+	
 	private AccessTokenTracker accessTokenTracker;
 
 	@Override
@@ -59,7 +64,14 @@ public class fb_loginActivity extends Activity {
 
 		intent = getIntent();
 		Log.d(LOG_TAG,"What is intent action received:\n"+intent.getAction());
-		login();
+		isConnected=isConnectingToInternet();
+		if(isConnected)
+		{	
+			Log.d(LOG_TAG,"oncreate() calling login");
+			login();
+		}
+		else
+			Toast.makeText(this,"Please connect to Internet", Toast.LENGTH_LONG).show();
 
 	}
 
@@ -67,8 +79,11 @@ public class fb_loginActivity extends Activity {
 	protected void onResume()
 	{
 		super.onResume();
-		if(MainActivity.gotaccesstoken==false)
+		if(MainActivity.gotaccesstoken==false && isConnected){
+			Log.d(LOG_TAG,"onresume() calling login");
 			login();
+			
+		}
 
 	}
 
@@ -226,7 +241,21 @@ public class fb_loginActivity extends Activity {
 		//  or Fragment's onActivityResult() method.
 		callbackManager.onActivityResult(requestCode, resultCode, data);
 	}
-
+	
+	public boolean isConnectingToInternet(){
+       
+        ConnectivityManager cm =
+                (ConnectivityManager)this.getSystemService(Context.CONNECTIVITY_SERVICE);
+          if (cm != null) 
+          {
+        	  
+        	  NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+               
+              return activeNetwork != null &&
+                      activeNetwork.isConnectedOrConnecting();
+          }
+          return false;
+    }
 
 
 }
