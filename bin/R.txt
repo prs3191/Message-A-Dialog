@@ -1062,6 +1062,10 @@ int string common_signin_button_text_long 0x7f0b0033
 int string create_calendar_message 0x7f0b0018
 int string create_calendar_title 0x7f0b0017
 int string decline 0x7f0b0016
+int string dialog_cancel 0x7f0b0052
+int string dialog_message 0x7f0b0054
+int string dialog_ok 0x7f0b0051
+int string dialog_title 0x7f0b0053
 int string drawer_close 0x7f0b004e
 int string drawer_open 0x7f0b004d
 int string facebook_app_id 0x7f0b004a

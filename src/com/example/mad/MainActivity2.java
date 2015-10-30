@@ -80,11 +80,13 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.SearchView;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.app.SearchableInfo;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -1140,4 +1142,30 @@ public class MainActivity2 extends AppCompatActivity implements MediaPlayerContr
 	}*/
 
 
+	@Override
+	public void onBackPressed()
+	{
+	     // code here to show dialog
+		// Use the Builder class for convenient dialog construction
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity2.this);
+        builder.setMessage(R.string.dialog_message)
+        	   .setTitle(R.string.dialog_title)
+               
+        	   .setPositiveButton(R.string.dialog_ok, new DialogInterface.OnClickListener() {
+                   public void onClick(DialogInterface dialog, int id) {
+                      finish();
+                   }
+               })
+               
+               .setNegativeButton(R.string.dialog_cancel, new DialogInterface.OnClickListener() {
+                   public void onClick(DialogInterface dialog, int id) {
+                       // User cancelled the dialog
+                   }
+               }).show();
+
+		
+		
+	    // super.onBackPressed();  // optional depending on your needs
+	}
+	
 }

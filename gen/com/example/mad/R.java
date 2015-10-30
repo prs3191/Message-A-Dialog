@@ -3862,6 +3862,10 @@ containing a value of this type.
         public static final int create_calendar_message=0x7f0b0018;
         public static final int create_calendar_title=0x7f0b0017;
         public static final int decline=0x7f0b0016;
+        public static final int dialog_cancel=0x7f0b0052;
+        public static final int dialog_message=0x7f0b0054;
+        public static final int dialog_ok=0x7f0b0051;
+        public static final int dialog_title=0x7f0b0053;
         public static final int drawer_close=0x7f0b004e;
         public static final int drawer_open=0x7f0b004d;
         public static final int facebook_app_id=0x7f0b004a;
