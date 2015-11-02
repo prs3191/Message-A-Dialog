@@ -349,8 +349,8 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 			// set up the drawer's list view with items and click listener
 			mNavigationView.setNavigationItemSelectedListener(new DrawerItemClickListener());
 
-			mTitle = mDrawerTitle = "MAD > "+mNavigationView.getMenu().getItem(0);
-			actionBar.setTitle(mTitle);
+			mTitle = mDrawerTitle = ""+mNavigationView.getMenu().getItem(0);
+			setTitle(mTitle);
 			actionBar.setDisplayHomeAsUpEnabled(true);
 			actionBar.setHomeButtonEnabled(true);
 
@@ -463,6 +463,7 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 					Log.d("m","onCompletion and resetting media player");
 					mMediaController.hide();
 					mMediaPlayer.reset();
+					setTitle(mTitle);
 				}
 			});
 			mMediaPlayer.setOnBufferingUpdateListener(new OnBufferingUpdateListener() {
@@ -819,6 +820,7 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 				//String audioFile ="http://www.stephaniequinn.com/Music/The%20Irish%20Washerwoman.mp3";
 				String audioFilename=((ArrayList<DataObject>)results).get(position).getmText1();
 				String audioFile =mlink+audioFilename;
+				actionBar.setTitle("Fetching Clip");
 				mMediaPlayer.reset();
 				try 
 				{	
@@ -886,6 +888,10 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 	public boolean isPlaying() {
 		// TODO Auto-generated method stub
 		//return false;
+		if (!mMediaPlayer.isPlaying())
+			setTitle(mTitle);
+		else
+			actionBar.setTitle("Playing clip");
 		return mMediaPlayer.isPlaying();
 	}
 	@Override

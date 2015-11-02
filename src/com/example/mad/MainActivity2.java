@@ -339,8 +339,8 @@ public class MainActivity2 extends AppCompatActivity implements MediaPlayerContr
 			// set up the drawer's list view with items and click listener
 			mNavigationView.setNavigationItemSelectedListener(new DrawerItemClickListener());
 
-			mTitle = mDrawerTitle = "MAD > "+mNavigationView.getMenu().getItem(0);
-			actionBar.setTitle(mTitle);
+			mTitle = mDrawerTitle = mNavigationView.getMenu().getItem(0)+"";
+			setTitle(mTitle);
 			actionBar.setDisplayHomeAsUpEnabled(true);
 			actionBar.setHomeButtonEnabled(true);
 
@@ -425,7 +425,7 @@ public class MainActivity2 extends AppCompatActivity implements MediaPlayerContr
 			mMediaController.setMediaPlayer(MainActivity2.this);
 			mMediaController.setAnchorView(findViewById(R.id.drawer_layout));
 
-			final Handler mHandler = new Handler();
+			//final Handler mHandler = new Handler();
 
 
 			mMediaPlayer.setOnPreparedListener(new OnPreparedListener() {
@@ -444,6 +444,7 @@ public class MainActivity2 extends AppCompatActivity implements MediaPlayerContr
 					mMediaController.show();
 				}
 			});
+			
 
 			mMediaPlayer.setOnCompletionListener(new OnCompletionListener() {
 
@@ -453,6 +454,7 @@ public class MainActivity2 extends AppCompatActivity implements MediaPlayerContr
 					Log.d("m","onCompletion and resetting media player");
 					mMediaController.hide();
 					mMediaPlayer.reset();
+					setTitle(mTitle);
 				}
 			});
 			mMediaPlayer.setOnBufferingUpdateListener(new OnBufferingUpdateListener() {
@@ -474,7 +476,8 @@ public class MainActivity2 extends AppCompatActivity implements MediaPlayerContr
 					return false;
 				}
 			});
-
+			
+			
 
 			Intent intent = getIntent();
 			Log.d("MainActivity","What is intent action received:\n"+intent.getAction());
@@ -805,6 +808,7 @@ public class MainActivity2 extends AppCompatActivity implements MediaPlayerContr
 				Log.d(LOG_TAG,"onCardClick");
 				//String audioFile = "/storage/emulated/0/mad/Aiio_Raaama.mp3" ; 
 				//String audioFile ="http://www.stephaniequinn.com/Music/The%20Irish%20Washerwoman.mp3";
+				actionBar.setTitle("Fetching Clip");
 				String audioFilename=((ArrayList<DataObject>)results).get(position).getmText1();
 				String audioFile =mlink+audioFilename;
 				mMediaPlayer.reset();
@@ -847,7 +851,9 @@ public class MainActivity2 extends AppCompatActivity implements MediaPlayerContr
 	public void pause() {
 		// TODO Auto-generated method stub
 		if(mMediaPlayer.isPlaying())
-			mMediaPlayer.pause();
+		{	mMediaPlayer.pause();
+		    
+		}
 
 	}
 	@Override
@@ -874,6 +880,10 @@ public class MainActivity2 extends AppCompatActivity implements MediaPlayerContr
 	public boolean isPlaying() {
 		// TODO Auto-generated method stub
 		//return false;
+		if (!mMediaPlayer.isPlaying())
+			setTitle(mTitle);
+		else
+			actionBar.setTitle("Playing clip");
 		return mMediaPlayer.isPlaying();
 	}
 	@Override
