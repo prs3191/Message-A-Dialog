@@ -73,6 +73,7 @@ public class SearchResultsActivity extends AppCompatActivity implements MediaPla
 	private ProgressDialog progress;
 	private String callingactivity;
 	private String mlink;
+	private String mTitle;
 	
 	@Override
 	public void onCreate (Bundle savedInstanceState){
@@ -99,11 +100,13 @@ public class SearchResultsActivity extends AppCompatActivity implements MediaPla
 
 		mAdapter = new MyRecyclerViewAdapter(getDataSet());
 		mRecyclerView.setAdapter(mAdapter);
-
+		
 		if(search_results.size()<=1)
-			actionBar.setTitle(search_results.size()+" result for '"+query+"'");
+		{	mTitle=search_results.size()+" result for '"+query+"'";
+			actionBar.setTitle(search_results.size()+" result for '"+query+"'");}
 		else
-			actionBar.setTitle(search_results.size()+" results for '"+query+"'");	
+		{	mTitle=search_results.size()+" results for '"+query+"'";
+			actionBar.setTitle(search_results.size()+" results for '"+query+"'");}	
 
 		actionBar.setDisplayHomeAsUpEnabled(true);
 
@@ -157,6 +160,7 @@ public class SearchResultsActivity extends AppCompatActivity implements MediaPla
 			public void onCompletion(MediaPlayer mp) {
 				// TODO Auto-generated method stub
 				Log.d(LOG_TAG,"onCompletion and resetting media player");
+				actionBar.setTitle(mTitle);
 				mMediaController.hide();
 				mMediaPlayer.reset();
 			}
@@ -345,7 +349,7 @@ public class SearchResultsActivity extends AppCompatActivity implements MediaPla
 				//String audioFile ="http://www.stephaniequinn.com/Music/The%20Irish%20Washerwoman.mp3";
 				String audioFilename=((ArrayList<DataObject>)search_results).get(position).getmText1();
 				String audioFile =mlink+audioFilename;
-
+				actionBar.setTitle("Fetching clip");
 				mMediaPlayer.reset();
 				try 
 				{	
@@ -491,6 +495,10 @@ public class SearchResultsActivity extends AppCompatActivity implements MediaPla
 	public boolean isPlaying() {
 		// TODO Auto-generated method stub
 		//return false;
+		if (!mMediaPlayer.isPlaying())
+			actionBar.setTitle(mTitle);
+		else
+			actionBar.setTitle("Playing clip");
 		return mMediaPlayer.isPlaying();
 	}
 	@Override
