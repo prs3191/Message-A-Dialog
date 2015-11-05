@@ -3482,6 +3482,8 @@ containing a value of this type.
         public static final int login_button=0x7f0a0099;
         public static final int match_parent=0x7f0a0043;
         public static final int media_actions=0x7f0a009e;
+        public static final int menu_bottom=0x7f0a00ae;
+        public static final int menu_top=0x7f0a00ab;
         public static final int messenger_send_button=0x7f0a009a;
         public static final int middle=0x7f0a0022;
         public static final int mini=0x7f0a0023;
@@ -3491,8 +3493,9 @@ containing a value of this type.
         public static final int my_recycler_view=0x7f0a0084;
         public static final int my_searchrecycler_view=0x7f0a00a9;
         public static final int nav_view=0x7f0a0085;
-        public static final int navigation_item_1=0x7f0a00ab;
-        public static final int navigation_item_2=0x7f0a00ac;
+        public static final int navigation_item_1=0x7f0a00ac;
+        public static final int navigation_item_2=0x7f0a00ad;
+        public static final int navigation_item_3=0x7f0a00af;
         public static final int never=0x7f0a001e;
         public static final int never_display=0x7f0a004c;
         public static final int none=0x7f0a0011;
@@ -3516,7 +3519,7 @@ containing a value of this type.
         public static final int scroll=0x7f0a0036;
         public static final int scrollView=0x7f0a0065;
         public static final int scrollable=0x7f0a0025;
-        public static final int search=0x7f0a00ad;
+        public static final int search=0x7f0a00b0;
         public static final int search_badge=0x7f0a0077;
         public static final int search_bar=0x7f0a0076;
         public static final int search_button=0x7f0a0078;

@@ -38,7 +38,8 @@
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/drawer_header2"
         app:itemBackground="@layout/activated_background2"
-        app:menu="@menu/drawer2" >
+        app:menu="@menu/drawer2"
+         >
 
 
 

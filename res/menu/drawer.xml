@@ -7,6 +7,7 @@
     tools:context=".MainActivity" >
 
     <group
+        android:id="@+id/menu_top"
         android:checkableBehavior="single"
         android:visible="true" >
         <item
@@ -20,7 +21,16 @@
             android:title="@string/nav2"/>
 
     </group>
-	
+	<group
+	    android:id="@+id/menu_bottom"
+        android:checkableBehavior="single"
+        android:visible="true" >
+        <item
+            android:id="@+id/navigation_item_3"
+            android:icon="@drawable/ic_action_headphones"
+            android:title="About"/>
+   </group>
+    
 
     
 </menu>
