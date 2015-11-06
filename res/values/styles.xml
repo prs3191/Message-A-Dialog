@@ -77,6 +77,8 @@
         <item name="android:textColorSecondary">@color/white</item>
         <!-- Used to color the overflow menu icon -->
         <item name="actionMenuTextColor">@color/white</item>
+        
+        <item name="android:listDivider">@color/black</item>
         <!-- Customize your theme here. -->
     </style>
 
@@ -93,6 +95,7 @@
         <item name="android:textColorSecondary">@color/white</item>
         <!-- Used to color the overflow menu icon -->
         <item name="actionMenuTextColor">@color/white</item>
+        <item name="android:listDivider">@color/black</item>
         <!-- Customize your theme here. -->
     </style>
 
