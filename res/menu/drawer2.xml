@@ -20,15 +20,14 @@
             android:icon="@drawable/ic_action_headphones"
             android:title="@string/nav2"/>
 
-    </group>
-	
+    </group>	
 	<group
 	    android:id="@+id/menu_bottom"
         android:checkableBehavior="single"
         android:visible="true" >
         <item
             android:id="@+id/navigation_item_3"
-            android:icon="@drawable/ic_action_headphones"
+            android:icon="@drawable/ic_action_about"
             android:title="About"/>
    </group>
     
