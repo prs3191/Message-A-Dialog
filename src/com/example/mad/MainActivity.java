@@ -1028,7 +1028,8 @@ public class MainActivity extends AppCompatActivity implements MediaPlayerContro
 		//SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
 		SearchView searchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.search));
 		Log.d(LOG_TAG,"onCreateOptionsMenu() searchView:"+searchView.toString());
-
+		
+		searchView.setQueryHint("Search Dialog");
 
 		SearchView.SearchAutoComplete searchAutoComplete = 
 				(SearchView.SearchAutoComplete)searchView.
