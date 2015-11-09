@@ -1106,6 +1106,12 @@ public class MainActivity2 extends AppCompatActivity implements MediaPlayerContr
 				progress.show();
 				getbucketlist();
 			}
+			else if(menuitem.getTitle().toString().contains("About")){
+				Log.d(LOG_TAG,"Switching to About_activity");
+				// Application code
+				Intent i=new Intent(MainActivity2.this,about.class);
+				startActivity(i);
+			}
 			closeNavDrawer();
 			return true;
 		}
