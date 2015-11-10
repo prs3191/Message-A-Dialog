@@ -1086,10 +1086,11 @@ public class MainActivity2 extends AppCompatActivity implements MediaPlayerContr
 			//selectItem(position);
 			menuitem.setChecked(true);
 
-			setTitle(menuitem.getTitle());
+			
 			Log.d(LOG_TAG,"Clicked title in Navig View:"+menuitem.getTitle().toString());
 			if(menuitem.getTitle().toString().contains("Tamil")){
 				Log.d(LOG_TAG,"Loading bucket Tamil");
+				setTitle(menuitem.getTitle());
 				mBucket=Utils.BUCKET;
 				mlink=Utils.LINK+mBucket+"/";
 				progress.setTitle("Loading");
@@ -1099,6 +1100,7 @@ public class MainActivity2 extends AppCompatActivity implements MediaPlayerContr
 			}
 			else if(menuitem.getTitle().toString().contains("English")){
 				Log.d(LOG_TAG,"Loading bucket English");
+				setTitle(menuitem.getTitle());
 				mBucket=Utils.BUCKET2;
 				mlink=Utils.LINK2+mBucket+"/";
 				progress.setTitle("Loading");

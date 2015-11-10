@@ -6,6 +6,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.View;
 
 public class about extends AppCompatActivity
 {
@@ -28,6 +29,13 @@ public class about extends AppCompatActivity
 		actionBar.setTitle("About");
 		actionBar.setDisplayHomeAsUpEnabled(true);
 		actionBar.setHomeButtonEnabled(true);
+		
+		mtoolbar.setNavigationOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+					onBackPressed();
+			}
+		});
 		
 	}
 	
