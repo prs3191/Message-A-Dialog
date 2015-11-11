@@ -120,7 +120,7 @@ public class fb_loginActivity extends Activity {
 		callbackManager = CallbackManager.Factory.create();
 
 
-		//setContentView(R.layout.fb_login);
+		setContentView(R.layout.launchscreen);
 
 		//		loginButton = (LoginButton) findViewById(R.id.login_button);
 		//		loginButton.setReadPermissions("read_insights");
