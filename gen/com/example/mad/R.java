@@ -23,6 +23,7 @@ public final class R {
         public static final int design_fab_out=0x7f04000b;
         public static final int design_snackbar_in=0x7f04000c;
         public static final int design_snackbar_out=0x7f04000d;
+        public static final int logo_anim=0x7f04000e;
     }
     public static final class array {
         public static final int drawerItem_array=0x7f0d0000;

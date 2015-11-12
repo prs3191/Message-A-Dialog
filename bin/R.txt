@@ -12,6 +12,7 @@ int anim design_fab_in 0x7f04000a
 int anim design_fab_out 0x7f04000b
 int anim design_snackbar_in 0x7f04000c
 int anim design_snackbar_out 0x7f04000d
+int anim logo_anim 0x7f04000e
 int array drawerItem_array 0x7f0d0000
 int attr actionBarDivider 0x7f010018
 int attr actionBarItemBackground 0x7f010019

@@ -40,6 +40,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 public class fb_loginActivity extends Activity {
@@ -121,6 +124,7 @@ public class fb_loginActivity extends Activity {
 
 
 		setContentView(R.layout.launchscreen);
+		startlogoanim();
 
 		//		loginButton = (LoginButton) findViewById(R.id.login_button);
 		//		loginButton.setReadPermissions("read_insights");
@@ -216,7 +220,16 @@ public class fb_loginActivity extends Activity {
 		LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("read_insights"));
 
 	}
-
+	
+	private void startlogoanim(){
+		 
+		Animation anim = AnimationUtils.loadAnimation(this, R.anim.logo_anim);
+        anim.reset();
+        ImageView iv = (ImageView) findViewById(R.id.launch_img);
+        iv.clearAnimation();
+        iv.startAnimation(anim);
+	}
+	
 	private void updateWithToken(AccessToken currentAccessToken)
 	{
 
