@@ -50,6 +50,27 @@
                 android:text="500 NoTS"
                 android:textColor="#000000"
                 android:textSize="12sp" />
+           
+            <TextView
+                android:id="@+id/played"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_toRightOf="@+id/splitter"
+                android:layout_below="@+id/music_key"
+                android:text="50 Plays" 
+                android:textColor="#000000"
+                android:textSize="12sp"/>
+             <TextView
+                android:id="@+id/splitter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/music_key"
+                android:layout_toRightOf="@+id/nots"
+                android:text="-" 
+                android:layout_marginLeft="5dp"
+                android:textColor="#000000"
+                android:textSize="12sp"/>
             <!--
             <View
                 android:layout_width="match_parent"
@@ -93,6 +114,9 @@
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentLeft="true"
                 layout="@layout/messenger_button_send_blue_small" />
+
+
+
         </RelativeLayout>
     </android.support.v7.widget.CardView>
 

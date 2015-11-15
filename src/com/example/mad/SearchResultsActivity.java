@@ -247,13 +247,14 @@ public class SearchResultsActivity extends AppCompatActivity implements MediaPla
 		while(index1 < msize){
 			String music_file_key= ((ArrayList<DataObject>)mresults).get(index1).getmText1();
 			String nots= ((ArrayList<DataObject>)mresults).get(index1).getmText2();
+			String played=((ArrayList<DataObject>)mresults).get(index1).getmText3();
 			Log.d(LOG_TAG,"searching:"+music_file_key);
 			if(music_file_key.toLowerCase().contains(query.toLowerCase()))
 			{
-				DataObject obj = new DataObject(music_file_key,nots);
+				DataObject obj = new DataObject(music_file_key,nots,played);
 				search_results.add(index2, obj);
 				index2++;
-				Log.d(LOG_TAG,"matched string:\n"+music_file_key+" nots:"+nots);
+				Log.d(LOG_TAG,"matched string:\n"+music_file_key+" nots:"+nots+" played:"+played);
 			}
 			index1++;
 		}

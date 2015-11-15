@@ -163,6 +163,7 @@ public class MainActivity2 extends AppCompatActivity implements MediaPlayerContr
 	private String user_name;
 
 	private Map<String, String> times_sent = new HashMap<String, String>();
+	private Map<String, String> times_played = new HashMap<String, String>();
 	static Map<String,String> all_files_wnots = new HashMap<String,String>();
 	//	private  DefaultSyncCallback syncCallback;
 
@@ -667,7 +668,40 @@ public class MainActivity2 extends AppCompatActivity implements MediaPlayerContr
 						}
 					}
 					).executeAndWait();
+			
+			parameters.putString("event_name", "fb_mobile_music_played");
+			
+			new GraphRequest(
+					AccessToken.getCurrentAccessToken(),
+					"/"+Utils.fb_app_id+"/app_insights/app_event",
+					parameters,
+					HttpMethod.GET,
+					new GraphRequest.Callback() {
+						public void onCompleted(GraphResponse response) {
+							/* handle the result */
 
+							Log.d("MainActivity","fb analytics-times played:\n"+response);
+							try{
+								JSONObject jsonobj = response.getJSONObject();
+								JSONArray jarray = jsonobj.getJSONArray("data");
+								for(int i = 0; i < jarray.length(); i++)
+								{
+									JSONObject getval = jarray.getJSONObject(i);
+									//get your values
+									String val=getval.getString("value"); // this will return you total sends.
+									String music_key=getval.getJSONObject("breakdowns").getString("fb_description");
+									times_played.put(music_key,val);
+									Log.d("MainActivity","music_key:\n"+music_key+"\nval:"+val);
+								}
+							}
+							catch(Exception e){
+								Log.d("MainActivity","err in gettin times send:\n"+e);
+							}
+						}
+					}
+					).executeAndWait();
+
+			
 			return null;	
 
 		}
@@ -697,10 +731,11 @@ public class MainActivity2 extends AppCompatActivity implements MediaPlayerContr
 		for(S3ObjectSummary summary : summaries)
 		{
 			Log.d("Mainactivity","times_sent from hashmap:"+summary.getKey().toString()+"="+times_sent.get(summary.getKey().toString()));
+			Log.d("Mainactivity","times_played from hashmap:"+summary.getKey().toString()+"="+times_played.get(summary.getKey().toString()));
 			key=summary.getKey().toString();
 			Log.d(LOG_TAG,"keysplit:"+key.substring(key.lastIndexOf('/')+1));
 			//if(key.substring(key.lastIndexOf('/')+1)!= ""){
-			DataObject obj = new DataObject(key, times_sent.get(summary.getKey().toString()));
+			DataObject obj = new DataObject(key, times_sent.get(key), times_played.get(key));
 			results.add(index, obj);
 			index++;
 			//}

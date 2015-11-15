@@ -48,7 +48,7 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
 	public static class DataObjectHolder extends RecyclerView.ViewHolder implements View.OnClickListener,View.OnTouchListener,OnGestureListener
 	{
 		TextView label;
-		TextView nots;
+		TextView nots, played, splitter;
 		View mMessengerButton;
 		View mCardView;
 		SendButton sendbutton;
@@ -61,6 +61,8 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
 			super(itemView);
 			label = (TextView) itemView.findViewById(R.id.music_key);
 			nots = (TextView) itemView.findViewById(R.id.nots);
+			played=(TextView) itemView.findViewById(R.id.played);
+			splitter=(TextView) itemView.findViewById(R.id.splitter);
 			mMessengerButton=itemView.findViewById(R.id.messenger_send_button);
 			//sendbutton = (SendButton)itemView.findViewById(R.id.fbsendButton);
 			// dateTime = (TextView) itemView.findViewById(R.id.textView2);
@@ -181,6 +183,8 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
 		if(mDataset.get(position).getmText2()==null)
 			mDataset.get(position).setmText2("0");
 		holder.nots.setText(mDataset.get(position).getmText2()+" NoTS");
+		holder.splitter.setText("-");
+		holder.played.setText(mDataset.get(position).getmText3()+" Plays");
 		
 		Log.d(LOG_TAG,"PrevPosition:"+mPreviousposition);
 		//add transition if scrolled down
