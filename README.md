@@ -2,4 +2,4 @@
 Message funny dialogs
 
 ##Description
-An Android app that lets you to message funny dialogs to your facebook friends.
+Sometimes texting your friends might be boring or your friend might not get the intensity of your tone from texts.Instead you can use this Android app that lets you message movie/famous dialogs to your facebook friends and make the conversation even more interesting.
